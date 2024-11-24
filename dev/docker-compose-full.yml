@@ -1,0 +1,26 @@
+services:
+  bondage-fantasy-client:
+    image: bondage-fantasy-client:latest
+    container_name: bondage-fantasy-client
+    ports:
+      - 80:80
+      - 443:443
+
+  mongodb:
+    image: bitnami/mongodb:8.0
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      MONGODB_ROOT_USER: root
+      MONGODB_ROOT_PASSWORD: root
+      MONGODB_REPLICA_SET_MODE: primary
+      MONGODB_REPLICA_SET_NAME: rs0
+      MONGODB_REPLICA_SET_KEY: replicaSetKey
+      MONGODB_ADVERTISED_HOSTNAME: mongodb
+    volumes:
+      - "mongodb_data:/bitnami/mongodb"
+
+volumes:
+  mongodb_data:
+    driver: local
