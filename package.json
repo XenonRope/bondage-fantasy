@@ -1,7 +1,8 @@
 {
-  "name": "bondage-fantasy",
   "private": true,
-  "workspaces": [
-    "bondage-fantasy-client"
-  ]
+  "pnpm": {
+    "overrides": {
+      "strtok3": "8.0.1"
+    }
+  }
 }
