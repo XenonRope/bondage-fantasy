@@ -1,0 +1,7 @@
+{
+  "name": "bondage-fantasy",
+  "private": true,
+  "workspaces": [
+    "bondage-fantasy-client"
+  ]
+}
