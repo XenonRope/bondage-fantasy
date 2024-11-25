@@ -31,4 +31,12 @@ export default await Env.create(new URL("../", import.meta.url), {
   |----------------------------------------------------------
   */
   SESSION_DRIVER: Env.schema.enum(["cookie", "memory"] as const),
+
+  /*
+  |----------------------------------------------------------
+  | Application specific configuration
+  |----------------------------------------------------------
+  */
+  MONGODB_CONNECTION_STRING: Env.schema.string(),
+  MONGODB_DATABASE: Env.schema.string(),
 });
