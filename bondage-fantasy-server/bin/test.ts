@@ -56,7 +56,7 @@ new Ignitor(APP_ROOT, { importer: IMPORTER })
     });
   })
   .run(() => run())
-  .catch((error) => {
+  .catch(async (error) => {
     process.exitCode = 1;
-    prettyPrintError(error);
+    await prettyPrintError(error);
   });

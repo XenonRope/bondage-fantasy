@@ -7,7 +7,7 @@
 |
 */
 
-const CounterController = () => import("#controllers/counter-controller");
+const AccountController = () => import("#controllers/account-controller");
 import router from "@adonisjs/core/services/router";
 
-router.get("/", [CounterController, "increment"]);
+router.post("/accounts/register", [AccountController, "register"]);
