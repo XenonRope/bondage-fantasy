@@ -1,5 +1,4 @@
 FROM node:22-alpine
-USER root
 WORKDIR /app
 
 COPY build/package.json /app/
