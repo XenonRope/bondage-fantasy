@@ -1,29 +1,48 @@
+name: "bondage-fantasy"
 services:
-  bondage-fantasy-client:
+  client:
     image: bondage-fantasy-client:latest
     container_name: bondage-fantasy-client
     ports:
       - 80:80
       - 443:443
 
+  server:
+    image: bondage-fantasy-server:latest
+    container_name: bondage-fantasy-server
+    ports:
+      - 3333:3333
+    environment:
+      TZ: UTC
+      PORT: 3333
+      HOST: localhost
+      LOG_LEVEL: info
+      APP_KEY: 16ZICmMNh26VUegNbUE_a7hlhHRGQQhP
+      NODE_ENV: production
+      SESSION_DRIVER: cookie
+      MONGODB_CONNECTION_STRING: mongodb://root:root@bondage-fantasy-mongodb:27017/admin
+      MONGODB_DATABASE: BondageFantasy
+      LOCK_STORE: redis
+      REDIS_HOST: bondage-fantasy-redis
+      REDIS_PORT: 6379
+    depends_on:
+      - mongodb
+      - redis
+
   mongodb:
     image: bitnami/mongodb:8.0
-    container_name: mongodb
+    container_name: bondage-fantasy-mongodb
     ports:
       - "27017:27017"
     environment:
       MONGODB_ROOT_USER: root
       MONGODB_ROOT_PASSWORD: root
-      MONGODB_REPLICA_SET_MODE: primary
-      MONGODB_REPLICA_SET_NAME: rs0
-      MONGODB_REPLICA_SET_KEY: replicaSetKey
-      MONGODB_ADVERTISED_HOSTNAME: localhost
     volumes:
       - "mongodb_data:/bitnami/mongodb"
 
   redis:
     image: redis:7.4
-    container_name: redis
+    container_name: bondage-fantasy-redis
     ports:
       - "6379:6379"
 

@@ -34,6 +34,15 @@ jobs:
       - name: bondage-fantasy-client - build
         working-directory: ./bondage-fantasy-client
         run: pnpm run build
+      - name: bondage-fantasy-server - check format
+        working-directory: ./bondage-fantasy-server
+        run: pnpm run format-check
+      - name: bondage-fantasy-server - lint
+        working-directory: ./bondage-fantasy-server
+        run: pnpm run lint
+      - name: bondage-fantasy-server - build
+        working-directory: ./bondage-fantasy-server
+        run: pnpm run build
       - name: Log in to the Container registry
         uses: docker/login-action@v3
         with:
@@ -47,3 +56,10 @@ jobs:
           file: ./bondage-fantasy-client/Dockerfile
           push: true
           tags: ghcr.io/xenonrope/bondage-fantasy-client
+      - name: Build and push bondage-fantasy-server Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./bondage-fantasy-server
+          file: ./bondage-fantasy-server/Dockerfile
+          push: true
+          tags: ghcr.io/xenonrope/bondage-fantasy-server

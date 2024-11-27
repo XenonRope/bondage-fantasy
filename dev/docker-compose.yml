@@ -1,22 +1,19 @@
+name: "bondage-fantasy"
 services:
   mongodb:
     image: bitnami/mongodb:8.0
-    container_name: mongodb
+    container_name: bondage-fantasy-mongodb
     ports:
       - "27017:27017"
     environment:
       MONGODB_ROOT_USER: root
       MONGODB_ROOT_PASSWORD: root
-      MONGODB_REPLICA_SET_MODE: primary
-      MONGODB_REPLICA_SET_NAME: rs0
-      MONGODB_REPLICA_SET_KEY: replicaSetKey
-      MONGODB_ADVERTISED_HOSTNAME: localhost
     volumes:
       - "mongodb_data:/bitnami/mongodb"
 
   redis:
     image: redis:7.4
-    container_name: redis
+    container_name: bondage-fantasy-redis
     ports:
       - "6379:6379"
 
