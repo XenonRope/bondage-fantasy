@@ -1,9 +1,10 @@
 {
   "name": "bondage-fantasy-server",
-  "version": "0.0.0",
   "private": true,
   "type": "module",
-  "license": "MIT",
+  "files": [
+    "build"
+  ],
   "scripts": {
     "start": "node bin/server.js",
     "build": "node ace build",
@@ -13,7 +14,7 @@
     "format": "prettier --write .",
     "format-check": "prettier --check .",
     "typecheck": "tsc --noEmit",
-    "docker": "docker build -t bondage-fantasy-server ."
+    "docker": "docker build -t bondage-fantasy-server -f ./Dockerfile .."
   },
   "imports": {
     "#controllers/*": "./app/controllers/*.js",
@@ -53,6 +54,7 @@
     "typescript": "5.7.2"
   },
   "dependencies": {
+    "bondage-fantasy-common": "workspace:*",
     "@adonisjs/auth": "9.2.4",
     "@adonisjs/core": "6.15.0",
     "@adonisjs/cors": "2.2.1",

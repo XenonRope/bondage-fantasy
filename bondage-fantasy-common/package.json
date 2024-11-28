@@ -1,0 +1,15 @@
+{
+  "name": "bondage-fantasy-common",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "typescript": "5.7.2"
+  }
+}

@@ -17,32 +17,14 @@ jobs:
         uses: pnpm/action-setup@v3
         with:
           version: 9
-      - name: Cache node_modules
-        uses: actions/cache@v4
-        with:
-          path: ./node_modules
-          key: node_modules-${{ hashFiles('pnpm-lock.yaml') }}
       - name: Install dependencies
-        working-directory: .
         run: pnpm install --frozen-lockfile
-      - name: bondage-fantasy-client - check format
-        working-directory: ./bondage-fantasy-client
-        run: pnpm run format-check
-      - name: bondage-fantasy-client - lint
-        working-directory: ./bondage-fantasy-client
-        run: pnpm run lint
-      - name: bondage-fantasy-client - build
-        working-directory: ./bondage-fantasy-client
-        run: pnpm run build
-      - name: bondage-fantasy-server - check format
-        working-directory: ./bondage-fantasy-server
-        run: pnpm run format-check
-      - name: bondage-fantasy-server - lint
-        working-directory: ./bondage-fantasy-server
-        run: pnpm run lint
-      - name: bondage-fantasy-server - build
-        working-directory: ./bondage-fantasy-server
-        run: pnpm run build
+      - name: Check format
+        run: pnpm run --recursive format-check
+      - name: Lint
+        run: pnpm run --recursive lint
+      - name: Build
+        run: pnpm run --recursive build
       - name: Log in to the Container registry
         uses: docker/login-action@v3
         with:
@@ -59,7 +41,7 @@ jobs:
       - name: Build and push bondage-fantasy-server Docker image
         uses: docker/build-push-action@v5
         with:
-          context: ./bondage-fantasy-server
+          context: .
           file: ./bondage-fantasy-server/Dockerfile
           push: true
           tags: ghcr.io/xenonrope/bondage-fantasy-server

@@ -1,3 +1,4 @@
 packages:
   - bondage-fantasy-client
+  - bondage-fantasy-common
   - bondage-fantasy-server
