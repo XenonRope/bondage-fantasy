@@ -11,10 +11,10 @@ services:
     image: bondage-fantasy-server:latest
     container_name: bondage-fantasy-server
     ports:
-      - 3333:3333
+      - 3333:80
     environment:
       TZ: UTC
-      PORT: 3333
+      PORT: 80
       HOST: 0.0.0.0
       LOG_LEVEL: info
       APP_KEY: 16ZICmMNh26VUegNbUE_a7hlhHRGQQhP
