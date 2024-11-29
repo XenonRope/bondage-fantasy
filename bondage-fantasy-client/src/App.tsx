@@ -1,11 +1,18 @@
 import "./App.css";
-import { USERNAME_MIN_LENGTH } from "bondage-fantasy-common";
+import AccountRegistrationPage from "./pages/AccountRegistrationPage";
+import { MantineProvider } from "@mantine/core";
+import "@mantine/core/styles.css";
+import { BrowserRouter, Route, Routes } from "react-router";
 
 function App() {
   return (
-    <div className="font-bold">
-      Bondage Fantasy. Account minimum length is {USERNAME_MIN_LENGTH}.
-    </div>
+    <MantineProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<AccountRegistrationPage />} />
+        </Routes>
+      </BrowserRouter>
+    </MantineProvider>
   );
 }
 
