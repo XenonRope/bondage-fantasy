@@ -1,6 +1,17 @@
-import { Button, Container, PasswordInput, TextInput } from "@mantine/core";
-import { useForm } from "@mantine/form";
+import { accountApi } from "../api/account-api";
+import { notificationService } from "../services/notification-service";
+import { isErrorWithCode } from "../utils/error";
 import {
+  Button,
+  Container,
+  PasswordInput,
+  TextInput,
+  Title,
+} from "@mantine/core";
+import { useForm } from "@mantine/form";
+import { useMutation } from "@tanstack/react-query";
+import {
+  ErrorCode,
   PASSWORD_MAX_LENGTH,
   PASSWORD_MIN_LENGTH,
   USERNAME_MAX_LENGTH,
@@ -14,7 +25,6 @@ export default function AccountRegistrationPage() {
       username: "",
       password: "",
     },
-
     validate: {
       username: (value) => {
         if (value.length < USERNAME_MIN_LENGTH) {
@@ -35,9 +45,32 @@ export default function AccountRegistrationPage() {
     },
   });
 
+  const registerMutation = useMutation({
+    mutationFn: (params: { username: string; password: string }) =>
+      accountApi.register(params),
+    onError: (error, { username }) => {
+      if (isErrorWithCode(error, ErrorCode.E_USERNAME_ALREADY_TAKEN)) {
+        form.setFieldError(
+          "username",
+          `Username "${username}" was already taken`,
+        );
+      } else {
+        notificationService.unexpectedError("Account was not created");
+      }
+    },
+  });
+
   return (
-    <Container>
-      <form onSubmit={form.onSubmit(() => {})}>
+    <Container size="xs">
+      <form
+        onSubmit={form.onSubmit(
+          (values) =>
+            !registerMutation.isPending && registerMutation.mutate(values),
+        )}
+      >
+        <Title order={2} mt={16} mb={24}>
+          Create account
+        </Title>
         <TextInput
           {...form.getInputProps("username")}
           key={form.key("username")}

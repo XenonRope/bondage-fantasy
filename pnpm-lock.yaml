@@ -22,6 +22,12 @@ importers:
       '@mantine/hooks':
         specifier: 7.14.3
         version: 7.14.3(react@18.3.1)
+      '@mantine/notifications':
+        specifier: ^7.14.3
+        version: 7.14.3(@mantine/core@7.14.3(@mantine/hooks@7.14.3(react@18.3.1))(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/hooks@7.14.3(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@tanstack/react-query':
+        specifier: ^5.62.0
+        version: 5.62.0(react@18.3.1)
       bondage-fantasy-common:
         specifier: workspace:*
         version: link:../bondage-fantasy-common
@@ -32,7 +38,7 @@ importers:
         specifier: 18.3.1
         version: 18.3.1(react@18.3.1)
       react-router:
-        specifier: ^7.0.1
+        specifier: 7.0.1
         version: 7.0.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
     devDependencies:
       '@eslint/js':
@@ -72,10 +78,10 @@ importers:
         specifier: 8.4.49
         version: 8.4.49
       postcss-preset-mantine:
-        specifier: ^1.17.0
+        specifier: 1.17.0
         version: 1.17.0(postcss@8.4.49)
       postcss-simple-vars:
-        specifier: ^7.0.1
+        specifier: 7.0.1
         version: 7.0.1(postcss@8.4.49)
       prettier:
         specifier: 3.4.1
@@ -824,6 +830,19 @@ packages:
     peerDependencies:
       react: ^18.x || ^19.x
 
+  '@mantine/notifications@7.14.3':
+    resolution: {integrity: sha512-7N9u4upi1On8TL94UvrUNhpDGxp1sAkbcgiNcu6zhvy4j29TPFapoXB5CRE9zzjAf3CYq3AigE96bXlCDm9xuQ==}
+    peerDependencies:
+      '@mantine/core': 7.14.3
+      '@mantine/hooks': 7.14.3
+      react: ^18.x || ^19.x
+      react-dom: ^18.x || ^19.x
+
+  '@mantine/store@7.14.3':
+    resolution: {integrity: sha512-o15vbTUNlLqD/yLOtEClnc4fY2ONDaCZiaL9REUy0xhCDbVTeeqnu9BV604yuym50ZH5mhMHix1TX3K9vGsWvA==}
+    peerDependencies:
+      react: ^18.x || ^19.x
+
   '@mongodb-js/saslprep@1.1.9':
     resolution: {integrity: sha512-tVkljjeEaAhCqTzajSdgbQ6gE6f3oneVwa3iXR6csiEwXXOFsiC6Uh9iAjAhXPtqa/XMDHWjjeNH/77m/Yq2dw==}
 
@@ -1096,6 +1115,14 @@ packages:
 
   '@swc/types@0.1.17':
     resolution: {integrity: sha512-V5gRru+aD8YVyCOMAjMpWR1Ui577DD5KSJsHP8RAxopAH22jFz6GZd/qxqjO6MJHQhcsjvjOFXyDhyLQUnMveQ==}
+
+  '@tanstack/query-core@5.62.0':
+    resolution: {integrity: sha512-sx38bGrqF9bop92AXOvzDr0L9fWDas5zXdPglxa9cuqeVSWS7lY6OnVyl/oodfXjgOGRk79IfCpgVmxrbHuFHg==}
+
+  '@tanstack/react-query@5.62.0':
+    resolution: {integrity: sha512-tj2ltjAn2a3fs+Dqonlvs6GyLQ/LKVJE2DVSYW+8pJ3P6/VCVGrfqv5UEchmlP7tLOvvtZcOuSyI2ooVlR5Yqw==}
+    peerDependencies:
+      react: ^18 || ^19
 
   '@tokenizer/token@0.3.0':
     resolution: {integrity: sha512-OvjF+z51L3ov0OyAU0duzsYuvO01PH7x4t6DJx+guahgTnBHkhJdG7soQeTSFLWN3efnHyibZ4Z8l2EuWwJN3A==}
@@ -1755,6 +1782,9 @@ packages:
 
   dlv@1.1.3:
     resolution: {integrity: sha512-+HlytyjlPKnIG8XuRG8WvmBP8xs8P71y+SKKS6ZXWoEgLuePxtDoUEiH7WkdePWrQ5JBpE6aoVqfZfJUQkjXwA==}
+
+  dom-helpers@5.2.1:
+    resolution: {integrity: sha512-nRCa7CK3VTrM2NmGkIy4cbK7IZlgBE/PYMn55rrXefr5xXDP0LdtfPnblFDoVdcAfslJ7or6iqAUnx0CCGIWQA==}
 
   dotenv@16.4.5:
     resolution: {integrity: sha512-ZmdL2rui+eB2YwhsWzjInR8LldtZHGDoQ1ugH85ppHKwpUHL7j7rN0Ti9NCnGiQbhaZ11FpR+7ao1dNsmduNUg==}
@@ -3080,6 +3110,9 @@ packages:
     resolution: {integrity: sha512-cdGef/drWFoydD1JsMzuFf8100nZl+GT+yacc2bEced5f9Rjk4z+WtFUTBu9PhOi9j/jfmBPu0mMEY4wIdAF8A==}
     engines: {node: '>= 0.6.0'}
 
+  prop-types@15.8.1:
+    resolution: {integrity: sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==}
+
   proxy-addr@2.0.7:
     resolution: {integrity: sha512-llQsMLSUDUPT44jdrU/O37qlnifitDP+ZwrmmZcoSKyLKvtZxpyV0n2/bD/N4tBAAZ/gJEdZU7KMraoK1+XYAg==}
     engines: {node: '>= 0.10'}
@@ -3171,6 +3204,12 @@ packages:
     engines: {node: '>=10'}
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0
+
+  react-transition-group@4.4.5:
+    resolution: {integrity: sha512-pZcd1MCJoiKiBR2NRxeCRg13uCXbydPnmB4EOeRrY7480qNWO8IIgQG6zlDkm6uRMsURXPuKq0GWtiM59a5Q6g==}
+    peerDependencies:
+      react: '>=16.6.0'
+      react-dom: '>=16.6.0'
 
   react@18.3.1:
     resolution: {integrity: sha512-wS+hAgJShR0KhEvPJArfuPVN1+Hz1t0Y6n5jLrGQbkb4urgPE/0Rve+1kMB1v/oWgHgm4WIcV+i7F2pTVj+2iQ==}
@@ -4601,6 +4640,19 @@ snapshots:
     dependencies:
       react: 18.3.1
 
+  '@mantine/notifications@7.14.3(@mantine/core@7.14.3(@mantine/hooks@7.14.3(react@18.3.1))(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/hooks@7.14.3(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+    dependencies:
+      '@mantine/core': 7.14.3(@mantine/hooks@7.14.3(react@18.3.1))(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@mantine/hooks': 7.14.3(react@18.3.1)
+      '@mantine/store': 7.14.3(react@18.3.1)
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+      react-transition-group: 4.4.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+
+  '@mantine/store@7.14.3(react@18.3.1)':
+    dependencies:
+      react: 18.3.1
+
   '@mongodb-js/saslprep@1.1.9':
     dependencies:
       sparse-bitfield: 3.0.3
@@ -4830,6 +4882,13 @@ snapshots:
   '@swc/types@0.1.17':
     dependencies:
       '@swc/counter': 0.1.3
+
+  '@tanstack/query-core@5.62.0': {}
+
+  '@tanstack/react-query@5.62.0(react@18.3.1)':
+    dependencies:
+      '@tanstack/query-core': 5.62.0
+      react: 18.3.1
 
   '@tokenizer/token@0.3.0': {}
 
@@ -5480,6 +5539,11 @@ snapshots:
   diff@4.0.2: {}
 
   dlv@1.1.3: {}
+
+  dom-helpers@5.2.1:
+    dependencies:
+      '@babel/runtime': 7.26.0
+      csstype: 3.1.3
 
   dotenv@16.4.5: {}
 
@@ -6770,6 +6834,12 @@ snapshots:
 
   process@0.11.10: {}
 
+  prop-types@15.8.1:
+    dependencies:
+      loose-envify: 1.4.0
+      object-assign: 4.1.1
+      react-is: 16.13.1
+
   proxy-addr@2.0.7:
     dependencies:
       forwarded: 0.2.0
@@ -6860,6 +6930,15 @@ snapshots:
       use-latest: 1.2.1(@types/react@18.3.12)(react@18.3.1)
     transitivePeerDependencies:
       - '@types/react'
+
+  react-transition-group@4.4.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+    dependencies:
+      '@babel/runtime': 7.26.0
+      dom-helpers: 5.2.1
+      loose-envify: 1.4.0
+      prop-types: 15.8.1
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
 
   react@18.3.1:
     dependencies:

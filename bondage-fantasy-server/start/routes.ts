@@ -10,4 +10,8 @@
 const AccountController = () => import("#controllers/account-controller");
 import router from "@adonisjs/core/services/router";
 
-router.post("/accounts/register", [AccountController, "register"]);
+router
+  .group(() => {
+    router.post("/accounts/register", [AccountController, "register"]);
+  })
+  .prefix("/api");
