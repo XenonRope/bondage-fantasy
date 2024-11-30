@@ -15,5 +15,6 @@ router
   .group(() => {
     router.post("/accounts/register", [AccountController, "register"]);
     router.post("/session/login", [SessionController, "login"]);
+    router.get("/csrf/token", () => "");
   })
   .prefix("/api");

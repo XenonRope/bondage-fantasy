@@ -1,4 +1,8 @@
+import Cookies from "js-cookie";
+
 class HttpClient {
+  private csrfToken?: Promise<string>;
+
   async post<T>(url: string, body?: unknown): Promise<T> {
     return this.sendRequest(url, {
       method: "POST",
@@ -16,13 +20,37 @@ class HttpClient {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
+        "X-XSRF-TOKEN": await this.getCsrfToken(),
       },
     });
+
+    const newCsrfToken = this.readCsrfTokenFromCookie();
+    if (newCsrfToken) {
+      this.csrfToken = Promise.resolve(newCsrfToken);
+    }
+
     if (!response.ok) {
       throw await this.tryGetJsonFromResponse(response);
     }
 
     return (await this.tryGetJsonFromResponse(response)) as T;
+  }
+
+  private async getCsrfToken(): Promise<string> {
+    if (this.csrfToken) {
+      return this.csrfToken;
+    }
+    this.csrfToken = this.fetchCsrfToken();
+    return this.csrfToken;
+  }
+
+  private async fetchCsrfToken(): Promise<string> {
+    await fetch("/api/csrf/token", { method: "GET" });
+    return this.readCsrfTokenFromCookie() as string;
+  }
+
+  private readCsrfTokenFromCookie(): string | undefined {
+    return Cookies.get("XSRF-TOKEN");
   }
 
   private async tryGetJsonFromResponse(response: Response): Promise<unknown> {
