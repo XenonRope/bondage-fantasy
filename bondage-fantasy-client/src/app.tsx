@@ -1,4 +1,5 @@
 import "./app.css";
+import "./i18n";
 import AccountRegistrationPage from "./pages/account-registration-page";
 import { MantineProvider } from "@mantine/core";
 import "@mantine/core/styles.css";

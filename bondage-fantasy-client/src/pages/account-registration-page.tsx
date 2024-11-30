@@ -19,8 +19,10 @@ import {
   USERNAME_MIN_LENGTH,
   USERNAME_PATTERN,
 } from "bondage-fantasy-common";
+import { useTranslation } from "react-i18next";
 
 export default function AccountRegistrationPage() {
+  const { t } = useTranslation();
   const form = useForm({
     mode: "uncontrolled",
     initialValues: {
@@ -28,67 +30,83 @@ export default function AccountRegistrationPage() {
       password: "",
     },
     validate: {
-      username: (value) => {
-        if (value.length < USERNAME_MIN_LENGTH) {
-          return `Username must have at least ${USERNAME_MIN_LENGTH} characters`;
-        }
-        if (value.length > USERNAME_MAX_LENGTH) {
-          return `Username cannot have more than ${USERNAME_MAX_LENGTH} characters`;
-        }
-        if (!USERNAME_PATTERN.test(value)) {
-          return `Username must start with letter and can only contain letters A-Z and digits`;
-        }
-      },
-      password: (value) => {
-        if (value.length < PASSWORD_MIN_LENGTH) {
-          return `Password must have at least ${PASSWORD_MIN_LENGTH} characters`;
-        }
-        if (value.length > PASSWORD_MAX_LENGTH) {
-          return `Password cannot have more than ${PASSWORD_MAX_LENGTH} characters`;
-        }
-      },
+      username: validateUsername,
+      password: validatePassword,
     },
   });
-
-  const registerMutation = useMutation({
+  const registerAccount = useMutation({
     mutationFn: (request: AccountRegisterRequest) =>
       accountApi.register(request),
-    onError: (error, { username }) => {
-      if (isErrorResponseWithCode(error, ErrorCode.E_USERNAME_ALREADY_TAKEN)) {
-        form.setFieldError(
-          "username",
-          `Username "${username}" was already taken`,
-        );
-        return;
-      }
-      errorService.handleUnexpectedError(error);
-    },
+    onError: handleRegisterAccountError,
   });
+
+  function validateUsername(value: string) {
+    if (value.length < USERNAME_MIN_LENGTH) {
+      return t("accountRegistration.usernameTooShort", {
+        minLength: USERNAME_MIN_LENGTH,
+      });
+    }
+    if (value.length > USERNAME_MAX_LENGTH) {
+      return t("accountRegistration.usernameTooLong", {
+        maxLength: USERNAME_MAX_LENGTH,
+      });
+    }
+    if (!USERNAME_PATTERN.test(value)) {
+      return t("accountRegistration.usernameInvalidFormat");
+    }
+  }
+
+  function validatePassword(value: string) {
+    if (value.length < PASSWORD_MIN_LENGTH) {
+      return t("accountRegistration.passwordTooShort", {
+        minLength: PASSWORD_MIN_LENGTH,
+      });
+    }
+    if (value.length > PASSWORD_MAX_LENGTH) {
+      return t("accountRegistration.passwordTooLong", {
+        maxLength: PASSWORD_MAX_LENGTH,
+      });
+    }
+  }
+
+  function handleRegisterAccountError(
+    error: unknown,
+    { username }: AccountRegisterRequest,
+  ) {
+    if (isErrorResponseWithCode(error, ErrorCode.E_USERNAME_ALREADY_TAKEN)) {
+      form.setFieldError(
+        "username",
+        t("accountRegistration.usernameWasAlreadyTaken", { username }),
+      );
+      return;
+    }
+    errorService.handleUnexpectedError(error);
+  }
 
   return (
     <Container size="xs">
       <form
         onSubmit={form.onSubmit(
           (values) =>
-            !registerMutation.isPending && registerMutation.mutate(values),
+            !registerAccount.isPending && registerAccount.mutate(values),
         )}
       >
         <Title order={2} mt={16} mb={24}>
-          Create account
+          {t("accountRegistration.createAccount")}
         </Title>
         <TextInput
           {...form.getInputProps("username")}
           key={form.key("username")}
-          label="Username"
+          label={t("common.username")}
         />
         <PasswordInput
           {...form.getInputProps("password")}
           key={form.key("password")}
           mt="md"
-          label="Password"
+          label={t("common.password")}
         />
         <Button type="submit" mt="md">
-          Submit
+          {t("accountRegistration.createAccount")}
         </Button>
       </form>
     </Container>
