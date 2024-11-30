@@ -23,5 +23,8 @@ export const en: ResourceLanguage = {
       "Password cannot have more than {{maxLength}} characters",
     "loginForm.login": "Login",
     "loginForm.createNewAccount": "Create new account",
+    "loginForm.invalidUsernameOrPassword": "Invalid username or password",
+    "loginForm.usernameCannotBeEmpty": "Username cannot be empty",
+    "loginForm.passwordCannotBeEmpty": "Password cannot be empty",
   },
 };

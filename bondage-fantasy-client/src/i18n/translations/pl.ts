@@ -23,5 +23,9 @@ export const pl: ResourceLanguage = {
       "Hasło nie może być dłuższe niż {{maxLength}} znaków",
     "loginForm.login": "Zaloguj",
     "loginForm.createNewAccount": "Stwórz nowe konto",
+    "loginForm.invalidUsernameOrPassword":
+      "Niepoprawna nazwa użytkownika lub hasło",
+    "loginForm.usernameCannotBeEmpty": "Nazwa użytkownika nie może być pusta",
+    "loginForm.passwordCannotBeEmpty": "Hasło nie może być puste",
   },
 };
