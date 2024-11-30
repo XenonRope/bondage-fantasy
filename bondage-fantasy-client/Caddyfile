@@ -1,6 +1,8 @@
 {$DOMAIN:localhost} {
 	reverse_proxy /api/* {$SERVER_API_HOST:bondage-fantasy-server}:{$SERVER_API_PORT:80}
 
+	encode zstd gzip
+
 	root * /usr/share/caddy
 	file_server
 }
