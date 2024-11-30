@@ -4,6 +4,7 @@ export const pl: ResourceLanguage = {
   translation: {
     "common.username": "Nazwa użytkownika",
     "common.password": "Hasło",
+    "common.or": "lub",
     "error.unexpecterError": "Niespodziewany błąd",
     "error.errorMessage": 'Kod błędu: {{code}}. Wiadomość: "{{message}}".',
     "error.somethingWentWrong": "Coś poszło nie tak...",
@@ -20,5 +21,7 @@ export const pl: ResourceLanguage = {
       "Hasło musi mieć co najmniej {{minLength}} znaków",
     "accountRegistration.passwordTooLong":
       "Hasło nie może być dłuższe niż {{maxLength}} znaków",
+    "loginForm.login": "Zaloguj",
+    "loginForm.createNewAccount": "Stwórz nowe konto",
   },
 };

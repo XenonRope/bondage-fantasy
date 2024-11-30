@@ -4,6 +4,7 @@ export const en: ResourceLanguage = {
   translation: {
     "common.username": "Username",
     "common.password": "Password",
+    "common.or": "or",
     "error.unexpecterError": "Unexpected error",
     "error.errorMessage": 'Error code: {{code}}. Message: "{{message}}".',
     "error.somethingWentWrong": "Something went wrong...",
@@ -20,5 +21,7 @@ export const en: ResourceLanguage = {
       "Password must have at least {{minLength}} characters",
     "accountRegistration.passwordTooLong":
       "Password cannot have more than {{maxLength}} characters",
+    "loginForm.login": "Login",
+    "loginForm.createNewAccount": "Create new account",
   },
 };

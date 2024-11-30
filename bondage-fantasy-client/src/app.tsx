@@ -1,6 +1,7 @@
 import "./app.css";
 import "./i18n";
 import AccountRegistrationPage from "./pages/account-registration-page";
+import HomePage from "./pages/home-page";
 import { MantineProvider } from "@mantine/core";
 import "@mantine/core/styles.css";
 import { Notifications } from "@mantine/notifications";
@@ -13,13 +14,20 @@ function App() {
     <QueryClientProvider client={new QueryClient()}>
       <MantineProvider>
         <Notifications />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<AccountRegistrationPage />} />
-          </Routes>
-        </BrowserRouter>
+        <AppRouter />
       </MantineProvider>
     </QueryClientProvider>
+  );
+}
+
+function AppRouter() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/account/create" element={<AccountRegistrationPage />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
