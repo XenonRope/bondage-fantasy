@@ -4,6 +4,7 @@ import {
   PASSWORD_MIN_LENGTH,
   USERNAME_MAX_LENGTH,
   USERNAME_MIN_LENGTH,
+  USERNAME_PATTERN,
 } from "bondage-fantasy-common";
 
 export const registerAccountValidator = vine.compile(
@@ -12,7 +13,7 @@ export const registerAccountValidator = vine.compile(
       .string()
       .minLength(USERNAME_MIN_LENGTH)
       .maxLength(USERNAME_MAX_LENGTH)
-      .alphaNumeric(),
+      .regex(USERNAME_PATTERN),
     password: vine
       .string()
       .minLength(PASSWORD_MIN_LENGTH)

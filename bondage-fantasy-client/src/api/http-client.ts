@@ -1,6 +1,9 @@
 class HttpClient {
   async post<T>(url: string, body?: unknown): Promise<T> {
-    return this.sendRequest(url, { method: "POST", body });
+    return this.sendRequest(url, {
+      method: "POST",
+      body,
+    });
   }
 
   private async sendRequest<T>(
@@ -16,19 +19,23 @@ class HttpClient {
       },
     });
     if (!response.ok) {
-      throw await this.getJsonFromResponse(response);
+      throw await this.tryGetJsonFromResponse(response);
     }
 
-    return (await this.getJsonFromResponse(response)) as T;
+    return (await this.tryGetJsonFromResponse(response)) as T;
   }
 
-  private async getJsonFromResponse(response: Response): Promise<unknown> {
+  private async tryGetJsonFromResponse(response: Response): Promise<unknown> {
     const responseAsText = await response.text();
     if (responseAsText.length === 0) {
       return undefined;
     }
 
-    return JSON.parse(responseAsText);
+    try {
+      return JSON.parse(responseAsText);
+    } catch {
+      return undefined;
+    }
   }
 }
 

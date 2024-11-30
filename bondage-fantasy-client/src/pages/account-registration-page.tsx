@@ -1,6 +1,6 @@
 import { accountApi } from "../api/account-api";
-import { notificationService } from "../services/notification-service";
-import { isErrorWithCode } from "../utils/error";
+import { errorService } from "../services/error-service";
+import { isErrorResponseWithCode } from "../utils/error";
 import {
   Button,
   Container,
@@ -11,11 +11,13 @@ import {
 import { useForm } from "@mantine/form";
 import { useMutation } from "@tanstack/react-query";
 import {
+  AccountRegisterRequest,
   ErrorCode,
   PASSWORD_MAX_LENGTH,
   PASSWORD_MIN_LENGTH,
   USERNAME_MAX_LENGTH,
   USERNAME_MIN_LENGTH,
+  USERNAME_PATTERN,
 } from "bondage-fantasy-common";
 
 export default function AccountRegistrationPage() {
@@ -33,6 +35,9 @@ export default function AccountRegistrationPage() {
         if (value.length > USERNAME_MAX_LENGTH) {
           return `Username cannot have more than ${USERNAME_MAX_LENGTH} characters`;
         }
+        if (!USERNAME_PATTERN.test(value)) {
+          return `Username must start with letter and can only contain letters A-Z and digits`;
+        }
       },
       password: (value) => {
         if (value.length < PASSWORD_MIN_LENGTH) {
@@ -46,17 +51,17 @@ export default function AccountRegistrationPage() {
   });
 
   const registerMutation = useMutation({
-    mutationFn: (params: { username: string; password: string }) =>
-      accountApi.register(params),
+    mutationFn: (request: AccountRegisterRequest) =>
+      accountApi.register(request),
     onError: (error, { username }) => {
-      if (isErrorWithCode(error, ErrorCode.E_USERNAME_ALREADY_TAKEN)) {
+      if (isErrorResponseWithCode(error, ErrorCode.E_USERNAME_ALREADY_TAKEN)) {
         form.setFieldError(
           "username",
           `Username "${username}" was already taken`,
         );
-      } else {
-        notificationService.unexpectedError("Account was not created");
+        return;
       }
+      errorService.handleUnexpectedError(error);
     },
   });
 

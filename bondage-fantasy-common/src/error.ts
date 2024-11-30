@@ -3,6 +3,6 @@ export enum ErrorCode {
 }
 
 export interface ErrorResponse {
-  code?: ErrorCode;
-  message?: string;
+  code: ErrorCode;
+  message: string;
 }

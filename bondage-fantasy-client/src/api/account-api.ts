@@ -1,13 +1,11 @@
 import { httpClient } from "./http-client";
+import { AccountRegisterRequest } from "bondage-fantasy-common";
 
 class AccountApi {
-  async register(params: {
-    username: string;
-    password: string;
-  }): Promise<void> {
+  async register(requset: AccountRegisterRequest): Promise<void> {
     return await httpClient.post("accounts/register", {
-      username: params.username,
-      password: params.password,
+      username: requset.username,
+      password: requset.password,
     });
   }
 }
