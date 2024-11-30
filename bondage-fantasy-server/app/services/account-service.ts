@@ -4,6 +4,7 @@ import { SequenceCode } from "#models/sequence-model";
 import { inject } from "@adonisjs/core";
 import hash from "@adonisjs/core/services/hash";
 import { SequenceService } from "./sequence-service.js";
+import { Account } from "#models/account-model";
 
 @inject()
 export default class AccountService {
@@ -11,6 +12,10 @@ export default class AccountService {
     private accountDao: AccountDao,
     private sequenceService: SequenceService,
   ) {}
+
+  async tryGetByUsername(username: string): Promise<Account | null> {
+    return await this.accountDao.getByUsername(username);
+  }
 
   async register(params: {
     username: string;

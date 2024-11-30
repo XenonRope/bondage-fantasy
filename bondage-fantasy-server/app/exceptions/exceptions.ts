@@ -19,3 +19,13 @@ export class UsernameAlreadyTakenException extends ApplicationException {
     });
   }
 }
+
+export class InvalidUsernameOrPasswordException extends ApplicationException {
+  constructor() {
+    super({
+      code: ErrorCode.E_INVALID_USERNAME_OF_PASSWORD,
+      message: "Invalid username or password",
+      status: 401,
+    });
+  }
+}

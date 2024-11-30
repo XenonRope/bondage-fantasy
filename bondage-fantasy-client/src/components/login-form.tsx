@@ -1,11 +1,4 @@
-import {
-  Anchor,
-  Box,
-  Button,
-  Paper,
-  PasswordInput,
-  TextInput,
-} from "@mantine/core";
+import { Anchor, Button, Paper, PasswordInput, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";

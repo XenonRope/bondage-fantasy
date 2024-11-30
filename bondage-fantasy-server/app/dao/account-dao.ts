@@ -6,6 +6,10 @@ import { Collection, Db } from "mongodb";
 export class AccountDao {
   constructor(private db: Db) {}
 
+  async getByUsername(username: string): Promise<Account | null> {
+    return await this.getCollection().findOne({ username });
+  }
+
   async existsUsername(username: string): Promise<boolean> {
     return (await this.getCollection().countDocuments({ username })) !== 0;
   }
