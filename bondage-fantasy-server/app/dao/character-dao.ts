@@ -1,31 +1,28 @@
 import { inject } from "@adonisjs/core";
 import { Character } from "bondage-fantasy-common";
-import { Collection, Db, Filter } from "mongodb";
-
-interface ListParams {
-  accountsIds?: number[];
-}
+import { Collection, Db } from "mongodb";
 
 @inject()
 export class CharacterDao {
   constructor(private db: Db) {}
 
-  async list(params: ListParams): Promise<Character[]> {
-    const filter = this.prepareListFilter(params);
-    return await this.getCollection().find(filter).toArray();
-  }
-
-  private prepareListFilter(params: ListParams): Filter<Character> {
-    const filters: Filter<Character>[] = [];
-    if (params.accountsIds != null) {
-      filters.push({ accountId: { $in: params.accountsIds } });
-    }
-
-    return filters.length > 0 ? { $and: filters } : {};
+  async getManyByAccountId(accountId: number): Promise<Character[]> {
+    return await this.getCollection().find({ accountId }).toArray();
   }
 
   async countByAccountId(accountId: number): Promise<number> {
     return await this.getCollection().countDocuments({ accountId });
+  }
+
+  async isCharacterdOwnedByAccount(
+    characterId: number,
+    accountId: number,
+  ): Promise<boolean> {
+    const count = await this.getCollection().countDocuments({
+      id: characterId,
+      accountId,
+    });
+    return count > 0;
   }
 
   async insert(character: Character): Promise<void> {

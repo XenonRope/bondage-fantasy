@@ -12,7 +12,7 @@ const bodyParserConfig = defineConfig({
    * content-type parser
    */
   form: {
-    convertEmptyStringsToNull: true,
+    convertEmptyStringsToNull: false,
     types: ["application/x-www-form-urlencoded"],
   },
 
@@ -20,7 +20,7 @@ const bodyParserConfig = defineConfig({
    * Config for the JSON parser
    */
   json: {
-    convertEmptyStringsToNull: true,
+    convertEmptyStringsToNull: false,
     types: [
       "application/json",
       "application/json-patch+json",
@@ -40,7 +40,7 @@ const bodyParserConfig = defineConfig({
      * operating system
      */
     autoProcess: true,
-    convertEmptyStringsToNull: true,
+    convertEmptyStringsToNull: false,
     processManually: [],
 
     /**

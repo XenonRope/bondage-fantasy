@@ -1,5 +1,6 @@
 import { ZoneDao } from "#dao/zone-dao";
 import { InvalidZoneException } from "#exceptions/exceptions";
+import { SequenceCode } from "#models/sequence-model";
 import { inject } from "@adonisjs/core";
 import {
   arePositionsEqual,
@@ -9,7 +10,6 @@ import {
   ZoneFieldConnection,
 } from "bondage-fantasy-common";
 import { SequenceService } from "./sequence-service.js";
-import { SequenceCode } from "#models/sequence-model";
 
 @inject()
 export class ZoneService {

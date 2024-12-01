@@ -14,9 +14,9 @@ export default class CharacterController {
   ) {}
 
   async list({ response, auth }: HttpContext) {
-    const characters = await this.characterDao.list({
-      accountsIds: [auth.user!.id],
-    });
+    const characters = await this.characterDao.getManyByAccountId(
+      auth.user!.id,
+    );
 
     response.status(200).send(characters.map(characterDto));
   }

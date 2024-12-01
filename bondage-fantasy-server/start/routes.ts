@@ -10,6 +10,7 @@
 const AccountController = () => import("#controllers/account-controller");
 const SessionController = () => import("#controllers/session-controller");
 const CharacterController = () => import("#controllers/character-controller");
+const ZoneController = () => import("#controllers/zone-controller");
 import router from "@adonisjs/core/services/router";
 import { middleware } from "./kernel.js";
 
@@ -24,7 +25,9 @@ router
         router.get("/accounts/my", [AccountController, "getMyAccount"]);
         router.get("/characters", [CharacterController, "list"]);
         router.post("/characters", [CharacterController, "create"]);
+        router.post("/zones", [ZoneController, "create"]);
       })
-      .use(middleware.auth());
+      .use(middleware.auth())
+      .use(middleware.characterId());
   })
   .prefix("/api");
