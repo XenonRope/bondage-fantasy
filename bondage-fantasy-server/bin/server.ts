@@ -11,6 +11,8 @@
 
 import "reflect-metadata";
 import { Ignitor, prettyPrintError } from "@adonisjs/core";
+import { ApplicationService } from "@adonisjs/core/types";
+import { MongoClient } from "mongodb";
 
 /**
  * URL to the application root. AdonisJS need it to resolve
@@ -34,8 +36,8 @@ new Ignitor(APP_ROOT, { importer: IMPORTER })
     app.booting(async () => {
       await import("#start/env");
     });
-    app.listen("SIGTERM", () => app.terminate());
-    app.listenIf(app.managedByPm2, "SIGINT", () => app.terminate());
+    app.listen("SIGTERM", () => terminate(app));
+    app.listenIf(app.managedByPm2, "SIGINT", () => terminate(app));
   })
   .httpServer()
   .start()
@@ -43,3 +45,9 @@ new Ignitor(APP_ROOT, { importer: IMPORTER })
     process.exitCode = 1;
     await prettyPrintError(error);
   });
+
+async function terminate(app: ApplicationService): Promise<void> {
+  await app.terminate();
+  const mongoClient = await app.container.make(MongoClient);
+  await mongoClient.close();
+}

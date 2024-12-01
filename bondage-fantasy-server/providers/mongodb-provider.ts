@@ -8,6 +8,7 @@ export default class MongodbProvider {
   register() {
     const client = new MongoClient(env.get("MONGODB_CONNECTION_STRING"));
     const db = client.db(env.get("MONGODB_DATABASE"));
+    this.app.container.bindValue(MongoClient, client);
     this.app.container.bindValue(Db, db);
   }
 }
