@@ -36,5 +36,6 @@ export const pl: ResourceLanguage = {
     "characterCreation.nameIsTooLong":
       "Nazwa postaci nie może być dłuższa niż {{maxLength}} znaków",
     "characterCreation.createCharacter": "Stwórz postać",
+    "characterList.createNewCharacter": "Stwórz nową postać",
   },
 };

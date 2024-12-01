@@ -3,6 +3,12 @@ import Cookies from "js-cookie";
 class HttpClient {
   private csrfToken?: Promise<string>;
 
+  async get<T>(url: string): Promise<T> {
+    return this.sendRequest(url, {
+      method: "GET",
+    });
+  }
+
   async post<T>(url: string, body?: unknown): Promise<T> {
     return this.sendRequest(url, {
       method: "POST",

@@ -38,5 +38,6 @@ export const en: ResourceLanguage = {
     "characterCreation.nameIsTooLong":
       "Name cannot have more than {{maxLength}} characters",
     "characterCreation.createCharacter": "Create character",
+    "characterList.createNewCharacter": "Create new character",
   },
 };

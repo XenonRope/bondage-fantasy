@@ -73,7 +73,7 @@ export default function LoginForm() {
         <div className="flex items-baseline gap-1 mt-4">
           <Button type="submit">{t("loginForm.login")}</Button>
           <span>{t("common.or")}</span>
-          <Anchor onClick={() => naviage("/account/create")}>
+          <Anchor onClick={() => naviage("/accounts/create")}>
             {t("loginForm.createNewAccount")}
           </Anchor>
         </div>

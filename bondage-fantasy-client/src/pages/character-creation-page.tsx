@@ -36,7 +36,7 @@ export function CharacterCreationPage() {
   const createCharacter = useMutation({
     mutationFn: (request: CharacterCreateRequest) =>
       characterApi.create(request),
-    onError: handleCreateCharacterError,
+    onError: (error) => errorService.handleUnexpectedError(error),
   });
 
   function validateName(value: string) {
@@ -54,10 +54,6 @@ export function CharacterCreationPage() {
     if (!value) {
       return t("common.fieldCannotBeEmpty");
     }
-  }
-
-  function handleCreateCharacterError(error: unknown) {
-    errorService.handleUnexpectedError(error);
   }
 
   function getPronounsList(): ComboboxData {

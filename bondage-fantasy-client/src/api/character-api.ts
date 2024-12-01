@@ -1,8 +1,12 @@
 import { httpClient } from "./http-client";
-import { CharacterCreateRequest } from "bondage-fantasy-common";
+import { Character, CharacterCreateRequest } from "bondage-fantasy-common";
 
 class CharacterApi {
-  async create(request: CharacterCreateRequest): Promise<void> {
+  async list(): Promise<Character[]> {
+    return await httpClient.get("characters");
+  }
+
+  async create(request: CharacterCreateRequest): Promise<Character> {
     return await httpClient.post("characters", request);
   }
 }
