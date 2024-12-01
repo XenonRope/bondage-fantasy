@@ -9,6 +9,8 @@ export const en: ResourceLanguage = {
     "common.genitals": "Genitals",
     "common.or": "or",
     "common.fieldCannotBeEmpty": "Field cannot be empty",
+    "common.login": "Login",
+    "common.createNewAccount": "Create new account",
     "pronouns.SHE_HER": "She/Her",
     "pronouns.HE_HIM": "He/Him",
     "genitals.VAGINA": "Vagina",
@@ -30,8 +32,6 @@ export const en: ResourceLanguage = {
       "Password must have at least {{minLength}} characters",
     "accountRegistration.passwordTooLong":
       "Password cannot have more than {{maxLength}} characters",
-    "loginForm.login": "Login",
-    "loginForm.createNewAccount": "Create new account",
     "loginForm.invalidUsernameOrPassword": "Invalid username or password",
     "loginForm.usernameCannotBeEmpty": "Username cannot be empty",
     "loginForm.passwordCannotBeEmpty": "Password cannot be empty",

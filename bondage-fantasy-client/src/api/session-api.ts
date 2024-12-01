@@ -1,8 +1,8 @@
 import { httpClient } from "./http-client";
-import { LoginRequest } from "bondage-fantasy-common";
+import { Account, LoginRequest } from "bondage-fantasy-common";
 
 class SessionApi {
-  async login(request: LoginRequest): Promise<void> {
+  async login(request: LoginRequest): Promise<Account> {
     return await httpClient.post("session/login", request);
   }
 }

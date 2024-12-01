@@ -1,10 +1,13 @@
 import "./app.css";
 import "./i18n";
+import { MainLayout } from "./layouts/main-layout";
 import AccountRegistrationPage from "./pages/account-registration-page";
 import { CharacterCreationPage } from "./pages/character-creation-page";
 import CharacterListPage from "./pages/character-list-page";
 import HomePage from "./pages/home-page";
+import LoginPage from "./pages/login-page";
 import { errorService } from "./services/error-service";
+import { sessionService } from "./services/session-service";
 import { MantineProvider } from "@mantine/core";
 import "@mantine/core/styles.css";
 import { Notifications } from "@mantine/notifications";
@@ -15,6 +18,8 @@ import {
   QueryClientProvider,
 } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes } from "react-router";
+
+sessionService.restoreSession();
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -35,7 +40,9 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <MantineProvider>
         <Notifications />
-        <AppRouter />
+        <BrowserRouter>
+          <AppRouter />
+        </BrowserRouter>
       </MantineProvider>
     </QueryClientProvider>
   );
@@ -43,14 +50,15 @@ function App() {
 
 function AppRouter() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/accounts/create" element={<AccountRegistrationPage />} />
+    <Routes>
+      <Route path="/" element={<MainLayout />}>
+        <Route index element={<HomePage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<AccountRegistrationPage />} />
         <Route path="/characters" element={<CharacterListPage />} />
-        <Route path="/characters/create" element={<CharacterCreationPage />} />
-      </Routes>
-    </BrowserRouter>
+        <Route path="/new-character" element={<CharacterCreationPage />} />
+      </Route>
+    </Routes>
   );
 }
 

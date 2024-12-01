@@ -9,6 +9,8 @@ export const pl: ResourceLanguage = {
     "common.genitals": "Genitalia",
     "common.or": "lub",
     "common.fieldCannotBeEmpty": "Pole nie może być puste",
+    "common.login": "Zaloguj się",
+    "common.createNewAccount": "Stwórz nowe konto",
     "pronouns.SHE_HER": "Ona/Jej",
     "pronouns.HE_HIM": "On/Jego",
     "error.unexpecterError": "Niespodziewany błąd",
@@ -27,8 +29,6 @@ export const pl: ResourceLanguage = {
       "Hasło musi mieć co najmniej {{minLength}} znaków",
     "accountRegistration.passwordTooLong":
       "Hasło nie może być dłuższe niż {{maxLength}} znaków",
-    "loginForm.login": "Zaloguj",
-    "loginForm.createNewAccount": "Stwórz nowe konto",
     "loginForm.invalidUsernameOrPassword":
       "Niepoprawna nazwa użytkownika lub hasło",
     "loginForm.usernameCannotBeEmpty": "Nazwa użytkownika nie może być pusta",

@@ -3,8 +3,8 @@ import { UsernameAlreadyTakenException } from "#exceptions/exceptions";
 import { SequenceCode } from "#models/sequence-model";
 import { inject } from "@adonisjs/core";
 import hash from "@adonisjs/core/services/hash";
+import { Account } from "bondage-fantasy-common";
 import { SequenceService } from "./sequence-service.js";
-import { Account } from "#models/account-model";
 
 @inject()
 export default class AccountService {
@@ -20,7 +20,7 @@ export default class AccountService {
   async register(params: {
     username: string;
     password: string;
-  }): Promise<void> {
+  }): Promise<Account> {
     if (await this.accountDao.existsUsername(params.username)) {
       throw new UsernameAlreadyTakenException();
     }
@@ -32,5 +32,7 @@ export default class AccountService {
     };
 
     await this.accountDao.insert(account);
+
+    return account;
   }
 }

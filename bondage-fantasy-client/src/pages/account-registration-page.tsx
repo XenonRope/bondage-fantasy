@@ -1,13 +1,7 @@
 import { accountApi } from "../api/account-api";
 import { errorService } from "../services/error-service";
 import { isErrorResponseWithCode } from "../utils/error";
-import {
-  Button,
-  Container,
-  PasswordInput,
-  TextInput,
-  Title,
-} from "@mantine/core";
+import { Button, PasswordInput, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useMutation } from "@tanstack/react-query";
 import {
@@ -20,9 +14,11 @@ import {
   USERNAME_PATTERN,
 } from "bondage-fantasy-common";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router";
 
 export default function AccountRegistrationPage() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const form = useForm({
     mode: "uncontrolled",
     initialValues: {
@@ -37,6 +33,7 @@ export default function AccountRegistrationPage() {
   const registerAccount = useMutation({
     mutationFn: (request: AccountRegisterRequest) =>
       accountApi.register(request),
+    onSuccess: () => navigate("/new-character"),
     onError: handleRegisterAccountError,
   });
 
@@ -84,31 +81,27 @@ export default function AccountRegistrationPage() {
   }
 
   return (
-    <Container size="xs">
-      <form
-        onSubmit={form.onSubmit(
-          (values) =>
-            !registerAccount.isPending && registerAccount.mutate(values),
-        )}
-      >
-        <Title order={2} mt={16} mb={24}>
-          {t("accountRegistration.createAccount")}
-        </Title>
-        <TextInput
-          {...form.getInputProps("username")}
-          key={form.key("username")}
-          label={t("common.username")}
-        />
-        <PasswordInput
-          {...form.getInputProps("password")}
-          key={form.key("password")}
-          mt="md"
-          label={t("common.password")}
-        />
-        <Button type="submit" mt="md">
-          {t("accountRegistration.createAccount")}
-        </Button>
-      </form>
-    </Container>
+    <form
+      onSubmit={form.onSubmit(
+        (values) =>
+          !registerAccount.isPending && registerAccount.mutate(values),
+      )}
+      className="max-w-xs"
+    >
+      <TextInput
+        {...form.getInputProps("username")}
+        key={form.key("username")}
+        label={t("common.username")}
+      />
+      <PasswordInput
+        {...form.getInputProps("password")}
+        key={form.key("password")}
+        label={t("common.password")}
+        className="mt-2"
+      />
+      <Button type="submit" className="mt-4">
+        {t("accountRegistration.createAccount")}
+      </Button>
+    </form>
   );
 }

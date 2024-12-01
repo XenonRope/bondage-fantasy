@@ -15,23 +15,19 @@ export default class MigrationService {
 
   async runMigrations(): Promise<void> {
     logger.info("Wait for lock 'migration.executeMigrations'");
-    await lockService.lockAndRun(
-      "migration.executeMigrations",
-      "5m",
-      async () => {
-        logger.info("Start migration...");
-        for (const migrationScript of await this.getMigrationScriptsToExecute()) {
-          logger.info("[Migration %s] Executing...", migrationScript.id);
-          await migrationScript.run({ db: this.db });
-          await this.migrationDao.insert({
-            id: migrationScript.id,
-            executionDate: new Date(),
-          });
-          logger.info("[Migration %s] Completed", migrationScript.id);
-        }
-        logger.info("All migrations completed");
-      },
-    );
+    await lockService.lockAndRun("executeMigrations", "5m", async () => {
+      logger.info("Start migration...");
+      for (const migrationScript of await this.getMigrationScriptsToExecute()) {
+        logger.info("[Migration %s] Executing...", migrationScript.id);
+        await migrationScript.run({ db: this.db });
+        await this.migrationDao.insert({
+          id: migrationScript.id,
+          executionDate: new Date(),
+        });
+        logger.info("[Migration %s] Completed", migrationScript.id);
+      }
+      logger.info("All migrations completed");
+    });
   }
 
   private async getMigrationScriptsToExecute(): Promise<MigrationScript[]> {

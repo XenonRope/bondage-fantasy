@@ -6,6 +6,7 @@ import { inject } from "@adonisjs/core";
 import { HttpContext } from "@adonisjs/core/http";
 import hash from "@adonisjs/core/services/hash";
 import { LoginRequest } from "bondage-fantasy-common";
+import { accountDto } from "./dto.js";
 
 @inject()
 export default class SessionController {
@@ -27,6 +28,6 @@ export default class SessionController {
 
     await auth.use("web").login(new SessionUser(account.id));
 
-    response.status(200).send("");
+    response.status(200).send(accountDto(account));
   }
 }

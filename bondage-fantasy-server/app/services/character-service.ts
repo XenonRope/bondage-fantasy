@@ -25,7 +25,7 @@ export default class CharacterService {
     genitals: Genitals;
   }): Promise<Character> {
     return await lockService.lockAndRun(
-      `character.createCharacter.${params.accountId}`,
+      `characters.account-${params.accountId}`,
       "5s",
       async () => {
         const charactersCount = await this.characterDao.countByAccountId(

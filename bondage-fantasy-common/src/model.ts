@@ -1,3 +1,10 @@
+export interface Account {
+  id: number;
+  username: string;
+  // Not sent to client
+  password: string;
+}
+
 export enum Pronouns {
   SHE_HER = "SHE_HER",
   HE_HIM = "HE_HIM",

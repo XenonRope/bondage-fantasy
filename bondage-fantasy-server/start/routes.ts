@@ -21,6 +21,7 @@ router
 
     router
       .group(() => {
+        router.get("/accounts/my", [AccountController, "getMyAccount"]);
         router.get("/characters", [CharacterController, "list"]);
         router.post("/characters", [CharacterController, "create"]);
       })

@@ -1,19 +1,33 @@
+import { AccountDao } from "#dao/account-dao";
+import { SessionUser } from "#models/session-model";
 import AccountService from "#services/account-service";
 import { registerAccountValidator } from "#validators/account-validator";
 import { inject } from "@adonisjs/core";
 import { HttpContext } from "@adonisjs/core/http";
 import { AccountRegisterRequest } from "bondage-fantasy-common";
+import { accountDto } from "./dto.js";
 
 @inject()
 export default class AccountController {
-  constructor(private accountService: AccountService) {}
+  constructor(
+    private accountService: AccountService,
+    private accountDao: AccountDao,
+  ) {}
 
-  async register({ request, response }: HttpContext) {
+  async getMyAccount({ response, auth }: HttpContext) {
+    const account = await this.accountDao.getById(auth.user!.id);
+
+    response.status(200).send(accountDto(account!));
+  }
+
+  async register({ request, response, auth }: HttpContext) {
     const { username, password }: AccountRegisterRequest =
       await request.validateUsing(registerAccountValidator);
 
-    await this.accountService.register({ username, password });
+    const account = await this.accountService.register({ username, password });
 
-    response.status(201).send("");
+    await auth.use("web").login(new SessionUser(account.id));
+
+    response.status(201).send(accountDto(account));
   }
 }

@@ -1,8 +1,12 @@
 import { httpClient } from "./http-client";
-import { AccountRegisterRequest } from "bondage-fantasy-common";
+import { Account, AccountRegisterRequest } from "bondage-fantasy-common";
 
 class AccountApi {
-  async register(request: AccountRegisterRequest): Promise<void> {
+  async getMyAccount(): Promise<Account> {
+    return await httpClient.get("accounts/my");
+  }
+
+  async register(request: AccountRegisterRequest): Promise<Account> {
     return await httpClient.post("accounts", request);
   }
 }

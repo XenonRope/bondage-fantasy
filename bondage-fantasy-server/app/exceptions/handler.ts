@@ -1,6 +1,8 @@
 import { ExceptionHandler, HttpContext } from "@adonisjs/core/http";
 import app from "@adonisjs/core/services/app";
 import { ApplicationException } from "./exceptions.js";
+import { Exception } from "@adonisjs/core/exceptions";
+import { ErrorCode } from "bondage-fantasy-common";
 
 export default class HttpExceptionHandler extends ExceptionHandler {
   /**
@@ -14,6 +16,13 @@ export default class HttpExceptionHandler extends ExceptionHandler {
    * response to the client
    */
   async handle(error: unknown, ctx: HttpContext) {
+    if (error instanceof Exception && error.code === "E_UNAUTHORIZED_ACCESS") {
+      ctx.response.status(401).send({
+        code: ErrorCode.E_UNAUTHORIZED_ACCESS,
+        message: "You are not logged in or you don't have permission",
+      });
+      return;
+    }
     if (error instanceof ApplicationException) {
       ctx.response.status(error.status).send({
         code: error.code,

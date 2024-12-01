@@ -1,10 +1,14 @@
-import { Account } from "#models/account-model";
 import { inject } from "@adonisjs/core";
+import { Account } from "bondage-fantasy-common";
 import { Collection, Db } from "mongodb";
 
 @inject()
 export class AccountDao {
   constructor(private db: Db) {}
+
+  async getById(id: number): Promise<Account | null> {
+    return await this.getCollection().findOne({ id });
+  }
 
   async getByUsername(username: string): Promise<Account | null> {
     return await this.getCollection().findOne({ username });
