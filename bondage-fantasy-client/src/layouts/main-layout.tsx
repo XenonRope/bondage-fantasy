@@ -9,6 +9,7 @@ export function MainLayout() {
   const navigate = useNavigate();
   const [opened, { toggle }] = useDisclosure();
   const account = useAppStore((state) => state.account);
+  const character = useAppStore((state) => state.character);
   const sessionRestoreCompleted = useAppStore(
     (state) => state.sessionRestoreCompleted,
   );
@@ -33,7 +34,17 @@ export function MainLayout() {
           </Anchor>
           {sessionRestoreCompleted && (
             <div className="ml-auto">
-              {account && <span>{account.username}</span>}
+              {account && (
+                <>
+                  <span>{account.username}</span>
+                  {character && (
+                    <>
+                      <span className="mx-2">/</span>
+                      <span>{character.name}</span>
+                    </>
+                  )}
+                </>
+              )}
               {!account && (
                 <div className="flex gap-1">
                   <Anchor onClick={() => navigate("/login")}>
@@ -51,12 +62,16 @@ export function MainLayout() {
       </AppShell.Header>
       <AppShell.Navbar p="md">
         {account && (
-          <>
-            <NavLink
-              onClick={() => navigate("/characters")}
-              label={t("navbar.characters")}
-            />
-          </>
+          <NavLink
+            onClick={() => navigate("/characters")}
+            label={t("navbar.characters")}
+          />
+        )}
+        {character && (
+          <NavLink
+            onClick={() => navigate("/zones")}
+            label={t("navbar.zones")}
+          />
         )}
       </AppShell.Navbar>
       <AppShell.Main>

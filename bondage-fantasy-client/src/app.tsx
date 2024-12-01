@@ -6,6 +6,8 @@ import { CharacterCreationPage } from "./pages/character-creation-page";
 import CharacterListPage from "./pages/character-list-page";
 import HomePage from "./pages/home-page";
 import LoginPage from "./pages/login-page";
+import { ZoneCreationPage } from "./pages/zone-creation-page";
+import { ZoneListPage } from "./pages/zone-list-page";
 import { errorService } from "./services/error-service";
 import { sessionService } from "./services/session-service";
 import { MantineProvider } from "@mantine/core";
@@ -57,6 +59,8 @@ function AppRouter() {
         <Route path="/register" element={<AccountRegistrationPage />} />
         <Route path="/characters" element={<CharacterListPage />} />
         <Route path="/new-character" element={<CharacterCreationPage />} />
+        <Route path="/zones" element={<ZoneListPage />} />
+        <Route path="/new-zone" element={<ZoneCreationPage />} />
       </Route>
     </Routes>
   );

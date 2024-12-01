@@ -79,7 +79,7 @@ export function CharacterCreationPage() {
       <TextInput
         {...form.getInputProps("name")}
         key={form.key("name")}
-        label={t("common.name")}
+        label={t("common.characterNameShort")}
       />
       <Select
         {...form.getInputProps("pronouns")}
