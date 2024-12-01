@@ -1,4 +1,4 @@
-import { accountApi } from "../api/account-api";
+import { accountService } from "../services/account-service";
 import { errorService } from "../services/error-service";
 import { isErrorResponseWithCode } from "../utils/error";
 import { Button, PasswordInput, TextInput } from "@mantine/core";
@@ -32,7 +32,7 @@ export default function AccountRegistrationPage() {
   });
   const registerAccount = useMutation({
     mutationFn: (request: AccountRegisterRequest) =>
-      accountApi.register(request),
+      accountService.register(request),
     onSuccess: () => navigate("/new-character"),
     onError: handleRegisterAccountError,
   });
