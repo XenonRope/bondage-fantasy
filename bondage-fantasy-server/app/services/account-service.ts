@@ -25,7 +25,7 @@ export default class AccountService {
       throw new UsernameAlreadyTakenException();
     }
 
-    const account = {
+    const account: Account = {
       id: await this.sequenceService.nextSequence(SequenceCode.ACCOUNT),
       username: params.username,
       password: await hash.make(params.password),

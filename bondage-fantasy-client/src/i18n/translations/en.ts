@@ -4,7 +4,16 @@ export const en: ResourceLanguage = {
   translation: {
     "common.username": "Username",
     "common.password": "Password",
+    "common.name": "Name",
+    "common.pronouns": "Pronouns",
+    "common.genitals": "Genitals",
     "common.or": "or",
+    "common.fieldCannotBeEmpty": "Field cannot be empty",
+    "pronouns.SHE_HER": "She/Her",
+    "pronouns.HE_HIM": "He/Him",
+    "genitals.VAGINA": "Vagina",
+    "genitals.PENIS": "Penis",
+    "genitals.FUTA": "Futa",
     "error.unexpecterError": "Unexpected error",
     "error.errorMessage": 'Error code: {{code}}. Message: "{{message}}".',
     "error.somethingWentWrong": "Something went wrong...",
@@ -26,5 +35,8 @@ export const en: ResourceLanguage = {
     "loginForm.invalidUsernameOrPassword": "Invalid username or password",
     "loginForm.usernameCannotBeEmpty": "Username cannot be empty",
     "loginForm.passwordCannotBeEmpty": "Password cannot be empty",
+    "characterCreation.nameIsTooLong":
+      "Name cannot have more than {{maxLength}} characters",
+    "characterCreation.createCharacter": "Create character",
   },
 };

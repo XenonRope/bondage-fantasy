@@ -4,7 +4,13 @@ export const pl: ResourceLanguage = {
   translation: {
     "common.username": "Nazwa użytkownika",
     "common.password": "Hasło",
+    "common.name": "Nazwa postaci",
+    "common.pronouns": "Zaimki",
+    "common.genitals": "Genitalia",
     "common.or": "lub",
+    "common.fieldCannotBeEmpty": "Pole nie może być puste",
+    "pronouns.SHE_HER": "Ona/Jej",
+    "pronouns.HE_HIM": "On/Jego",
     "error.unexpecterError": "Niespodziewany błąd",
     "error.errorMessage": 'Kod błędu: {{code}}. Wiadomość: "{{message}}".',
     "error.somethingWentWrong": "Coś poszło nie tak...",
@@ -27,5 +33,8 @@ export const pl: ResourceLanguage = {
       "Niepoprawna nazwa użytkownika lub hasło",
     "loginForm.usernameCannotBeEmpty": "Nazwa użytkownika nie może być pusta",
     "loginForm.passwordCannotBeEmpty": "Hasło nie może być puste",
+    "characterCreation.nameIsTooLong":
+      "Nazwa postaci nie może być dłuższa niż {{maxLength}} znaków",
+    "characterCreation.createCharacter": "Stwórz postać",
   },
 };

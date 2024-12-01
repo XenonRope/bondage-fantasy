@@ -1,6 +1,7 @@
 import "./app.css";
 import "./i18n";
 import AccountRegistrationPage from "./pages/account-registration-page";
+import { CharacterCreationPage } from "./pages/character-creation-page";
 import HomePage from "./pages/home-page";
 import { MantineProvider } from "@mantine/core";
 import "@mantine/core/styles.css";
@@ -26,6 +27,7 @@ function AppRouter() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/account/create" element={<AccountRegistrationPage />} />
+        <Route path="/character/create" element={<CharacterCreationPage />} />
       </Routes>
     </BrowserRouter>
   );

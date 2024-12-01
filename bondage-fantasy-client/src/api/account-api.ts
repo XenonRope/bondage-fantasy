@@ -3,7 +3,7 @@ import { AccountRegisterRequest } from "bondage-fantasy-common";
 
 class AccountApi {
   async register(request: AccountRegisterRequest): Promise<void> {
-    return await httpClient.post("accounts/register", request);
+    return await httpClient.post("accounts", request);
   }
 }
 

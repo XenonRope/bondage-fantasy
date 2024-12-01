@@ -9,12 +9,20 @@
 
 const AccountController = () => import("#controllers/account-controller");
 const SessionController = () => import("#controllers/session-controller");
+const CharacterController = () => import("#controllers/character-controller");
 import router from "@adonisjs/core/services/router";
+import { middleware } from "./kernel.js";
 
 router
   .group(() => {
-    router.post("/accounts/register", [AccountController, "register"]);
+    router.post("/accounts", [AccountController, "register"]);
     router.post("/session/login", [SessionController, "login"]);
     router.get("/csrf/token", () => "");
+
+    router
+      .group(() => {
+        router.post("/characters", [CharacterController, "create"]);
+      })
+      .use(middleware.auth());
   })
   .prefix("/api");
