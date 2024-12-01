@@ -6,7 +6,7 @@ import {
   Pronouns,
 } from "bondage-fantasy-common";
 
-export const createCharacterValidator = vine.compile(
+export const characterCreateRequestValidator = vine.compile(
   vine.object({
     name: vine
       .string()

@@ -1,6 +1,7 @@
 export enum SequenceCode {
   ACCOUNT = "ACCOUNT",
   CHARACTER = "CHARACTER",
+  ZONE = "ZONE",
 }
 
 export interface Sequence {

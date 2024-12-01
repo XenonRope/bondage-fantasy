@@ -1,5 +1,5 @@
 import CharacterService from "#services/character-service";
-import { createCharacterValidator } from "#validators/character-validator";
+import { characterCreateRequestValidator } from "#validators/character-validator";
 import { inject } from "@adonisjs/core";
 import { HttpContext } from "@adonisjs/core/http";
 import { CharacterCreateRequest } from "bondage-fantasy-common";
@@ -23,7 +23,7 @@ export default class CharacterController {
 
   async create({ request, response, auth }: HttpContext) {
     const { name, pronouns, genitals }: CharacterCreateRequest =
-      await request.validateUsing(createCharacterValidator);
+      await request.validateUsing(characterCreateRequestValidator);
 
     const character = await this.characterService.create({
       accountId: auth.user!.id,

@@ -11,6 +11,7 @@ export const en: ResourceLanguage = {
     "common.fieldCannotBeEmpty": "Field cannot be empty",
     "common.login": "Login",
     "common.createNewAccount": "Create new account",
+    "navbar.characters": "Characters",
     "pronouns.SHE_HER": "She/Her",
     "pronouns.HE_HIM": "He/Him",
     "genitals.VAGINA": "Vagina",

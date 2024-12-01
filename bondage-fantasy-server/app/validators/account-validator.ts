@@ -7,7 +7,7 @@ import {
   USERNAME_PATTERN,
 } from "bondage-fantasy-common";
 
-export const registerAccountValidator = vine.compile(
+export const accountRegisterRequestValidator = vine.compile(
   vine.object({
     username: vine
       .string()

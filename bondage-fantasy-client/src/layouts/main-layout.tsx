@@ -1,5 +1,5 @@
 import { useAppStore } from "../store";
-import { Anchor, AppShell, Burger, Group, Skeleton } from "@mantine/core";
+import { Anchor, AppShell, Burger, Group, NavLink } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { useTranslation } from "react-i18next";
 import { Outlet, useNavigate } from "react-router";
@@ -50,11 +50,14 @@ export function MainLayout() {
         </Group>
       </AppShell.Header>
       <AppShell.Navbar p="md">
-        {Array(15)
-          .fill(0)
-          .map((_, index) => (
-            <Skeleton key={index} h={28} mt="sm" animate={false} />
-          ))}
+        {account && (
+          <>
+            <NavLink
+              onClick={() => navigate("/characters")}
+              label={t("navbar.characters")}
+            />
+          </>
+        )}
       </AppShell.Navbar>
       <AppShell.Main>
         <Outlet />

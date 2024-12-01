@@ -1,4 +1,4 @@
-import { Genitals, Pronouns } from "./model.js";
+import { Genitals, Pronouns, ZoneField, ZoneFieldConnection } from "./model.js";
 
 export interface AccountRegisterRequest {
   username: string;
@@ -14,4 +14,11 @@ export interface CharacterCreateRequest {
   name: string;
   pronouns: Pronouns;
   genitals: Genitals;
+}
+
+export interface ZoneCreateRequest {
+  name: string;
+  description: string;
+  fields: ZoneField[];
+  connections: ZoneFieldConnection[];
 }

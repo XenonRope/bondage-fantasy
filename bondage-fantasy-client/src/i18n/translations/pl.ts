@@ -11,6 +11,7 @@ export const pl: ResourceLanguage = {
     "common.fieldCannotBeEmpty": "Pole nie może być puste",
     "common.login": "Zaloguj się",
     "common.createNewAccount": "Stwórz nowe konto",
+    "navbar.characters": "Postacie",
     "pronouns.SHE_HER": "Ona/Jej",
     "pronouns.HE_HIM": "On/Jego",
     "error.unexpecterError": "Niespodziewany błąd",

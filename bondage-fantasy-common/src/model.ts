@@ -24,3 +24,27 @@ export interface Character {
   pronouns: Pronouns;
   genitals: Genitals;
 }
+
+export interface ZoneFieldPosition {
+  x: number;
+  y: number;
+}
+
+export interface ZoneFieldConnection {
+  positions: [ZoneFieldPosition, ZoneFieldPosition];
+}
+
+export interface ZoneField {
+  position: ZoneFieldPosition;
+  name: string;
+  description: string;
+}
+
+export interface Zone {
+  id: number;
+  ownerCharacterId: number;
+  name: string;
+  description: string;
+  fields: ZoneField[];
+  connections: ZoneFieldConnection[];
+}

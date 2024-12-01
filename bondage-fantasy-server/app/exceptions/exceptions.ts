@@ -49,3 +49,13 @@ export class CannotAcquireLockException extends ApplicationException {
     });
   }
 }
+
+export class InvalidZoneException extends ApplicationException {
+  constructor(message: string) {
+    super({
+      code: ErrorCode.E_INVALID_ZONE,
+      message,
+      status: 422,
+    });
+  }
+}
