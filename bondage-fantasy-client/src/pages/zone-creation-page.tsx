@@ -2,11 +2,15 @@ import { ZoneMap } from "../components/zone-map";
 import { Button, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import {
+  findFieldByPosition,
   ZONE_DESCRIPTION_MAX_LENGTH,
   ZONE_DESCRIPTION_MIN_LENGTH,
   ZONE_NAME_MAX_LENGTH,
   ZONE_NAME_MIN_LENGTH,
+  ZoneField,
+  ZoneFieldPosition,
 } from "bondage-fantasy-common";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 export function ZoneCreationPage() {
@@ -22,6 +26,7 @@ export function ZoneCreationPage() {
       description: validateDescription,
     },
   });
+  const [fields, setFields] = useState<ZoneField[]>([]);
 
   function validateName(value: string) {
     if (value.length < ZONE_NAME_MIN_LENGTH) {
@@ -45,6 +50,19 @@ export function ZoneCreationPage() {
     }
   }
 
+  function onFieldClick(position: ZoneFieldPosition) {
+    const field = findFieldByPosition(fields, position);
+    if (!field) {
+      const newField: ZoneField = {
+        position,
+        name: "",
+        description: "",
+        canLeave: false,
+      };
+      setFields((fields) => [...fields, newField]);
+    }
+  }
+
   return (
     <form onSubmit={form.onSubmit(() => {})} className="flex flex-col h-full">
       <div className="max-w-xs">
@@ -60,8 +78,8 @@ export function ZoneCreationPage() {
           className="mt-2"
         />
       </div>
-      <div className="min-h-[300px] max-w-fit overflow-auto mt-4">
-        <ZoneMap />
+      <div className="min-h-[256px] max-w-fit overflow-auto mt-4">
+        <ZoneMap fields={fields} onFieldClick={onFieldClick} />
       </div>
       <div>
         <Button type="submit" className="mt-4">
