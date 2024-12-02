@@ -41,6 +41,7 @@ export function zoneFieldDto(field: ZoneField): ZoneField {
     position: zoneFieldPositionDto(field.position),
     name: field.name,
     description: field.description,
+    canLeave: field.canLeave,
   };
 }
 
@@ -60,6 +61,7 @@ export function zoneDto(zone: Zone): Zone {
     id: zone.id,
     ownerCharacterId: zone.ownerCharacterId,
     name: zone.name,
+    entrance: zone.entrance,
     description: zone.description,
     fields: zone.fields.map(zoneFieldDto),
     connections: zone.connections.map(zoneFieldConnectionDto),

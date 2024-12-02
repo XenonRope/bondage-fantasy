@@ -27,7 +27,6 @@ router
         router.post("/characters", [CharacterController, "create"]);
         router.post("/zones", [ZoneController, "create"]);
       })
-      .use(middleware.auth())
-      .use(middleware.characterId());
+      .use(middleware.auth());
   })
   .prefix("/api");

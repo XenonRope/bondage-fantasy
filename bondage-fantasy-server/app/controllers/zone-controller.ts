@@ -1,19 +1,19 @@
-import { getCharacterId } from "#middleware/character-middleware";
 import { ZoneService } from "#services/zone-service";
 import { zoneCreateRequestValidator } from "#validators/zone-validator";
 import { inject } from "@adonisjs/core";
 import { HttpContext } from "@adonisjs/core/http";
 import { ZoneCreateRequest } from "bondage-fantasy-common";
 import { zoneDto } from "./dto.js";
+import { getCharacterId } from "./utils.js";
 
 @inject()
 export default class ZoneController {
   constructor(private zoneService: ZoneService) {}
 
-  async create({ request, response, containerResolver }: HttpContext) {
-    const characterId = await getCharacterId(containerResolver);
+  async create(ctx: HttpContext) {
+    const characterId = await getCharacterId(ctx);
     const { name, description, entrance, fields, connections } =
-      (await request.validateUsing(
+      (await ctx.request.validateUsing(
         zoneCreateRequestValidator,
       )) as ZoneCreateRequest;
 
@@ -26,6 +26,6 @@ export default class ZoneController {
       connections,
     });
 
-    response.status(201).send(zoneDto(zone));
+    ctx.response.status(201).send(zoneDto(zone));
   }
 }
