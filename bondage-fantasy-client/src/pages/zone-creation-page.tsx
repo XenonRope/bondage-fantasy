@@ -1,3 +1,4 @@
+import { ZoneMap } from "../components/zone-map";
 import { Button, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import {
@@ -45,21 +46,28 @@ export function ZoneCreationPage() {
   }
 
   return (
-    <form onSubmit={form.onSubmit(() => {})} className="max-w-xs">
-      <TextInput
-        {...form.getInputProps("name")}
-        key={form.key("name")}
-        label={t("common.name")}
-      />
-      <TextInput
-        {...form.getInputProps("description")}
-        key={form.key("description")}
-        label={t("common.description")}
-        className="mt-2"
-      />
-      <Button type="submit" className="mt-4">
-        {t("zoneCreation.createZone")}
-      </Button>
+    <form onSubmit={form.onSubmit(() => {})} className="flex flex-col h-full">
+      <div className="max-w-xs">
+        <TextInput
+          {...form.getInputProps("name")}
+          key={form.key("name")}
+          label={t("common.name")}
+        />
+        <TextInput
+          {...form.getInputProps("description")}
+          key={form.key("description")}
+          label={t("common.description")}
+          className="mt-2"
+        />
+      </div>
+      <div className="min-h-[300px] max-w-fit overflow-auto mt-4">
+        <ZoneMap />
+      </div>
+      <div>
+        <Button type="submit" className="mt-4">
+          {t("zoneCreation.createZone")}
+        </Button>
+      </div>
     </form>
   );
 }

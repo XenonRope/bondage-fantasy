@@ -1,10 +1,10 @@
 import { useAppStore } from "../store";
-import { Anchor, AppShell, Burger, Group, NavLink } from "@mantine/core";
+import { Anchor, AppShell, Box, Burger, Group, NavLink } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { useTranslation } from "react-i18next";
 import { Outlet, useNavigate } from "react-router";
 
-export function MainLayout() {
+export function MainLayout(props: { fixedHeight?: boolean }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [opened, { toggle }] = useDisclosure();
@@ -18,7 +18,7 @@ export function MainLayout() {
     <AppShell
       header={{ height: 60 }}
       navbar={{ width: 300, breakpoint: "sm", collapsed: { mobile: !opened } }}
-      padding="md"
+      padding={props.fixedHeight ? undefined : "md"}
     >
       <AppShell.Header>
         <Group h="100%" px="md">
@@ -74,8 +74,14 @@ export function MainLayout() {
           />
         )}
       </AppShell.Navbar>
-      <AppShell.Main>
-        <Outlet />
+      <AppShell.Main h="100dvh">
+        {props.fixedHeight ? (
+          <Box p="md" className="h-full overflow-auto">
+            <Outlet />
+          </Box>
+        ) : (
+          <Outlet />
+        )}
       </AppShell.Main>
     </AppShell>
   );

@@ -60,6 +60,11 @@ function AppRouter() {
         <Route path="/characters" element={<CharacterListPage />} />
         <Route path="/new-character" element={<CharacterCreationPage />} />
         <Route path="/zones" element={<ZoneListPage />} />
+      </Route>
+      <Route
+        path="/"
+        element={<MainLayout key={"fixedHeight"} fixedHeight={true} />}
+      >
         <Route path="/new-zone" element={<ZoneCreationPage />} />
       </Route>
     </Routes>
