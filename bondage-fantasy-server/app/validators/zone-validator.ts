@@ -35,6 +35,7 @@ const zoneField = vine.object({
     .string()
     .minLength(ZONE_FIELD_DESCRIPTION_MIN_LENGTH)
     .maxLength(ZONE_FIELD_DESCRIPTION_MAX_LENGTH),
+  canLeave: vine.boolean(),
 });
 
 const zoneFieldConnection = vine.object({
@@ -51,6 +52,7 @@ export const zoneCreateRequestValidator = vine.compile(
       .string()
       .minLength(ZONE_DESCRIPTION_MIN_LENGTH)
       .maxLength(ZONE_DESCRIPTION_MAX_LENGTH),
+    entrance: zoneFieldPosition,
     fields: vine.array(zoneField),
     connections: vine.array(zoneFieldConnection),
   }),

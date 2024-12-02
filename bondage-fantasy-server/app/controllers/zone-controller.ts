@@ -12,7 +12,7 @@ export default class ZoneController {
 
   async create({ request, response, containerResolver }: HttpContext) {
     const characterId = await getCharacterId(containerResolver);
-    const { name, description, fields, connections } =
+    const { name, description, entrance, fields, connections } =
       (await request.validateUsing(
         zoneCreateRequestValidator,
       )) as ZoneCreateRequest;
@@ -21,6 +21,7 @@ export default class ZoneController {
       ownerCharacterId: characterId,
       name,
       description,
+      entrance,
       fields,
       connections,
     });

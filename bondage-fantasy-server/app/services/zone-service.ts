@@ -8,6 +8,7 @@ import {
   Zone,
   ZoneField,
   ZoneFieldConnection,
+  ZoneFieldPosition,
 } from "bondage-fantasy-common";
 import { SequenceService } from "./sequence-service.js";
 
@@ -22,17 +23,20 @@ export class ZoneService {
     ownerCharacterId: number;
     name: string;
     description: string;
+    entrance: ZoneFieldPosition;
     fields: ZoneField[];
     connections: ZoneFieldConnection[];
   }): Promise<Zone> {
     this.validateFields(params.fields);
     this.validateConnections(params.connections, params.fields);
+    this.validateEntrance(params.entrance, params.fields);
 
     const zone: Zone = {
       ownerCharacterId: params.ownerCharacterId,
       id: await this.sequenceService.nextSequence(SequenceCode.ZONE),
       name: params.name,
       description: params.description,
+      entrance: params.entrance,
       fields: params.fields,
       connections: params.connections,
     };
@@ -76,6 +80,16 @@ export class ZoneService {
           `Invalid connection to nonexistent field [${connection.positions[1].x}, ${connection.positions[1].y}]`,
         );
       }
+      if (
+        !this.arePositionsAdjacent(
+          connection.positions[0],
+          connection.positions[1],
+        )
+      ) {
+        throw new InvalidZoneException(
+          `Invalid connection. Fields [${connection.positions[0].x}, ${connection.positions[0].y}] and [${connection.positions[1].x}, ${connection.positions[1].y}] are not adjacent.`,
+        );
+      }
       const connectionKey1 = `${connection.positions[0].x}-${connection.positions[0].y}-${connection.positions[1].x}-${connection.positions[1].y}`;
       const connectionKey2 = `${connection.positions[1].x}-${connection.positions[1].y}-${connection.positions[0].x}-${connection.positions[0].y}`;
       if (
@@ -89,5 +103,23 @@ export class ZoneService {
       connectionsKeys.add(connectionKey1);
       connectionsKeys.add(connectionKey2);
     }
+  }
+
+  private validateEntrance(entrance: ZoneFieldPosition, fields: ZoneField[]) {
+    if (findFieldByPosition(fields, entrance) == null) {
+      throw new InvalidZoneException(
+        `Invalid entrance. Field with position [${entrance.x}, ${entrance.y}] doesn't exist.`,
+      );
+    }
+  }
+
+  private arePositionsAdjacent(
+    { x: x1, y: y1 }: ZoneFieldPosition,
+    { x: x2, y: y2 }: ZoneFieldPosition,
+  ) {
+    return (
+      (x1 == x2 && Math.abs(y1 - y2) === 1) ||
+      (y1 === y2 && Math.abs(x1 - x2) === 1)
+    );
   }
 }

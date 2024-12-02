@@ -38,6 +38,7 @@ export interface ZoneField {
   position: ZoneFieldPosition;
   name: string;
   description: string;
+  canLeave: boolean;
 }
 
 export interface Zone {
@@ -45,6 +46,7 @@ export interface Zone {
   ownerCharacterId: number;
   name: string;
   description: string;
+  entrance: ZoneFieldPosition;
   fields: ZoneField[];
   connections: ZoneFieldConnection[];
 }
