@@ -1,5 +1,5 @@
 import { useAppStore } from "../store";
-import { Anchor, AppShell, Box, Burger, Group, NavLink } from "@mantine/core";
+import { Anchor, AppShell, Burger, Group, NavLink } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { useTranslation } from "react-i18next";
 import { Outlet, useNavigate } from "react-router";
@@ -76,9 +76,9 @@ export function MainLayout(props: { fixedHeight?: boolean }) {
       </AppShell.Navbar>
       <AppShell.Main h="100dvh">
         {props.fixedHeight ? (
-          <Box p="md" className="h-full overflow-auto">
+          <div className="h-full overflow-auto">
             <Outlet />
-          </Box>
+          </div>
         ) : (
           <Outlet />
         )}

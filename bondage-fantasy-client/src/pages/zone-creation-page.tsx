@@ -27,6 +27,7 @@ export function ZoneCreationPage() {
     },
   });
   const [fields, setFields] = useState<ZoneField[]>([]);
+  const [selectedField, setSelectedField] = useState<ZoneField | undefined>();
 
   function validateName(value: string) {
     if (value.length < ZONE_NAME_MIN_LENGTH) {
@@ -52,40 +53,58 @@ export function ZoneCreationPage() {
 
   function onFieldClick(position: ZoneFieldPosition) {
     const field = findFieldByPosition(fields, position);
-    if (!field) {
-      const newField: ZoneField = {
-        position,
-        name: "",
-        description: "",
-        canLeave: false,
-      };
-      setFields((fields) => [...fields, newField]);
+    if (field) {
+      setSelectedField(field);
+      return;
     }
+
+    const newField: ZoneField = {
+      position,
+      name: "",
+      description: "",
+      canLeave: false,
+    };
+    setFields((fields) => [...fields, newField]);
+    setSelectedField(() => newField);
   }
 
   return (
-    <form onSubmit={form.onSubmit(() => {})} className="flex flex-col h-full">
-      <div className="max-w-xs">
-        <TextInput
-          {...form.getInputProps("name")}
-          key={form.key("name")}
-          label={t("common.name")}
-        />
-        <TextInput
-          {...form.getInputProps("description")}
-          key={form.key("description")}
-          label={t("common.description")}
-          className="mt-2"
-        />
+    <div className="flex h-full">
+      <form
+        onSubmit={form.onSubmit(() => {})}
+        className="flex flex-col h-full w-1/2 border-r border-app-shell p-md"
+      >
+        <div className="max-w-xs">
+          <TextInput
+            {...form.getInputProps("name")}
+            key={form.key("name")}
+            label={t("common.name")}
+          />
+          <TextInput
+            {...form.getInputProps("description")}
+            key={form.key("description")}
+            label={t("common.description")}
+            className="mt-2"
+          />
+        </div>
+
+        <div className="min-h-[256px] max-w-fit overflow-auto mt-4">
+          <ZoneMap fields={fields} onFieldClick={onFieldClick} />
+        </div>
+        <div>
+          <Button type="submit" className="mt-4">
+            {t("zoneCreation.createZone")}
+          </Button>
+        </div>
+      </form>
+      <div className="w-1/2 p-md">
+        {selectedField && (
+          <div className="max-w-xs">
+            <TextInput label={t("common.name")} />
+            <TextInput label={t("common.description")} className="mt-2" />
+          </div>
+        )}
       </div>
-      <div className="min-h-[256px] max-w-fit overflow-auto mt-4">
-        <ZoneMap fields={fields} onFieldClick={onFieldClick} />
-      </div>
-      <div>
-        <Button type="submit" className="mt-4">
-          {t("zoneCreation.createZone")}
-        </Button>
-      </div>
-    </form>
+    </div>
   );
 }
