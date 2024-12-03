@@ -1,4 +1,5 @@
 import {
+  arePositionsEqual,
   Field,
   Position,
   ZONE_MAX_HEIGHT,
@@ -6,8 +7,11 @@ import {
 } from "bondage-fantasy-common";
 import { useMemo } from "react";
 
+const FIELD_SIZE = 64;
+
 export function ZoneMap(props: {
   fields: Field[];
+  selectedField?: Position;
   onFieldClick?: (position: Position) => void;
 }) {
   const fields = useMemo(() => {
@@ -20,25 +24,38 @@ export function ZoneMap(props: {
     return fields;
   }, [props.fields]);
 
+  function getFieldClasses(x: number, y: number): string {
+    const field = fields[y][x];
+    if (field) {
+      let result = "bg-green-300";
+      if (
+        props.selectedField &&
+        arePositionsEqual({ x, y }, props.selectedField)
+      ) {
+        result += " border-4 border-yellow-400";
+      }
+      return result;
+    } else {
+      return "bg-gray-100 hover:bg-gray-200";
+    }
+  }
+
   return (
-    <div className="flex flex-col gap-[32px] w-fit">
+    <div className="flex flex-col w-fit" style={{ gap: `${FIELD_SIZE / 2}px` }}>
       {[...Array(ZONE_MAX_HEIGHT).keys()].map((y) => (
-        <div key={y} className="flex flex-row gap-[32px]">
-          {[...Array(ZONE_MAX_WIDTH).keys()].map((x) =>
-            fields[y][x] ? (
-              <div
-                key={x}
-                onClick={() => props.onFieldClick?.({ x, y })}
-                className="w-[64px] h-[64px] bg-green-300"
-              ></div>
-            ) : (
-              <div
-                key={x}
-                onClick={() => props.onFieldClick?.({ x, y })}
-                className="w-[64px] h-[64px] bg-gray-100 hover:bg-gray-200"
-              ></div>
-            ),
-          )}
+        <div
+          key={y}
+          className="flex flex-row"
+          style={{ gap: `${FIELD_SIZE / 2}px` }}
+        >
+          {[...Array(ZONE_MAX_WIDTH).keys()].map((x) => (
+            <div
+              key={x}
+              onClick={() => props.onFieldClick?.({ x, y })}
+              className={getFieldClasses(x, y)}
+              style={{ width: `${FIELD_SIZE}px`, height: `${FIELD_SIZE}px` }}
+            ></div>
+          ))}
         </div>
       ))}
     </div>

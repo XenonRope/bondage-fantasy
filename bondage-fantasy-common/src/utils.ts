@@ -39,7 +39,18 @@ export function getFieldKey(fieldOrPosition: Field | Position): FieldKey {
     : `${fieldOrPosition.x}-${fieldOrPosition.y}`;
 }
 
-export function getPositionFromFieldKey(fieldKey: FieldKey): Position {
+export function getPositionFromFieldKey(fieldKey: undefined): undefined;
+export function getPositionFromFieldKey(fieldKey: FieldKey): Position;
+export function getPositionFromFieldKey(
+  fieldKey: FieldKey | undefined
+): Position | undefined;
+export function getPositionFromFieldKey(
+  fieldKey: FieldKey | undefined
+): Position | undefined {
+  if (!fieldKey) {
+    return undefined;
+  }
+
   const [x, y] = fieldKey.split("-");
   return {
     x: parseInt(x),

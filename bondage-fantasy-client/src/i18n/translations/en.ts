@@ -48,5 +48,6 @@ export const en: ResourceLanguage = {
     "characterCreation.createCharacter": "Create character",
     "characterList.createNewCharacter": "Create new character",
     "zoneCreation.createZone": "Create zone",
+    "zoneCreation.removeField": "Remove field",
   },
 };

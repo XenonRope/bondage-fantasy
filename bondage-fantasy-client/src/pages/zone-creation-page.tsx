@@ -15,7 +15,7 @@ import {
   ZONE_NAME_MIN_LENGTH,
 } from "bondage-fantasy-common";
 import { useState } from "react";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 
 interface ZoneForm {
   name: string;
@@ -71,7 +71,7 @@ export function ZoneCreationPage() {
     }
   }
 
-  function onFieldClick(position: Position) {
+  function onFieldClick(position: Position): void {
     const fieldKey = getFieldKey(position);
     const field = form.getValues().fields[fieldKey];
     if (field) {
@@ -86,6 +86,19 @@ export function ZoneCreationPage() {
     };
     form.setFieldValue(`fields.${fieldKey}`, newField);
     setSelectedField(() => fieldKey);
+  }
+
+  function removeSelectedField(): void {
+    if (!selectedField) {
+      return;
+    }
+
+    form.setFieldValue(`fields`, (fields) => {
+      const fieldsCopy = { ...fields };
+      delete fieldsCopy[selectedField];
+      return fieldsCopy;
+    });
+    setSelectedField(() => undefined);
   }
 
   function getFieldsAsArray(): Field[] {
@@ -118,7 +131,11 @@ export function ZoneCreationPage() {
         </div>
 
         <div className="min-h-[256px] max-w-fit overflow-auto mt-4">
-          <ZoneMap fields={getFieldsAsArray()} onFieldClick={onFieldClick} />
+          <ZoneMap
+            fields={getFieldsAsArray()}
+            selectedField={getPositionFromFieldKey(selectedField)}
+            onFieldClick={onFieldClick}
+          />
         </div>
         <div>
           <Button type="submit" className="mt-4">
@@ -128,19 +145,26 @@ export function ZoneCreationPage() {
       </form>
       <div className="w-1/2 p-md">
         {selectedField && (
-          <div className="max-w-xs">
-            <TextInput
-              {...form.getInputProps(`fields.${selectedField}.name`)}
-              key={form.key(`fields.${selectedField}.name`)}
-              label={t("common.name")}
-            />
-            <TextInput
-              {...form.getInputProps(`fields.${selectedField}.description`)}
-              key={form.key(`fields.${selectedField}.description`)}
-              label={t("common.description")}
-              className="mt-2"
-            />
-          </div>
+          <>
+            <div className="max-w-xs">
+              <TextInput
+                {...form.getInputProps(`fields.${selectedField}.name`)}
+                key={form.key(`fields.${selectedField}.name`)}
+                label={t("common.name")}
+              />
+              <TextInput
+                {...form.getInputProps(`fields.${selectedField}.description`)}
+                key={form.key(`fields.${selectedField}.description`)}
+                label={t("common.description")}
+                className="mt-2"
+              />
+            </div>
+            <div className="mt-4">
+              <Button variant="danger" onClick={removeSelectedField}>
+                <Trans i18nKey="zoneCreation.removeField" />
+              </Button>
+            </div>
+          </>
         )}
       </div>
     </div>
