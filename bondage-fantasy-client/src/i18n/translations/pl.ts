@@ -46,5 +46,8 @@ export const pl: ResourceLanguage = {
     "characterList.createNewCharacter": "Stwórz nową postać",
     "zoneCreation.createZone": "Stwórz strefę",
     "zoneCreation.removeField": "Usuń pole",
+    "zoneCreation.allowToLeaveZoneOnThisField":
+      "Pozwól opuścić strefę na tym polu",
+    "zoneCreation.setAsEntrance": "Ustaw jako wejście",
   },
 };

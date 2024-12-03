@@ -11,6 +11,7 @@ const FIELD_SIZE = 64;
 
 export function ZoneMap(props: {
   fields: Field[];
+  entrance?: Position;
   selectedField?: Position;
   onFieldClick?: (position: Position) => void;
 }) {
@@ -27,13 +28,16 @@ export function ZoneMap(props: {
   function getFieldClasses(x: number, y: number): string {
     const field = fields[y][x];
     if (field) {
-      let result = "bg-green-300";
-      if (
-        props.selectedField &&
-        arePositionsEqual({ x, y }, props.selectedField)
-      ) {
+      let result: string;
+      if (arePositionsEqual({ x, y }, props.entrance)) {
+        result = "bg-green-500";
+      } else {
+        result = "bg-green-300";
+      }
+      if (arePositionsEqual({ x, y }, props.selectedField)) {
         result += " border-4 border-yellow-400";
       }
+
       return result;
     } else {
       return "bg-gray-100 hover:bg-gray-200";

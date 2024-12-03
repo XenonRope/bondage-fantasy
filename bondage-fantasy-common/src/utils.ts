@@ -7,9 +7,16 @@ import {
 } from "./model.js";
 
 export function arePositionsEqual(
-  firstPosition: Position,
-  secondPosition: Position
+  firstPosition?: Position,
+  secondPosition?: Position
 ): boolean {
+  if (!firstPosition && !secondPosition) {
+    return true;
+  }
+  if (!firstPosition || !secondPosition) {
+    return false;
+  }
+
   return (
     firstPosition.x === secondPosition.x && firstPosition.y === secondPosition.y
   );

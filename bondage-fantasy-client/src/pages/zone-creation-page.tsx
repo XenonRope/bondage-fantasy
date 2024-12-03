@@ -1,5 +1,5 @@
 import { ZoneMap } from "../components/zone-map";
-import { Button, TextInput } from "@mantine/core";
+import { Button, Checkbox, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import {
   Field,
@@ -20,7 +20,7 @@ import { Trans, useTranslation } from "react-i18next";
 interface ZoneForm {
   name: string;
   description: string;
-  entrance?: Position;
+  entrance?: FieldKey;
   fields: {
     [key: FieldKey]: {
       name: string;
@@ -98,7 +98,14 @@ export function ZoneCreationPage() {
       delete fieldsCopy[selectedField];
       return fieldsCopy;
     });
+    if (selectedField === form.getValues().entrance) {
+      form.setFieldValue("entrance", undefined);
+    }
     setSelectedField(() => undefined);
+  }
+
+  function setSelectedFieldAsEntrance(): void {
+    form.setFieldValue("entrance", selectedField);
   }
 
   function getFieldsAsArray(): Field[] {
@@ -133,6 +140,7 @@ export function ZoneCreationPage() {
         <div className="min-h-[256px] max-w-fit overflow-auto mt-4">
           <ZoneMap
             fields={getFieldsAsArray()}
+            entrance={getPositionFromFieldKey(form.getValues().entrance)}
             selectedField={getPositionFromFieldKey(selectedField)}
             onFieldClick={onFieldClick}
           />
@@ -158,8 +166,19 @@ export function ZoneCreationPage() {
                 label={t("common.description")}
                 className="mt-2"
               />
+              <Checkbox
+                {...form.getInputProps(`fields.${selectedField}.canLeave`, {
+                  type: "checkbox",
+                })}
+                key={form.key(`fields.${selectedField}.canLeave`)}
+                label={t("zoneCreation.allowToLeaveZoneOnThisField")}
+                className="mt-4"
+              />
             </div>
             <div className="mt-4">
+              <Button onClick={setSelectedFieldAsEntrance}>
+                <Trans i18nKey="zoneCreation.setAsEntrance" />
+              </Button>
               <Button variant="danger" onClick={removeSelectedField}>
                 <Trans i18nKey="zoneCreation.removeField" />
               </Button>
