@@ -34,12 +34,16 @@ export interface FieldConnection {
   positions: [Position, Position];
 }
 
+export type FieldConnectionKey = string;
+
 export interface Field {
   position: Position;
   name: string;
   description: string;
   canLeave: boolean;
 }
+
+export type FieldKey = string;
 
 export interface Zone {
   id: number;

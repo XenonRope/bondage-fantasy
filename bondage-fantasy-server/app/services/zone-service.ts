@@ -7,6 +7,8 @@ import {
   Field,
   FieldConnection,
   findFieldByPosition,
+  getFieldConnectionKey,
+  getFieldKey,
   Position,
   Zone,
 } from "bondage-fantasy-common";
@@ -47,15 +49,15 @@ export class ZoneService {
   }
 
   private validateFields(fields: Field[]): void {
-    const positions = new Set<string>();
+    const fieldsKeys = new Set<string>();
     for (const field of fields) {
-      const position = `${field.position.x}-${field.position.y}`;
-      if (positions.has(position)) {
+      const fieldKey = getFieldKey(field);
+      if (fieldsKeys.has(fieldKey)) {
         throw new InvalidZoneException(
           `More than two fields with position [${field.position.x}, ${field.position.y}]`,
         );
       }
-      positions.add(position);
+      fieldsKeys.add(fieldKey);
     }
   }
 
@@ -90,18 +92,13 @@ export class ZoneService {
           `Invalid connection. Fields [${connection.positions[0].x}, ${connection.positions[0].y}] and [${connection.positions[1].x}, ${connection.positions[1].y}] are not adjacent.`,
         );
       }
-      const connectionKey1 = `${connection.positions[0].x}-${connection.positions[0].y}-${connection.positions[1].x}-${connection.positions[1].y}`;
-      const connectionKey2 = `${connection.positions[1].x}-${connection.positions[1].y}-${connection.positions[0].x}-${connection.positions[0].y}`;
-      if (
-        connectionsKeys.has(connectionKey1) ||
-        connectionsKeys.has(connectionKey2)
-      ) {
+      const connectionKey = getFieldConnectionKey(connection);
+      if (connectionsKeys.has(connectionKey)) {
         throw new InvalidZoneException(
           `Duplicated connection from [${connection.positions[0].x}, ${connection.positions[0].y}] to [${connection.positions[1].x}, ${connection.positions[1].y}]`,
         );
       }
-      connectionsKeys.add(connectionKey1);
-      connectionsKeys.add(connectionKey2);
+      connectionsKeys.add(connectionKey);
     }
   }
 

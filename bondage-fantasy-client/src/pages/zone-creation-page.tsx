@@ -2,32 +2,52 @@ import { ZoneMap } from "../components/zone-map";
 import { Button, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import {
-  findFieldByPosition,
+  Field,
+  FieldConnection,
+  FieldConnectionKey,
+  FieldKey,
+  getFieldKey,
+  getPositionFromFieldKey,
+  Position,
   ZONE_DESCRIPTION_MAX_LENGTH,
   ZONE_DESCRIPTION_MIN_LENGTH,
   ZONE_NAME_MAX_LENGTH,
   ZONE_NAME_MIN_LENGTH,
-  Position,
-  Field,
 } from "bondage-fantasy-common";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
+interface ZoneForm {
+  name: string;
+  description: string;
+  entrance?: Position;
+  fields: {
+    [key: FieldKey]: {
+      name: string;
+      description: string;
+      canLeave: boolean;
+    };
+  };
+  connections: { [key: FieldConnectionKey]: FieldConnection };
+}
+
 export function ZoneCreationPage() {
   const { t } = useTranslation();
-  const form = useForm({
+  const form = useForm<ZoneForm>({
     mode: "uncontrolled",
     initialValues: {
       name: "",
       description: "",
+      entrance: undefined,
+      fields: {},
+      connections: {},
     },
     validate: {
       name: validateName,
       description: validateDescription,
     },
   });
-  const [fields, setFields] = useState<Field[]>([]);
-  const [selectedField, setSelectedField] = useState<Field | undefined>();
+  const [selectedField, setSelectedField] = useState<FieldKey>();
 
   function validateName(value: string) {
     if (value.length < ZONE_NAME_MIN_LENGTH) {
@@ -52,20 +72,29 @@ export function ZoneCreationPage() {
   }
 
   function onFieldClick(position: Position) {
-    const field = findFieldByPosition(fields, position);
+    const fieldKey = getFieldKey(position);
+    const field = form.getValues().fields[fieldKey];
     if (field) {
-      setSelectedField(field);
+      setSelectedField(fieldKey);
       return;
     }
 
-    const newField: Field = {
-      position,
+    const newField = {
       name: "",
       description: "",
       canLeave: false,
     };
-    setFields((fields) => [...fields, newField]);
-    setSelectedField(() => newField);
+    form.setFieldValue(`fields.${fieldKey}`, newField);
+    setSelectedField(() => fieldKey);
+  }
+
+  function getFieldsAsArray(): Field[] {
+    return Object.entries(form.getValues().fields).map(([fieldKey, field]) => ({
+      position: getPositionFromFieldKey(fieldKey),
+      name: field.name,
+      description: field.description,
+      canLeave: field.canLeave,
+    }));
   }
 
   return (
@@ -89,7 +118,7 @@ export function ZoneCreationPage() {
         </div>
 
         <div className="min-h-[256px] max-w-fit overflow-auto mt-4">
-          <ZoneMap fields={fields} onFieldClick={onFieldClick} />
+          <ZoneMap fields={getFieldsAsArray()} onFieldClick={onFieldClick} />
         </div>
         <div>
           <Button type="submit" className="mt-4">
@@ -100,8 +129,17 @@ export function ZoneCreationPage() {
       <div className="w-1/2 p-md">
         {selectedField && (
           <div className="max-w-xs">
-            <TextInput label={t("common.name")} />
-            <TextInput label={t("common.description")} className="mt-2" />
+            <TextInput
+              {...form.getInputProps(`fields.${selectedField}.name`)}
+              key={form.key(`fields.${selectedField}.name`)}
+              label={t("common.name")}
+            />
+            <TextInput
+              {...form.getInputProps(`fields.${selectedField}.description`)}
+              key={form.key(`fields.${selectedField}.description`)}
+              label={t("common.description")}
+              className="mt-2"
+            />
           </div>
         )}
       </div>
