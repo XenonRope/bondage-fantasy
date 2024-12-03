@@ -4,11 +4,11 @@ import { SequenceCode } from "#models/sequence-model";
 import { inject } from "@adonisjs/core";
 import {
   arePositionsEqual,
+  Field,
+  FieldConnection,
   findFieldByPosition,
+  Position,
   Zone,
-  ZoneField,
-  ZoneFieldConnection,
-  ZoneFieldPosition,
 } from "bondage-fantasy-common";
 import { SequenceService } from "./sequence-service.js";
 
@@ -23,9 +23,9 @@ export class ZoneService {
     ownerCharacterId: number;
     name: string;
     description: string;
-    entrance: ZoneFieldPosition;
-    fields: ZoneField[];
-    connections: ZoneFieldConnection[];
+    entrance: Position;
+    fields: Field[];
+    connections: FieldConnection[];
   }): Promise<Zone> {
     this.validateFields(params.fields);
     this.validateConnections(params.connections, params.fields);
@@ -46,7 +46,7 @@ export class ZoneService {
     return zone;
   }
 
-  private validateFields(fields: ZoneField[]): void {
+  private validateFields(fields: Field[]): void {
     const positions = new Set<string>();
     for (const field of fields) {
       const position = `${field.position.x}-${field.position.y}`;
@@ -60,8 +60,8 @@ export class ZoneService {
   }
 
   private validateConnections(
-    connections: ZoneFieldConnection[],
-    fields: ZoneField[],
+    connections: FieldConnection[],
+    fields: Field[],
   ): void {
     const connectionsKeys = new Set<string>();
     for (const connection of connections) {
@@ -105,7 +105,7 @@ export class ZoneService {
     }
   }
 
-  private validateEntrance(entrance: ZoneFieldPosition, fields: ZoneField[]) {
+  private validateEntrance(entrance: Position, fields: Field[]) {
     if (findFieldByPosition(fields, entrance) == null) {
       throw new InvalidZoneException(
         `Invalid entrance. Field with position [${entrance.x}, ${entrance.y}] doesn't exist.`,
@@ -114,8 +114,8 @@ export class ZoneService {
   }
 
   private arePositionsAdjacent(
-    { x: x1, y: y1 }: ZoneFieldPosition,
-    { x: x2, y: y2 }: ZoneFieldPosition,
+    { x: x1, y: y1 }: Position,
+    { x: x2, y: y2 }: Position,
   ) {
     return (
       (x1 == x2 && Math.abs(y1 - y2) === 1) ||

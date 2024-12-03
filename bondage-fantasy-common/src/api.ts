@@ -1,9 +1,9 @@
 import {
   Genitals,
   Pronouns,
-  ZoneField,
-  ZoneFieldConnection,
-  ZoneFieldPosition,
+  Field,
+  FieldConnection,
+  Position,
 } from "./model.js";
 
 export interface AccountRegisterRequest {
@@ -25,7 +25,7 @@ export interface CharacterCreateRequest {
 export interface ZoneCreateRequest {
   name: string;
   description: string;
-  entrance: ZoneFieldPosition;
-  fields: ZoneField[];
-  connections: ZoneFieldConnection[];
+  entrance: Position;
+  fields: Field[];
+  connections: FieldConnection[];
 }

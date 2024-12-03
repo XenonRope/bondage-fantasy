@@ -7,8 +7,8 @@ import {
   ZONE_DESCRIPTION_MIN_LENGTH,
   ZONE_NAME_MAX_LENGTH,
   ZONE_NAME_MIN_LENGTH,
-  ZoneField,
-  ZoneFieldPosition,
+  Position,
+  Field,
 } from "bondage-fantasy-common";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -26,8 +26,8 @@ export function ZoneCreationPage() {
       description: validateDescription,
     },
   });
-  const [fields, setFields] = useState<ZoneField[]>([]);
-  const [selectedField, setSelectedField] = useState<ZoneField | undefined>();
+  const [fields, setFields] = useState<Field[]>([]);
+  const [selectedField, setSelectedField] = useState<Field | undefined>();
 
   function validateName(value: string) {
     if (value.length < ZONE_NAME_MIN_LENGTH) {
@@ -51,14 +51,14 @@ export function ZoneCreationPage() {
     }
   }
 
-  function onFieldClick(position: ZoneFieldPosition) {
+  function onFieldClick(position: Position) {
     const field = findFieldByPosition(fields, position);
     if (field) {
       setSelectedField(field);
       return;
     }
 
-    const newField: ZoneField = {
+    const newField: Field = {
       position,
       name: "",
       description: "",

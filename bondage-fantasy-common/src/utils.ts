@@ -1,8 +1,8 @@
-import { ZoneField, ZoneFieldPosition } from "./model.js";
+import { Field, Position } from "./model.js";
 
 export function arePositionsEqual(
-  firstPosition: ZoneFieldPosition,
-  secondPosition: ZoneFieldPosition
+  firstPosition: Position,
+  secondPosition: Position
 ): boolean {
   return (
     firstPosition.x === secondPosition.x && firstPosition.y === secondPosition.y
@@ -10,8 +10,8 @@ export function arePositionsEqual(
 }
 
 export function findFieldByPosition(
-  fields: ZoneField[],
-  position: ZoneFieldPosition
-): ZoneField | undefined {
+  fields: Field[],
+  position: Position
+): Field | undefined {
   return fields.find((field) => arePositionsEqual(field.position, position));
 }

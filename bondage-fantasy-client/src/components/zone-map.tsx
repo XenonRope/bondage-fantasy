@@ -1,17 +1,17 @@
 import {
+  Field,
+  Position,
   ZONE_MAX_HEIGHT,
   ZONE_MAX_WIDTH,
-  ZoneField,
-  ZoneFieldPosition,
 } from "bondage-fantasy-common";
 import { useMemo } from "react";
 
 export function ZoneMap(props: {
-  fields: ZoneField[];
-  onFieldClick?: (position: ZoneFieldPosition) => void;
+  fields: Field[];
+  onFieldClick?: (position: Position) => void;
 }) {
   const fields = useMemo(() => {
-    const fields: ZoneField[][] = [...Array(ZONE_MAX_HEIGHT)].map(() =>
+    const fields: Field[][] = [...Array(ZONE_MAX_HEIGHT)].map(() =>
       Array(ZONE_MAX_WIDTH),
     );
     props.fields.forEach((field) => {

@@ -1,10 +1,10 @@
 import {
   Account,
   Character,
+  Field,
+  FieldConnection,
+  Position,
   Zone,
-  ZoneField,
-  ZoneFieldConnection,
-  ZoneFieldPosition,
 } from "bondage-fantasy-common";
 
 export function accountDto(account: Account): Account {
@@ -27,16 +27,14 @@ export function characterDto(character: Character): Character {
   return dto as Character;
 }
 
-export function zoneFieldPositionDto(
-  position: ZoneFieldPosition,
-): ZoneFieldPosition {
+export function zoneFieldPositionDto(position: Position): Position {
   return {
     x: position.x,
     y: position.y,
   };
 }
 
-export function zoneFieldDto(field: ZoneField): ZoneField {
+export function zoneFieldDto(field: Field): Field {
   return {
     position: zoneFieldPositionDto(field.position),
     name: field.name,
@@ -46,8 +44,8 @@ export function zoneFieldDto(field: ZoneField): ZoneField {
 }
 
 export function zoneFieldConnectionDto(
-  connection: ZoneFieldConnection,
-): ZoneFieldConnection {
+  connection: FieldConnection,
+): FieldConnection {
   return {
     positions: [
       zoneFieldPositionDto(connection.positions[0]),

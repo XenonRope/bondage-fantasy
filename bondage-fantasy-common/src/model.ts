@@ -25,17 +25,17 @@ export interface Character {
   genitals: Genitals;
 }
 
-export interface ZoneFieldPosition {
+export interface Position {
   x: number;
   y: number;
 }
 
-export interface ZoneFieldConnection {
-  positions: [ZoneFieldPosition, ZoneFieldPosition];
+export interface FieldConnection {
+  positions: [Position, Position];
 }
 
-export interface ZoneField {
-  position: ZoneFieldPosition;
+export interface Field {
+  position: Position;
   name: string;
   description: string;
   canLeave: boolean;
@@ -46,7 +46,7 @@ export interface Zone {
   ownerCharacterId: number;
   name: string;
   description: string;
-  entrance: ZoneFieldPosition;
-  fields: ZoneField[];
-  connections: ZoneFieldConnection[];
+  entrance: Position;
+  fields: Field[];
+  connections: FieldConnection[];
 }
