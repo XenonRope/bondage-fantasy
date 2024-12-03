@@ -2,12 +2,15 @@ import { ZoneMap } from "../components/zone-map";
 import { Button, Checkbox, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import {
+  doesConnectionKeyContainFieldKey,
   Field,
   FieldConnection,
   FieldConnectionKey,
   FieldKey,
+  getFieldConnectionKey,
   getFieldKey,
   getPositionFromFieldKey,
+  getPositionsFromConnectionKey,
   Position,
   ZONE_DESCRIPTION_MAX_LENGTH,
   ZONE_DESCRIPTION_MIN_LENGTH,
@@ -28,7 +31,7 @@ interface ZoneForm {
       canLeave: boolean;
     };
   };
-  connections: { [key: FieldConnectionKey]: FieldConnection };
+  connections: { [key: FieldConnectionKey]: true };
 }
 
 export function ZoneCreationPage() {
@@ -88,15 +91,34 @@ export function ZoneCreationPage() {
     setSelectedField(() => fieldKey);
   }
 
+  function onConnectionClick(positions: [Position, Position]): void {
+    const connectionKey = getFieldConnectionKey(positions);
+    const connection = form.getValues().connections[connectionKey];
+    if (connection) {
+      return;
+    }
+
+    form.setFieldValue(`connections.${connectionKey}`, true);
+  }
+
   function removeSelectedField(): void {
     if (!selectedField) {
       return;
     }
 
-    form.setFieldValue(`fields`, (fields) => {
+    form.setFieldValue("fields", (fields) => {
       const fieldsCopy = { ...fields };
       delete fieldsCopy[selectedField];
       return fieldsCopy;
+    });
+    form.setFieldValue("connections", (connections) => {
+      const connectionsCopy = { ...connections };
+      for (const connectionKey of Object.keys(connectionsCopy)) {
+        if (doesConnectionKeyContainFieldKey(connectionKey, selectedField)) {
+          delete connectionsCopy[connectionKey];
+        }
+      }
+      return connectionsCopy;
     });
     if (selectedField === form.getValues().entrance) {
       form.setFieldValue("entrance", undefined);
@@ -115,6 +137,14 @@ export function ZoneCreationPage() {
       description: field.description,
       canLeave: field.canLeave,
     }));
+  }
+
+  function getConnectionsAsArray(): FieldConnection[] {
+    return Object.entries(form.getValues().connections).map(
+      ([connectionKey]) => ({
+        positions: getPositionsFromConnectionKey(connectionKey),
+      }),
+    );
   }
 
   return (
@@ -140,9 +170,11 @@ export function ZoneCreationPage() {
         <div className="min-h-[256px] max-w-fit overflow-auto mt-4">
           <ZoneMap
             fields={getFieldsAsArray()}
+            connections={getConnectionsAsArray()}
             entrance={getPositionFromFieldKey(form.getValues().entrance)}
             selectedField={getPositionFromFieldKey(selectedField)}
             onFieldClick={onFieldClick}
+            onConnectionClick={onConnectionClick}
           />
         </div>
         <div>
@@ -179,7 +211,11 @@ export function ZoneCreationPage() {
               <Button onClick={setSelectedFieldAsEntrance}>
                 <Trans i18nKey="zoneCreation.setAsEntrance" />
               </Button>
-              <Button variant="danger" onClick={removeSelectedField}>
+              <Button
+                variant="danger"
+                className="ml-4"
+                onClick={removeSelectedField}
+              >
                 <Trans i18nKey="zoneCreation.removeField" />
               </Button>
             </div>

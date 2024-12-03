@@ -79,3 +79,20 @@ export function getFieldConnectionKey(
     return `${pos2.x}-${pos2.y}-${pos1.x}-${pos1.y}`;
   }
 }
+
+export function getPositionsFromConnectionKey(
+  connectionKey: FieldConnectionKey
+): [Position, Position] {
+  const [x1, y1, x2, y2] = connectionKey.split("-");
+  return [
+    { x: parseInt(x1), y: parseInt(y1) },
+    { x: parseInt(x2), y: parseInt(y2) },
+  ];
+}
+
+export function doesConnectionKeyContainFieldKey(
+  connectionKey: FieldConnectionKey,
+  fieldKey: FieldKey
+): boolean {
+  return connectionKey.startsWith(fieldKey) || connectionKey.endsWith(fieldKey);
+}
