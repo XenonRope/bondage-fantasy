@@ -1,8 +1,9 @@
 import { zoneApi } from "../api/zone-api";
 import { ZoneMap } from "../components/zone-map";
 import { errorService } from "../services/error-service";
+import { Validators } from "../utils/validators";
 import { Button, Checkbox, TextInput } from "@mantine/core";
-import { useForm } from "@mantine/form";
+import { FormErrors, useForm } from "@mantine/form";
 import { useMutation } from "@tanstack/react-query";
 import {
   doesConnectionKeyContainFieldKey,
@@ -17,6 +18,10 @@ import {
   Position,
   ZONE_DESCRIPTION_MAX_LENGTH,
   ZONE_DESCRIPTION_MIN_LENGTH,
+  ZONE_FIELD_DESCRIPTION_MAX_LENGTH,
+  ZONE_FIELD_DESCRIPTION_MIN_LENGTH,
+  ZONE_FIELD_NAME_MAX_LENGTH,
+  ZONE_FIELD_NAME_MIN_LENGTH,
   ZONE_NAME_MAX_LENGTH,
   ZONE_NAME_MIN_LENGTH,
   ZoneCreateRequest,
@@ -49,10 +54,7 @@ export function ZoneCreationPage() {
       fields: {},
       connections: {},
     },
-    validate: {
-      name: validateName,
-      description: validateDescription,
-    },
+    validate: validateForm,
   });
   const [selectedField, setSelectedField] = useState<FieldKey>();
   const [selectedConnection, setSelectedConnection] =
@@ -62,26 +64,30 @@ export function ZoneCreationPage() {
     onError: (error) => errorService.handleUnexpectedError(error),
   });
 
-  function validateName(value: string) {
-    if (value.length < ZONE_NAME_MIN_LENGTH) {
-      return t("common.fieldTooShort", { minLength: ZONE_NAME_MIN_LENGTH });
+  function validateForm(values: ZoneForm): FormErrors {
+    const errors: FormErrors = {
+      name: Validators.inRange(
+        ZONE_NAME_MIN_LENGTH,
+        ZONE_NAME_MAX_LENGTH,
+      )(values.name),
+      description: Validators.inRange(
+        ZONE_DESCRIPTION_MIN_LENGTH,
+        ZONE_DESCRIPTION_MAX_LENGTH,
+      )(values.description),
+      entrance: Validators.notEmpty()(values.entrance),
+    };
+    for (const [fieldKey, field] of Object.entries(values.fields)) {
+      errors[`fields.${fieldKey}.name`] = Validators.inRange(
+        ZONE_FIELD_NAME_MIN_LENGTH,
+        ZONE_FIELD_NAME_MAX_LENGTH,
+      )(field.name);
+      errors[`fields.${fieldKey}.description`] = Validators.inRange(
+        ZONE_FIELD_DESCRIPTION_MIN_LENGTH,
+        ZONE_FIELD_DESCRIPTION_MAX_LENGTH,
+      )(field.description);
     }
-    if (value.length > ZONE_NAME_MAX_LENGTH) {
-      return t("common.fieldTooLong", {
-        maxLength: ZONE_NAME_MAX_LENGTH,
-      });
-    }
-  }
 
-  function validateDescription(value: string) {
-    if (value.length < ZONE_DESCRIPTION_MIN_LENGTH) {
-      return t("common.fieldCannotBeEmpty");
-    }
-    if (value.length > ZONE_DESCRIPTION_MAX_LENGTH) {
-      return t("common.fieldTooLong", {
-        maxLength: ZONE_DESCRIPTION_MAX_LENGTH,
-      });
-    }
+    return errors;
   }
 
   function onFieldClick(position: Position): void {
