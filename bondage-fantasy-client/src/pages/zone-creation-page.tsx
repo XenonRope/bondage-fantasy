@@ -1,6 +1,9 @@
+import { zoneApi } from "../api/zone-api";
 import { ZoneMap } from "../components/zone-map";
+import { errorService } from "../services/error-service";
 import { Button, Checkbox, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
+import { useMutation } from "@tanstack/react-query";
 import {
   doesConnectionKeyContainFieldKey,
   Field,
@@ -16,6 +19,7 @@ import {
   ZONE_DESCRIPTION_MIN_LENGTH,
   ZONE_NAME_MAX_LENGTH,
   ZONE_NAME_MIN_LENGTH,
+  ZoneCreateRequest,
 } from "bondage-fantasy-common";
 import { useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
@@ -53,6 +57,10 @@ export function ZoneCreationPage() {
   const [selectedField, setSelectedField] = useState<FieldKey>();
   const [selectedConnection, setSelectedConnection] =
     useState<FieldConnectionKey>();
+  const createZone = useMutation({
+    mutationFn: (request: ZoneCreateRequest) => zoneApi.create(request),
+    onError: (error) => errorService.handleUnexpectedError(error),
+  });
 
   function validateName(value: string) {
     if (value.length < ZONE_NAME_MIN_LENGTH) {
@@ -166,10 +174,24 @@ export function ZoneCreationPage() {
     );
   }
 
+  function prepareZoneCreateRequest(): ZoneCreateRequest {
+    return {
+      name: form.getValues().name,
+      description: form.getValues().description,
+      entrance: getPositionFromFieldKey(form.getValues().entrance!),
+      fields: getFieldsAsArray(),
+      connections: getConnectionsAsArray(),
+    };
+  }
+
   return (
     <div className="flex h-full">
       <form
-        onSubmit={form.onSubmit(() => {})}
+        onSubmit={form.onSubmit(
+          () =>
+            !createZone.isPending &&
+            createZone.mutate(prepareZoneCreateRequest()),
+        )}
         className="flex flex-col h-full w-1/2 border-r border-app-shell p-md"
       >
         <div className="max-w-xs">

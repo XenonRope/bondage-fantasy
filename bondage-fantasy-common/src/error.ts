@@ -7,6 +7,7 @@ export enum ErrorCode {
   E_INVALID_ZONE = "E_INVALID_ZONE",
   E_INVALID_CHARACTER_ID = "E_INVALID_CHARACTER_ID",
   E_NO_CHARACTER_ID = "E_NO_CHARACTER_ID",
+  E_VALIDATION_ERROR = "E_VALIDATION_ERROR",
 }
 
 export interface ErrorResponse {

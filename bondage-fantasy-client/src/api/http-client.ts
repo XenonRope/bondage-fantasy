@@ -1,3 +1,4 @@
+import { useAppStore } from "../store";
 import Cookies from "js-cookie";
 
 class HttpClient {
@@ -20,14 +21,19 @@ class HttpClient {
     url: string,
     params: { method: string; body?: unknown },
   ): Promise<T> {
+    const headers: HeadersInit = {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      "X-XSRF-TOKEN": await this.getCsrfToken(),
+    };
+    const characterId = useAppStore.getState().character?.id;
+    if (characterId) {
+      headers["X-CHARACTER-ID"] = characterId.toString();
+    }
     const response = await fetch(`/api/${url}`, {
       method: params.method,
       body: params.body != null ? JSON.stringify(params.body) : undefined,
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        "X-XSRF-TOKEN": await this.getCsrfToken(),
-      },
+      headers,
     });
 
     const newCsrfToken = this.readCsrfTokenFromCookie();

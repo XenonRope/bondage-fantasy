@@ -16,6 +16,18 @@ export default class HttpExceptionHandler extends ExceptionHandler {
    * response to the client
    */
   async handle(error: unknown, ctx: HttpContext) {
+    if (
+      error instanceof Error &&
+      "code" in error &&
+      "messages" in error &&
+      error.code === "E_VALIDATION_ERROR"
+    ) {
+      ctx.response.status(422).send({
+        code: ErrorCode.E_VALIDATION_ERROR,
+        message: JSON.stringify(error.messages),
+      });
+      return;
+    }
     if (error instanceof Exception && error.code === "E_UNAUTHORIZED_ACCESS") {
       ctx.response.status(401).send({
         code: ErrorCode.E_UNAUTHORIZED_ACCESS,
