@@ -10,8 +10,9 @@ import { ZoneCreationPage } from "./pages/zone-creation-page";
 import { ZoneListPage } from "./pages/zone-list-page";
 import { errorService } from "./services/error-service";
 import { sessionService } from "./services/session-service";
+import alertClasses from "./theme/Alert.module.css";
 import buttonClasses from "./theme/Button.module.css";
-import { Button, createTheme, MantineProvider } from "@mantine/core";
+import { Alert, Button, createTheme, MantineProvider } from "@mantine/core";
 import "@mantine/core/styles.css";
 import { Notifications } from "@mantine/notifications";
 import "@mantine/notifications/styles.css";
@@ -42,6 +43,9 @@ const theme = createTheme({
   components: {
     Button: Button.extend({
       classNames: buttonClasses,
+    }),
+    Alert: Alert.extend({
+      classNames: alertClasses,
     }),
   },
 });

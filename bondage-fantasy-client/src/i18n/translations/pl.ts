@@ -50,5 +50,7 @@ export const pl: ResourceLanguage = {
       "Pozwól opuścić strefę na tym polu",
     "zoneCreation.setAsEntrance": "Ustaw jako wejście",
     "zoneCreation.removeConnection": "Usuń połączenie",
+    "zoneCreation.yourZoneHasNoEntrance":
+      "Twoja strefa nie ma wejścia. Powinieneś zdecydować, na którym polu twoi goście rozpoczną przygodę.",
   },
 };

@@ -1,3 +1,4 @@
+import { ReactNode } from "react";
 import { Trans } from "react-i18next";
 
 function inRange(min?: number, max?: number) {
@@ -21,10 +22,10 @@ function inRange(min?: number, max?: number) {
   };
 }
 
-function notEmpty() {
+function notEmpty(customMessage?: string | ReactNode) {
   return (value: unknown) => {
     if (value == null || value === "") {
-      return <Trans i18nKey="common.fieldCannotBeEmpty" />;
+      return customMessage ?? <Trans i18nKey="common.fieldCannotBeEmpty" />;
     }
   };
 }

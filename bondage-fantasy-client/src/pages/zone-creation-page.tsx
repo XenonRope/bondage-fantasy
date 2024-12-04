@@ -2,7 +2,7 @@ import { zoneApi } from "../api/zone-api";
 import { ZoneMap } from "../components/zone-map";
 import { errorService } from "../services/error-service";
 import { Validators } from "../utils/validators";
-import { Button, Checkbox, TextInput } from "@mantine/core";
+import { Alert, Button, Checkbox, TextInput } from "@mantine/core";
 import { FormErrors, useForm } from "@mantine/form";
 import { useMutation } from "@tanstack/react-query";
 import {
@@ -74,7 +74,9 @@ export function ZoneCreationPage() {
         ZONE_DESCRIPTION_MIN_LENGTH,
         ZONE_DESCRIPTION_MAX_LENGTH,
       )(values.description),
-      entrance: Validators.notEmpty()(values.entrance),
+      entrance: Validators.notEmpty(t("zoneCreation.yourZoneHasNoEntrance"))(
+        values.entrance,
+      ),
     };
     for (const [fieldKey, field] of Object.entries(values.fields)) {
       errors[`fields.${fieldKey}.name`] = Validators.inRange(
@@ -200,6 +202,11 @@ export function ZoneCreationPage() {
         )}
         className="flex flex-col h-full w-1/2 border-r border-app-shell p-md"
       >
+        {form.errors.entrance && (
+          <Alert variant="error" className="mb-4">
+            {form.errors.entrance}
+          </Alert>
+        )}
         <div className="max-w-xs">
           <TextInput
             {...form.getInputProps("name")}

@@ -53,5 +53,7 @@ export const en: ResourceLanguage = {
       "Allow to leave zone on this field",
     "zoneCreation.setAsEntrance": "Set as entrance",
     "zoneCreation.removeConnection": "Remove connection",
+    "zoneCreation.yourZoneHasNoEntrance":
+      "Your zone has no entrance. You should decide on which field your guests will start their adventure.",
   },
 };

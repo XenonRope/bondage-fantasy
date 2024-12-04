@@ -1,0 +1,7 @@
+.root {
+  &[data-variant="error"] {
+    & {
+      background-color: var(--mantine-color-red-1);
+    }
+  }
+}
