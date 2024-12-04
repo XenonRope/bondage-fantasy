@@ -12,6 +12,8 @@ import { errorService } from "./services/error-service";
 import { sessionService } from "./services/session-service";
 import alertClasses from "./theme/Alert.module.css";
 import buttonClasses from "./theme/Button.module.css";
+import { AuthRequired } from "./utils/auth-required";
+import { CharacterRequired } from "./utils/character-required";
 import { Alert, Button, createTheme, MantineProvider } from "@mantine/core";
 import "@mantine/core/styles.css";
 import { Notifications } from "@mantine/notifications";
@@ -70,15 +72,21 @@ function AppRouter() {
         <Route index element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<AccountRegistrationPage />} />
-        <Route path="/characters" element={<CharacterListPage />} />
-        <Route path="/new-character" element={<CharacterCreationPage />} />
-        <Route path="/zones" element={<ZoneListPage />} />
+        <Route element={<AuthRequired />}>
+          <Route path="/characters" element={<CharacterListPage />} />
+          <Route path="/new-character" element={<CharacterCreationPage />} />
+          <Route path="/zones" element={<ZoneListPage />} />
+        </Route>
       </Route>
       <Route
         path="/"
         element={<MainLayout key={"fixedHeight"} fixedHeight={true} />}
       >
-        <Route path="/new-zone" element={<ZoneCreationPage />} />
+        <Route element={<AuthRequired />}>
+          <Route element={<CharacterRequired />}>
+            <Route path="/new-zone" element={<ZoneCreationPage />} />
+          </Route>
+        </Route>
       </Route>
     </Routes>
   );
