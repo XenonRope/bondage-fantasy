@@ -52,5 +52,6 @@ export const en: ResourceLanguage = {
     "zoneCreation.allowToLeaveZoneOnThisField":
       "Allow to leave zone on this field",
     "zoneCreation.setAsEntrance": "Set as entrance",
+    "zoneCreation.removeConnection": "Remove connection",
   },
 };

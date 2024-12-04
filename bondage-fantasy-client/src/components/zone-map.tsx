@@ -2,6 +2,10 @@ import {
   arePositionsEqual,
   Field,
   FieldConnection,
+  FieldConnectionKey,
+  FieldKey,
+  getFieldConnectionKey,
+  getFieldKey,
   Position,
   ZONE_MAX_HEIGHT,
   ZONE_MAX_WIDTH,
@@ -21,7 +25,8 @@ export function ZoneMap(props: {
   fields: Field[];
   connections: FieldConnection[];
   entrance?: Position;
-  selectedField?: Position;
+  selectedField?: FieldKey;
+  selectedConnection?: FieldConnectionKey;
   onFieldClick?: (position: Position) => void;
   onConnectionClick?: (positions: [Position, Position]) => void;
 }) {
@@ -76,7 +81,10 @@ export function ZoneMap(props: {
       } else {
         result = "bg-green-300";
       }
-      if (arePositionsEqual({ x, y }, props.selectedField)) {
+      if (
+        props.selectedField &&
+        props.selectedField === getFieldKey({ x, y })
+      ) {
         result += " border-4 border-yellow-400";
       }
 
@@ -88,7 +96,14 @@ export function ZoneMap(props: {
 
   function getConnectionClasses(connection?: FieldConnection): string {
     if (connection) {
-      return "absolute bg-green-300";
+      let result = "absolute bg-green-300";
+      if (
+        props.selectedConnection &&
+        props.selectedConnection === getFieldConnectionKey(connection)
+      ) {
+        result += " border-4 border-yellow-400";
+      }
+      return result;
     } else {
       return "absolute bg-gray-100 hover:bg-gray-200";
     }

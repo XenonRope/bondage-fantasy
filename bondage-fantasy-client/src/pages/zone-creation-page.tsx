@@ -51,6 +51,8 @@ export function ZoneCreationPage() {
     },
   });
   const [selectedField, setSelectedField] = useState<FieldKey>();
+  const [selectedConnection, setSelectedConnection] =
+    useState<FieldConnectionKey>();
 
   function validateName(value: string) {
     if (value.length < ZONE_NAME_MIN_LENGTH) {
@@ -77,28 +79,29 @@ export function ZoneCreationPage() {
   function onFieldClick(position: Position): void {
     const fieldKey = getFieldKey(position);
     const field = form.getValues().fields[fieldKey];
-    if (field) {
-      setSelectedField(fieldKey);
-      return;
+    if (!field) {
+      const newField = {
+        name: "",
+        description: "",
+        canLeave: false,
+      };
+      form.setFieldValue(`fields.${fieldKey}`, newField);
     }
 
-    const newField = {
-      name: "",
-      description: "",
-      canLeave: false,
-    };
-    form.setFieldValue(`fields.${fieldKey}`, newField);
-    setSelectedField(() => fieldKey);
+    setSelectedField(fieldKey);
+    setSelectedConnection(undefined);
   }
 
   function onConnectionClick(positions: [Position, Position]): void {
     const connectionKey = getFieldConnectionKey(positions);
     const connection = form.getValues().connections[connectionKey];
-    if (connection) {
-      return;
+    if (!connection) {
+      form.setFieldValue(`connections.${connectionKey}`, true);
     }
 
-    form.setFieldValue(`connections.${connectionKey}`, true);
+    setSelectedField(undefined);
+    setSelectedConnection(connectionKey);
+    return;
   }
 
   function removeSelectedField(): void {
@@ -116,6 +119,9 @@ export function ZoneCreationPage() {
       for (const connectionKey of Object.keys(connectionsCopy)) {
         if (doesConnectionKeyContainFieldKey(connectionKey, selectedField)) {
           delete connectionsCopy[connectionKey];
+          if (selectedConnection === connectionKey) {
+            setSelectedConnection(() => undefined);
+          }
         }
       }
       return connectionsCopy;
@@ -124,6 +130,19 @@ export function ZoneCreationPage() {
       form.setFieldValue("entrance", undefined);
     }
     setSelectedField(() => undefined);
+  }
+
+  function removeSelectedConnection(): void {
+    if (!selectedConnection) {
+      return;
+    }
+
+    form.setFieldValue("connections", (connections) => {
+      const connectionsCopy = { ...connections };
+      delete connectionsCopy[selectedConnection];
+      return connectionsCopy;
+    });
+    setSelectedConnection(() => undefined);
   }
 
   function setSelectedFieldAsEntrance(): void {
@@ -172,7 +191,8 @@ export function ZoneCreationPage() {
             fields={getFieldsAsArray()}
             connections={getConnectionsAsArray()}
             entrance={getPositionFromFieldKey(form.getValues().entrance)}
-            selectedField={getPositionFromFieldKey(selectedField)}
+            selectedField={selectedField}
+            selectedConnection={selectedConnection}
             onFieldClick={onFieldClick}
             onConnectionClick={onConnectionClick}
           />
@@ -220,6 +240,13 @@ export function ZoneCreationPage() {
               </Button>
             </div>
           </>
+        )}
+        {selectedConnection && (
+          <div>
+            <Button variant="danger" onClick={removeSelectedConnection}>
+              <Trans i18nKey="zoneCreation.removeConnection" />
+            </Button>
+          </div>
         )}
       </div>
     </div>

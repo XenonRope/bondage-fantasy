@@ -49,5 +49,6 @@ export const pl: ResourceLanguage = {
     "zoneCreation.allowToLeaveZoneOnThisField":
       "Pozwól opuścić strefę na tym polu",
     "zoneCreation.setAsEntrance": "Ustaw jako wejście",
+    "zoneCreation.removeConnection": "Usuń połączenie",
   },
 };
