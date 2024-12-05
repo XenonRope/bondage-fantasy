@@ -24,6 +24,9 @@ router
       .group(() => {
         router.get("/accounts/my", [AccountController, "getMyAccount"]);
         router.get("/characters", [CharacterController, "list"]);
+        router
+          .get("/characters/:id", [CharacterController, "getById"])
+          .where("id", router.matchers.number());
         router.post("/characters", [CharacterController, "create"]);
         router.post("/zones", [ZoneController, "create"]);
       })

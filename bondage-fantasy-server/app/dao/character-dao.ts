@@ -6,6 +6,10 @@ import { Collection, Db } from "mongodb";
 export class CharacterDao {
   constructor(private db: Db) {}
 
+  async getById(id: number): Promise<Character | null> {
+    return await this.getCollection().findOne({ id });
+  }
+
   async getManyByAccountId(accountId: number): Promise<Character[]> {
     return await this.getCollection().find({ accountId }).toArray();
   }

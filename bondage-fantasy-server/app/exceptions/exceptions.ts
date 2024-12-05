@@ -59,3 +59,14 @@ export class InvalidZoneException extends ApplicationException {
     });
   }
 }
+
+export class CharacterNotFoundException extends ApplicationException {
+  constructor() {
+    super({
+      code: ErrorCode.E_CHARACTER_NOT_FOUND,
+      message:
+        "Character doesn't exist or you don't have permission to access it",
+      status: 404,
+    });
+  }
+}

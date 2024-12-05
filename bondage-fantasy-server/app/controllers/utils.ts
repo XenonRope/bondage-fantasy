@@ -1,5 +1,8 @@
 import { CharacterDao } from "#dao/character-dao";
-import { ApplicationException } from "#exceptions/exceptions";
+import {
+  ApplicationException,
+  CharacterNotFoundException,
+} from "#exceptions/exceptions";
 import { HttpContext } from "@adonisjs/core/http";
 import app from "@adonisjs/core/services/app";
 import { ErrorCode } from "bondage-fantasy-common";
@@ -20,11 +23,7 @@ export async function getCharacterId(ctx: HttpContext): Promise<number> {
     ctx.auth.user!.id,
   );
   if (!characterOwnedByAccount) {
-    throw new ApplicationException({
-      code: ErrorCode.E_INVALID_CHARACTER_ID,
-      message: `You are not owner of character with id ${characterId}`,
-      status: 401,
-    });
+    throw new CharacterNotFoundException();
   }
 
   return characterId;

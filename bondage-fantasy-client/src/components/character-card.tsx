@@ -1,3 +1,4 @@
+import { characterService } from "../services/character-service";
 import { useAppStore } from "../store";
 import { Card } from "@mantine/core";
 import { Character } from "bondage-fantasy-common";
@@ -8,6 +9,7 @@ export function CharacterCard(props: { character: Character }) {
   const naviagate = useNavigate();
 
   function selectCharacter() {
+    characterService.setDefaultCharacter(props.character.id);
     setCharacter(props.character);
     naviagate("/zones");
   }
