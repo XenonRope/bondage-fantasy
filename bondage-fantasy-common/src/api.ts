@@ -4,6 +4,7 @@ import {
   Field,
   FieldConnection,
   Position,
+  Zone,
 } from "./model.js";
 
 export interface AccountRegisterRequest {
@@ -28,4 +29,15 @@ export interface ZoneCreateRequest {
   entrance: Position;
   fields: Field[];
   connections: FieldConnection[];
+}
+
+export interface ZoneSearchRequest {
+  query: string;
+  offset: number;
+  limit: number;
+}
+
+export interface ZoneSearchResponse {
+  zones: Zone[];
+  total: number;
 }

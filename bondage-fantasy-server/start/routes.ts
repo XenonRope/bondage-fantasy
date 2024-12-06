@@ -30,6 +30,7 @@ router
           .where("id", router.matchers.number());
         router.post("/characters", [CharacterController, "create"]);
         router.post("/zones", [ZoneController, "create"]);
+        router.post("/zones/search", [ZoneController, "search"]);
       })
       .use(middleware.auth());
   })

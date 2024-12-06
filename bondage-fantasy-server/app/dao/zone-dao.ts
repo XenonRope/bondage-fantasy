@@ -1,10 +1,33 @@
 import { inject } from "@adonisjs/core";
 import { Zone } from "bondage-fantasy-common";
-import { Collection, Db } from "mongodb";
+import { Collection, Db, Filter } from "mongodb";
+import { escapeRegex } from "../utils.js";
 
 @inject()
 export class ZoneDao {
   constructor(private db: Db) {}
+
+  async search(params: {
+    query: string;
+    offset: number;
+    limit: number;
+  }): Promise<{ zones: Zone[]; total: number }> {
+    const filter: Filter<Zone> = params.query
+      ? {
+          name: { $regex: escapeRegex(params.query), $options: "i" },
+        }
+      : {};
+
+    const zones = await this.getCollection()
+      .find(filter)
+      .skip(params.offset)
+      .limit(params.limit)
+      .toArray();
+    const total = await this.getCollection().countDocuments({
+      $text: { $search: params.query },
+    });
+    return { zones, total };
+  }
 
   async insert(zone: Zone): Promise<void> {
     await this.getCollection().insertOne(zone);

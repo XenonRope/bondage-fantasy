@@ -10,6 +10,8 @@ import {
   ZONE_MAX_WIDTH,
   ZONE_NAME_MAX_LENGTH,
   ZONE_NAME_MIN_LENGTH,
+  ZONE_SEARCH_QUERY_MAX_LENGTH,
+  ZONE_SEARCH_QUERY_MIN_LENGTH,
 } from "bondage-fantasy-common";
 
 const zoneFieldPosition = vine.object({
@@ -41,6 +43,17 @@ const zoneField = vine.object({
 const zoneFieldConnection = vine.object({
   positions: vine.array(zoneFieldPosition).fixedLength(2),
 });
+
+export const zoneSearchRequestValidator = vine.compile(
+  vine.object({
+    query: vine
+      .string()
+      .minLength(ZONE_SEARCH_QUERY_MIN_LENGTH)
+      .maxLength(ZONE_SEARCH_QUERY_MAX_LENGTH),
+    offset: vine.number().withoutDecimals().min(0),
+    limit: vine.number().withoutDecimals().min(0),
+  }),
+);
 
 export const zoneCreateRequestValidator = vine.compile(
   vine.object({
