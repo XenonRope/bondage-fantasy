@@ -31,4 +31,9 @@ export default class SessionController {
 
     response.status(200).send(accountDto(account));
   }
+
+  async logout(ctx: HttpContext) {
+    await ctx.auth.use("web").logout();
+    ctx.response.status(200).send({});
+  }
 }

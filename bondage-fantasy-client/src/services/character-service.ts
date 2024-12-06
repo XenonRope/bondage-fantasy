@@ -1,13 +1,23 @@
-const CHARACTER_ID_KEY = "characterId";
+const DEFAULT_CHARACTER_ID_KEY = "defaultCharacterId";
 
 export class CharacterService {
-  setDefaultCharacter(charcterId: number): void {
-    localStorage.setItem(CHARACTER_ID_KEY, charcterId.toString());
+  setDefaultCharacterForAccount(charcterId: number, accountId: number): void {
+    localStorage.setItem(
+      DEFAULT_CHARACTER_ID_KEY,
+      `${accountId}-${charcterId}`,
+    );
   }
 
-  getDefaultCharacter(): number | undefined {
-    const characterId = localStorage.getItem(CHARACTER_ID_KEY);
-    return characterId ? parseInt(characterId) : undefined;
+  getDefaultCharacterForAccount(expectedAccountId: number): number | undefined {
+    const defaultCharacterId = localStorage.getItem(DEFAULT_CHARACTER_ID_KEY);
+    if (!defaultCharacterId) {
+      return undefined;
+    }
+    const [accountId, characterId] = defaultCharacterId.split("-");
+    if (accountId !== expectedAccountId.toString()) {
+      return undefined;
+    }
+    return parseInt(characterId);
   }
 }
 

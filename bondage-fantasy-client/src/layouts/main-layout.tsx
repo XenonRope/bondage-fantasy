@@ -1,6 +1,9 @@
+import { errorService } from "../services/error-service";
+import { sessionService } from "../services/session-service";
 import { useAppStore } from "../store";
 import { Anchor, AppShell, Burger, Group, NavLink } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
+import { useMutation } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { Outlet, useNavigate } from "react-router";
 
@@ -13,6 +16,13 @@ export function MainLayout(props: { fixedHeight?: boolean }) {
   const sessionRestoreCompleted = useAppStore(
     (state) => state.sessionRestoreCompleted,
   );
+  const logout = useMutation({
+    mutationFn: () => sessionService.logout(),
+    onSuccess: () => {
+      navigate("/login");
+    },
+    onError: (error) => errorService.handleUnexpectedError(error),
+  });
 
   return (
     <AppShell
@@ -43,12 +53,18 @@ export function MainLayout(props: { fixedHeight?: boolean }) {
                       <span>{character.name}</span>
                     </>
                   )}
+                  <Anchor
+                    className="ml-4"
+                    onClick={() => !logout.isPending && logout.mutate()}
+                  >
+                    {t("common.logOut")}
+                  </Anchor>
                 </>
               )}
               {!account && (
                 <div className="flex gap-1">
                   <Anchor onClick={() => navigate("/login")}>
-                    {t("common.login")}
+                    {t("common.logIn")}
                   </Anchor>
                   <span>{t("common.or")}</span>
                   <Anchor onClick={() => navigate("/register")}>

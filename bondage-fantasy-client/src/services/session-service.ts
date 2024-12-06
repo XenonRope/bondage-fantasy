@@ -12,7 +12,9 @@ export class SessionService {
     try {
       const account = await accountApi.getMyAccount();
       useAppStore.getState().setAccount(account);
-      const characterId = characterService.getDefaultCharacter();
+      const characterId = characterService.getDefaultCharacterForAccount(
+        account.id,
+      );
       if (characterId != null) {
         const character = await characterApi.getById(characterId);
         useAppStore.getState().setCharacter(character);
@@ -30,7 +32,20 @@ export class SessionService {
   async login(request: LoginRequest): Promise<Account> {
     const account = await sessionApi.login(request);
     useAppStore.getState().setAccount(account);
+    const characterId = characterService.getDefaultCharacterForAccount(
+      account.id,
+    );
+    if (characterId != null) {
+      const character = await characterApi.getById(characterId);
+      useAppStore.getState().setCharacter(character);
+    }
     return account;
+  }
+
+  async logout(): Promise<void> {
+    await sessionApi.logout();
+    useAppStore.getState().setAccount(undefined);
+    useAppStore.getState().setCharacter(undefined);
   }
 }
 

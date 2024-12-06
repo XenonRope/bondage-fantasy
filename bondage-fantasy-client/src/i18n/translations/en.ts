@@ -12,7 +12,8 @@ export const en: ResourceLanguage = {
     "common.fieldTooShort": "Field must have at least {{minLength}} characters",
     "common.fieldTooLong":
       "Field cannot have more than {{maxLength}} characters",
-    "common.login": "Login",
+    "common.logIn": "Log in",
+    "common.logOut": "Log out",
     "common.createNewAccount": "Create new account",
     "common.createNewZone": "Create new zone",
     "common.name": "Name",

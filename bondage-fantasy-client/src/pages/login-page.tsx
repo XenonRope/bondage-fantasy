@@ -1,5 +1,6 @@
 import { errorService } from "../services/error-service";
 import { sessionService } from "../services/session-service";
+import { useAppStore } from "../store";
 import { isErrorResponseWithCode } from "../utils/error";
 import { Anchor, Button, PasswordInput, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
@@ -10,6 +11,7 @@ import { useNavigate } from "react-router";
 
 export default function LoginPage() {
   const { t } = useTranslation();
+  const character = useAppStore((state) => state.character);
   const navigate = useNavigate();
   const form = useForm({
     mode: "uncontrolled",
@@ -24,7 +26,13 @@ export default function LoginPage() {
   });
   const login = useMutation({
     mutationFn: (request: LoginRequest) => sessionService.login(request),
-    onSuccess: () => navigate("/"),
+    onSuccess: () => {
+      if (character) {
+        navigate("/");
+      } else {
+        navigate("/characters");
+      }
+    },
     onError: handleLoginError,
   });
 
@@ -72,7 +80,7 @@ export default function LoginPage() {
         className="mt-2"
       />
       <div className="flex items-baseline gap-1 mt-4">
-        <Button type="submit">{t("common.login")}</Button>
+        <Button type="submit">{t("common.logIn")}</Button>
         <span>{t("common.or")}</span>
         <Anchor onClick={() => navigate("/register")}>
           {t("common.createNewAccount")}

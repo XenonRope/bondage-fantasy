@@ -18,6 +18,7 @@ router
   .group(() => {
     router.post("/accounts", [AccountController, "register"]);
     router.post("/session/login", [SessionController, "login"]);
+    router.post("/session/logout", [SessionController, "logout"]);
     router.get("/csrf/token", () => "");
 
     router

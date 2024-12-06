@@ -5,11 +5,17 @@ import { Character } from "bondage-fantasy-common";
 import { useNavigate } from "react-router";
 
 export function CharacterCard(props: { character: Character }) {
+  const account = useAppStore((state) => state.account);
   const setCharacter = useAppStore((state) => state.setCharacter);
   const naviagate = useNavigate();
 
   function selectCharacter() {
-    characterService.setDefaultCharacter(props.character.id);
+    if (account) {
+      characterService.setDefaultCharacterForAccount(
+        props.character.id,
+        account.id,
+      );
+    }
     setCharacter(props.character);
     naviagate("/zones");
   }
