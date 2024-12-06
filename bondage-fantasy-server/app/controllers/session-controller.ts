@@ -1,6 +1,6 @@
+import { AccountDao } from "#dao/account-dao";
 import { InvalidUsernameOrPasswordException } from "#exceptions/exceptions";
 import { SessionUser } from "#models/session-model";
-import AccountService from "#services/account-service";
 import { loginRequestValidator } from "#validators/session-validator";
 import { inject } from "@adonisjs/core";
 import { HttpContext } from "@adonisjs/core/http";
@@ -10,14 +10,16 @@ import { accountDto } from "./dto.js";
 
 @inject()
 export default class SessionController {
-  constructor(private accountService: AccountService) {}
+  constructor(private accountDao: AccountDao) {}
 
   async login({ request, response, auth }: HttpContext) {
     const { username, password }: LoginRequest = await request.validateUsing(
       loginRequestValidator,
     );
 
-    const account = await this.accountService.tryGetByUsername(username);
+    const account = await this.accountDao.getByUsername(username, {
+      includePassword: true,
+    });
     if (!account) {
       throw new InvalidUsernameOrPasswordException();
     }

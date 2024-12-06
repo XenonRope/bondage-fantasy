@@ -7,11 +7,20 @@ export class AccountDao {
   constructor(private db: Db) {}
 
   async getById(id: number): Promise<Account | null> {
-    return await this.getCollection().findOne({ id });
+    return await this.getCollection().findOne(
+      { id },
+      { projection: { password: 0 } },
+    );
   }
 
-  async getByUsername(username: string): Promise<Account | null> {
-    return await this.getCollection().findOne({ username });
+  async getByUsername(
+    username: string,
+    params?: { includePassword?: boolean },
+  ): Promise<Account | null> {
+    return await this.getCollection().findOne(
+      { username },
+      params?.includePassword ? {} : { projection: { password: 0 } },
+    );
   }
 
   async existsUsername(username: string): Promise<boolean> {

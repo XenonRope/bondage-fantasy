@@ -13,10 +13,6 @@ export default class AccountService {
     private sequenceService: SequenceService,
   ) {}
 
-  async tryGetByUsername(username: string): Promise<Account | null> {
-    return await this.accountDao.getByUsername(username);
-  }
-
   async register(params: {
     username: string;
     password: string;
