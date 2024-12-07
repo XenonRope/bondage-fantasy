@@ -23,9 +23,7 @@ export class ZoneDao {
       .skip(params.offset)
       .limit(params.limit)
       .toArray();
-    const total = await this.getCollection().countDocuments({
-      $text: { $search: params.query },
-    });
+    const total = await this.getCollection().countDocuments(filter);
     return { zones, total };
   }
 
