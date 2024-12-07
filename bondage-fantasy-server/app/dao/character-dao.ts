@@ -10,6 +10,14 @@ export class CharacterDao {
     return await this.getCollection().findOne({ id });
   }
 
+  async getNamesByIds(
+    ids: number[],
+  ): Promise<Array<{ id: number; name: string }>> {
+    return await this.getCollection()
+      .find({ id: { $in: ids } }, { projection: { _id: 0, id: 1, name: 1 } })
+      .toArray();
+  }
+
   async getManyByAccountId(accountId: number): Promise<Character[]> {
     return await this.getCollection().find({ accountId }).toArray();
   }

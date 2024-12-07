@@ -60,6 +60,7 @@ export enum ObjectType {
 }
 
 export interface ZoneObject {
+  id: number;
   type: ObjectType;
   zoneId: number;
   position: Position;
@@ -68,4 +69,34 @@ export interface ZoneObject {
 export interface CharacterObject extends ZoneObject {
   type: ObjectType.CHARACTER;
   characterId: number;
+}
+
+export interface ZoneVisionField {
+  position: Position;
+  name: string;
+  canLeave: boolean;
+  objects: ZoneVisionObject[];
+}
+
+export interface ZoneVisionConnection {
+  positions: [Position, Position];
+}
+
+export interface ZoneVisionObject {
+  id: number;
+  type: ObjectType;
+  position: Position;
+}
+
+export interface CharacterZoneVisionObject extends ZoneVisionObject {
+  type: ObjectType.CHARACTER;
+  characterId: number;
+  name: string;
+}
+
+export interface ZoneVision {
+  currentPosition: Position;
+  currentFieldDescription: string;
+  fields: ZoneVisionField[];
+  connections: ZoneVisionConnection[];
 }

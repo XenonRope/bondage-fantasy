@@ -90,3 +90,13 @@ export class CharacterInZoneException extends ApplicationException {
     });
   }
 }
+
+export class CharacterNotInZoneException extends ApplicationException {
+  constructor() {
+    super({
+      code: ErrorCode.E_CHARACTER_NOT_IN_ZONE,
+      message: "Action is impossible because character is not in zone",
+      status: 422,
+    });
+  }
+}

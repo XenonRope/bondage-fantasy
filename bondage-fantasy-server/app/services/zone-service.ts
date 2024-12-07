@@ -1,4 +1,5 @@
 import { ZoneDao } from "#dao/zone-dao";
+import { ZoneObjectDao } from "#dao/zone-object-dao";
 import {
   CharacterInZoneException,
   InvalidZoneException,
@@ -18,9 +19,8 @@ import {
   Position,
   Zone,
 } from "bondage-fantasy-common";
-import { SequenceService } from "./sequence-service.js";
 import lockService, { LOCKS } from "./lock-service.js";
-import { ZoneObjectDao } from "#dao/zone-object-dao";
+import { SequenceService } from "./sequence-service.js";
 
 @inject()
 export class ZoneService {
@@ -62,7 +62,10 @@ export class ZoneService {
       LOCKS.character(params.characterId),
       "1s",
       async () => {
-        if (await this.zoneObjectDao.isCharacterInAnyZone(params.characterId)) {
+        if (
+          (await this.zoneObjectDao.getCharacterObject(params.characterId)) !=
+          null
+        ) {
           throw new CharacterInZoneException();
         }
 
@@ -72,6 +75,7 @@ export class ZoneService {
         }
 
         const chracterObject: CharacterObject = {
+          id: await this.sequenceService.nextSequence(SequenceCode.ZONE_OBJECT),
           type: ObjectType.CHARACTER,
           zoneId: params.zoneId,
           position: zone.entrance,

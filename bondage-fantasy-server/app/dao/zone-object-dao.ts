@@ -1,17 +1,29 @@
 import { inject } from "@adonisjs/core";
-import { ObjectType, ZoneObject } from "bondage-fantasy-common";
+import {
+  CharacterObject,
+  ObjectType,
+  Position,
+  ZoneObject,
+} from "bondage-fantasy-common";
 import { Collection, Db } from "mongodb";
 
 @inject()
 export class ZoneObjectDao {
   constructor(private db: Db) {}
 
-  async isCharacterInAnyZone(characterId: number): Promise<boolean> {
-    const count = await this.getCollection().countDocuments({
+  async getCharacterObject(
+    characterId: number,
+  ): Promise<CharacterObject | null> {
+    return (await this.getCollection().findOne({
       type: ObjectType.CHARACTER,
       characterId,
-    });
-    return count > 0;
+    })) as CharacterObject | null;
+  }
+
+  async getManyByPosition(position: Position): Promise<ZoneObject[]> {
+    return await this.getCollection()
+      .find({ "position.x": position.x, "position.y": position.y })
+      .toArray();
   }
 
   async insert(object: ZoneObject): Promise<void> {

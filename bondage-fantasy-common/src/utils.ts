@@ -4,6 +4,9 @@ import {
   FieldKey,
   FieldConnectionKey,
   FieldConnection,
+  ZoneObject,
+  CharacterObject,
+  ObjectType,
 } from "./model.js";
 
 export function arePositionsEqual(
@@ -95,4 +98,10 @@ export function doesConnectionKeyContainFieldKey(
   fieldKey: FieldKey
 ): boolean {
   return connectionKey.startsWith(fieldKey) || connectionKey.endsWith(fieldKey);
+}
+
+export function isCharacterObject(
+  object: ZoneObject
+): object is CharacterObject {
+  return object.type === ObjectType.CHARACTER;
 }

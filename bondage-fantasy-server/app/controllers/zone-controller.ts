@@ -14,12 +14,14 @@ import {
 } from "bondage-fantasy-common";
 import { zoneDto } from "./dto.js";
 import { getCharacterId } from "./utils.js";
+import { ZoneVisionService } from "#services/zone-vision-service";
 
 @inject()
 export default class ZoneController {
   constructor(
     private zoneService: ZoneService,
     private zoneDao: ZoneDao,
+    private zoneVisionService: ZoneVisionService,
   ) {}
 
   async search(ctx: HttpContext): Promise<ZoneSearchResponse> {
@@ -69,5 +71,10 @@ export default class ZoneController {
     await this.zoneService.join({ characterId, zoneId });
 
     return {};
+  }
+
+  async getVision(ctx: HttpContext) {
+    const characterId = await getCharacterId(ctx);
+    return await this.zoneVisionService.getVisionForCharacter(characterId);
   }
 }
