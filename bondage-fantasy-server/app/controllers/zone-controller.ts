@@ -1,5 +1,4 @@
 import { ZoneDao } from "#dao/zone-dao";
-import { CharacterInZoneException } from "#exceptions/exceptions";
 import { ZoneService } from "#services/zone-service";
 import {
   zoneCreateRequestValidator,
