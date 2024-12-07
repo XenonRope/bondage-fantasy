@@ -1,3 +1,4 @@
+import { LanguagePicker } from "../components/language-picker";
 import { errorService } from "../services/error-service";
 import { sessionService } from "../services/session-service";
 import { useAppStore } from "../store";
@@ -43,9 +44,9 @@ export function MainLayout(props: { fixedHeight?: boolean }) {
             Bondage Fantasy
           </Anchor>
           {sessionRestoreCompleted && (
-            <div className="ml-auto">
+            <div className="flex gap-4 items-center ml-auto">
               {account && (
-                <>
+                <span>
                   <span>{account.username}</span>
                   {character && (
                     <>
@@ -59,10 +60,10 @@ export function MainLayout(props: { fixedHeight?: boolean }) {
                   >
                     {t("common.logOut")}
                   </Anchor>
-                </>
+                </span>
               )}
               {!account && (
-                <div className="flex gap-1">
+                <div className="flex gap-2">
                   <Anchor onClick={() => navigate("/login")}>
                     {t("common.logIn")}
                   </Anchor>
@@ -72,6 +73,7 @@ export function MainLayout(props: { fixedHeight?: boolean }) {
                   </Anchor>
                 </div>
               )}
+              <LanguagePicker />
             </div>
           )}
         </Group>

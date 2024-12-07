@@ -2,6 +2,8 @@ import { ResourceLanguage } from "i18next";
 
 export const en: ResourceLanguage = {
   translation: {
+    "common.language.en": "English",
+    "common.language.pl": "Polish",
     "common.username": "Username",
     "common.password": "Password",
     "common.characterNameShort": "Name",
