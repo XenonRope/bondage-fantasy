@@ -28,6 +28,7 @@ import {
 } from "bondage-fantasy-common";
 import { useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
+import { useNavigate } from "react-router";
 
 interface ZoneForm {
   name: string;
@@ -45,6 +46,7 @@ interface ZoneForm {
 
 export function ZoneCreationPage() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const form = useForm<ZoneForm>({
     mode: "uncontrolled",
     initialValues: {
@@ -61,6 +63,7 @@ export function ZoneCreationPage() {
     useState<FieldConnectionKey>();
   const createZone = useMutation({
     mutationFn: (request: ZoneCreateRequest) => zoneApi.create(request),
+    onSuccess: () => navigate("/zones"),
     onError: (error) => errorService.handleUnexpectedError(error),
   });
 
