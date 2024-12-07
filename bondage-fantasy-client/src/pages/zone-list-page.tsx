@@ -1,5 +1,6 @@
 import { zoneApi } from "../api/zone-api";
 import { errorService } from "../services/error-service";
+import { useAppStore } from "../store";
 import { Button, Card, SimpleGrid, Text, TextInput } from "@mantine/core";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
@@ -13,6 +14,7 @@ import { useNavigate } from "react-router";
 
 export function ZoneListPage() {
   const navigate = useNavigate();
+  const inZone = useAppStore((state) => state.zone != null);
   const [query, setQuery] = useState("");
   const searchResult = useQuery({
     queryKey: ["zones", query],
@@ -20,7 +22,10 @@ export function ZoneListPage() {
     enabled: () => query.length >= ZONE_SEARCH_QUERY_MIN_LENGTH,
   });
   const join = useMutation({
-    mutationFn: (request: ZoneJoinRequest) => zoneApi.join(request),
+    mutationFn: async (request: ZoneJoinRequest) => {
+      const zone = await zoneApi.join(request);
+      useAppStore.getState().setZone(zone);
+    },
     onSuccess: () => {
       navigate("/");
     },
@@ -61,6 +66,7 @@ export function ZoneListPage() {
                 <Button
                   size="compact-sm"
                   radius="xl"
+                  disabled={inZone}
                   onClick={() =>
                     !join.isPending && join.mutate({ zoneId: zone.id })
                   }

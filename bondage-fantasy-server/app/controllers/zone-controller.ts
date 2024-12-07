@@ -11,6 +11,7 @@ import {
   ZoneCreateRequest,
   ZoneJoinRequest,
   ZoneSearchResponse,
+  ZoneVision,
 } from "bondage-fantasy-common";
 import { zoneDto } from "./dto.js";
 import { getCharacterId } from "./utils.js";
@@ -62,7 +63,7 @@ export default class ZoneController {
     ctx.response.status(201).send(zoneDto(zone));
   }
 
-  async join(ctx: HttpContext) {
+  async join(ctx: HttpContext): Promise<ZoneVision> {
     const characterId = await getCharacterId(ctx);
     const { zoneId } = (await ctx.request.validateUsing(
       zoneJoinRequestValidator,
@@ -70,7 +71,7 @@ export default class ZoneController {
 
     await this.zoneService.join({ characterId, zoneId });
 
-    return {};
+    return await this.zoneVisionService.getVisionForCharacter(characterId);
   }
 
   async getVision(ctx: HttpContext) {

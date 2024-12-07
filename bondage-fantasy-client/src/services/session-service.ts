@@ -1,6 +1,7 @@
 import { accountApi } from "../api/account-api";
 import { characterApi } from "../api/character-api";
 import { sessionApi } from "../api/session-api";
+import { zoneApi } from "../api/zone-api";
 import { useAppStore } from "../store";
 import { isErrorResponseWithCode } from "../utils/error";
 import { characterService } from "./character-service";
@@ -18,9 +19,14 @@ export class SessionService {
       if (characterId != null) {
         const character = await characterApi.getById(characterId);
         useAppStore.getState().setCharacter(character);
+        const zone = await zoneApi.getVision();
+        useAppStore.getState().setZone(zone);
       }
     } catch (error) {
-      if (isErrorResponseWithCode(error, ErrorCode.E_UNAUTHORIZED_ACCESS)) {
+      if (
+        isErrorResponseWithCode(error, ErrorCode.E_UNAUTHORIZED_ACCESS) ||
+        isErrorResponseWithCode(error, ErrorCode.E_CHARACTER_NOT_IN_ZONE)
+      ) {
         return;
       }
       errorService.handleUnexpectedError(error);
@@ -38,6 +44,16 @@ export class SessionService {
     if (characterId != null) {
       const character = await characterApi.getById(characterId);
       useAppStore.getState().setCharacter(character);
+      try {
+        const zone = await zoneApi.getVision();
+        useAppStore.getState().setZone(zone);
+      } catch (error) {
+        if (
+          !isErrorResponseWithCode(error, ErrorCode.E_CHARACTER_NOT_IN_ZONE)
+        ) {
+          errorService.handleUnexpectedError(error);
+        }
+      }
     }
     return account;
   }
@@ -46,6 +62,7 @@ export class SessionService {
     await sessionApi.logout();
     useAppStore.getState().setAccount(undefined);
     useAppStore.getState().setCharacter(undefined);
+    useAppStore.getState().setZone(undefined);
   }
 }
 

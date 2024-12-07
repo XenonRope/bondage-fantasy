@@ -5,6 +5,7 @@ import {
   ZoneJoinRequest,
   ZoneSearchRequest,
   ZoneSearchResponse,
+  ZoneVision,
 } from "bondage-fantasy-common";
 
 class ZoneApi {
@@ -16,8 +17,12 @@ class ZoneApi {
     return await httpClient.post("zones", request);
   }
 
-  async join(request: ZoneJoinRequest): Promise<void> {
+  async join(request: ZoneJoinRequest): Promise<ZoneVision> {
     return await httpClient.post("zones/join", request);
+  }
+
+  async getVision(): Promise<ZoneVision> {
+    return await httpClient.get("zones/vision");
   }
 }
 
