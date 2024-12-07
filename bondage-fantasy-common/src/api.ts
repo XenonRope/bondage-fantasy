@@ -38,6 +38,10 @@ export interface ZoneSearchRequest {
 }
 
 export interface ZoneSearchResponse {
-  zones: Zone[];
+  zones: Array<{
+    id: number;
+    name: string;
+    description: string;
+  }>;
   total: number;
 }

@@ -26,7 +26,14 @@ export default class ZoneController {
       offset,
       limit,
     });
-    return { zones: zones.map(zoneDto), total };
+    return {
+      zones: zones.map((zone) => ({
+        id: zone.id,
+        name: zone.name,
+        description: zone.description,
+      })),
+      total,
+    };
   }
 
   async create(ctx: HttpContext) {

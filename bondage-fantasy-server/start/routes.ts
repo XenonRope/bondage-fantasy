@@ -19,7 +19,7 @@ router
     router.post("/accounts", [AccountController, "register"]);
     router.post("/session/login", [SessionController, "login"]);
     router.post("/session/logout", [SessionController, "logout"]);
-    router.get("/csrf/token", () => {});
+    router.get("/csrf/token", async (ctx) => ctx.response.status(200).send({}));
 
     router
       .group(() => {
