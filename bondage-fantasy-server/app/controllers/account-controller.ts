@@ -1,11 +1,12 @@
 import { AccountDao } from "#dao/account-dao";
+import { AccountNotFoundException } from "#exceptions/exceptions";
 import { SessionUser } from "#models/session-model";
 import AccountService from "#services/account-service";
+import { accountRegisterRequestValidator } from "#validators/account-validator";
 import { inject } from "@adonisjs/core";
 import { HttpContext } from "@adonisjs/core/http";
 import { AccountRegisterRequest } from "bondage-fantasy-common";
 import { accountDto } from "./dto.js";
-import { accountRegisterRequestValidator } from "#validators/account-validator";
 
 @inject()
 export default class AccountController {
@@ -16,6 +17,9 @@ export default class AccountController {
 
   async getMyAccount({ response, auth }: HttpContext) {
     const account = await this.accountDao.getById(auth.user!.id);
+    if (!account) {
+      throw new AccountNotFoundException();
+    }
 
     response.status(200).send(accountDto(account!));
   }
