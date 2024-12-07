@@ -90,7 +90,7 @@ export function MainLayout(props: { fixedHeight?: boolean }) {
           />
         )}
       </AppShell.Navbar>
-      <AppShell.Main h="100dvh">
+      <AppShell.Main h={props.fixedHeight ? "100dvh" : undefined}>
         {props.fixedHeight ? (
           <div className="h-full overflow-auto">
             <Outlet />

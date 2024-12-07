@@ -18,6 +18,7 @@ export const en: ResourceLanguage = {
     "common.createNewZone": "Create new zone",
     "common.name": "Name",
     "common.description": "Description",
+    "common.search": "Search",
     "navbar.characters": "Characters",
     "navbar.zones": "Zones",
     "pronouns.SHE_HER": "She/Her",
@@ -56,5 +57,6 @@ export const en: ResourceLanguage = {
     "zoneCreation.removeConnection": "Remove connection",
     "zoneCreation.yourZoneHasNoEntrance":
       "Your zone has no entrance. You should decide on which field your guests will start their adventure.",
+    "zoneList.join": "Join",
   },
 };

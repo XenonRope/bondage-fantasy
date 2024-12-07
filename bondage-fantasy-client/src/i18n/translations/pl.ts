@@ -17,6 +17,7 @@ export const pl: ResourceLanguage = {
     "common.createNewZone": "Stwórz nową strefę",
     "common.name": "Nazwa",
     "common.description": "Opis",
+    "common.search": "Szukaj",
     "navbar.characters": "Postacie",
     "navbar.zones": "Strefy",
     "pronouns.SHE_HER": "Ona/Jej",
@@ -53,5 +54,6 @@ export const pl: ResourceLanguage = {
     "zoneCreation.removeConnection": "Usuń połączenie",
     "zoneCreation.yourZoneHasNoEntrance":
       "Twoja strefa nie ma wejścia. Powinieneś zdecydować, na którym polu twoi goście rozpoczną przygodę.",
+    "zoneList.join": "Dołącz",
   },
 };

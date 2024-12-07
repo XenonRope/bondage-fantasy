@@ -1,5 +1,5 @@
 import { zoneApi } from "../api/zone-api";
-import { Button, TextInput } from "@mantine/core";
+import { Button, Card, SimpleGrid, Text, TextInput } from "@mantine/core";
 import { useQuery } from "@tanstack/react-query";
 import {
   ZONE_SEARCH_QUERY_MAX_LENGTH,
@@ -14,25 +14,51 @@ export function ZoneListPage() {
   const [query, setQuery] = useState("");
   const searchResult = useQuery({
     queryKey: ["zones", query],
-    queryFn: () => zoneApi.search({ query, offset: 0, limit: 10 }),
+    queryFn: () => zoneApi.search({ query, offset: 0, limit: 24 }),
     enabled: () => query.length >= ZONE_SEARCH_QUERY_MIN_LENGTH,
   });
 
   return (
     <div>
       <div>
-        <Button onClick={() => navigate("/new-zone")}>
-          <Trans i18nKey="common.createNewZone" />
-        </Button>
-        <TextInput
-          maxLength={ZONE_SEARCH_QUERY_MAX_LENGTH}
-          onChange={(event) => setQuery(event.currentTarget.value)}
-        />
+        <div className="flex items-end">
+          <TextInput
+            label={<Trans i18nKey="common.search" />}
+            className="w-80"
+            maxLength={ZONE_SEARCH_QUERY_MAX_LENGTH}
+            onChange={(event) => setQuery(event.currentTarget.value)}
+          />
+          <Button
+            className="shrink-0 ml-4"
+            onClick={() => navigate("/new-zone")}
+          >
+            <Trans i18nKey="common.createNewZone" />
+          </Button>
+        </div>
       </div>
-      <div>
-        {searchResult.data?.zones.map((zone) => (
-          <div key={zone.id}>{zone.name}</div>
-        ))}
+      <div className="mt-8">
+        <SimpleGrid cols={3}>
+          {searchResult.data?.zones.map((zone) => (
+            <Card
+              key={zone.id}
+              shadow="sm"
+              padding="lg"
+              radius="md"
+              withBorder
+              className="h-32"
+            >
+              <div className="flex justify-between items-center">
+                <span className="font-medium">{zone.name}</span>
+                <Button size="compact-sm" radius="xl">
+                  <Trans i18nKey="zoneList.join" />
+                </Button>
+              </div>
+              <Text size="sm" c="dimmed" className="mt-2">
+                {zone.description}
+              </Text>
+            </Card>
+          ))}
+        </SimpleGrid>
       </div>
     </div>
   );
