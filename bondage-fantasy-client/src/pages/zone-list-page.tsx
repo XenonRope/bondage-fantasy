@@ -1,9 +1,11 @@
 import { zoneApi } from "../api/zone-api";
+import { errorService } from "../services/error-service";
 import { Button, Card, SimpleGrid, Text, TextInput } from "@mantine/core";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   ZONE_SEARCH_QUERY_MAX_LENGTH,
   ZONE_SEARCH_QUERY_MIN_LENGTH,
+  ZoneJoinRequest,
 } from "bondage-fantasy-common";
 import { useState } from "react";
 import { Trans } from "react-i18next";
@@ -16,6 +18,13 @@ export function ZoneListPage() {
     queryKey: ["zones", query],
     queryFn: () => zoneApi.search({ query, offset: 0, limit: 24 }),
     enabled: () => query.length >= ZONE_SEARCH_QUERY_MIN_LENGTH,
+  });
+  const join = useMutation({
+    mutationFn: (request: ZoneJoinRequest) => zoneApi.join(request),
+    onSuccess: () => {
+      navigate("/");
+    },
+    onError: (error) => errorService.handleUnexpectedError(error),
   });
 
   return (
@@ -49,7 +58,13 @@ export function ZoneListPage() {
             >
               <div className="flex justify-between items-center">
                 <span className="font-medium">{zone.name}</span>
-                <Button size="compact-sm" radius="xl">
+                <Button
+                  size="compact-sm"
+                  radius="xl"
+                  onClick={() =>
+                    !join.isPending && join.mutate({ zoneId: zone.id })
+                  }
+                >
                   <Trans i18nKey="zoneList.join" />
                 </Button>
               </div>

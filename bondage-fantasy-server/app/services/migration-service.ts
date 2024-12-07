@@ -4,7 +4,7 @@ import { MigrationScript } from "#models/migration-model";
 import { inject } from "@adonisjs/core";
 import logger from "@adonisjs/core/services/logger";
 import { Db } from "mongodb";
-import lockService from "./lock-service.js";
+import lockService, { LOCKS } from "./lock-service.js";
 
 @inject()
 export default class MigrationService {
@@ -15,7 +15,7 @@ export default class MigrationService {
 
   async runMigrations(): Promise<void> {
     logger.info("Wait for lock 'migration.executeMigrations'");
-    await lockService.lockAndRun("executeMigrations", "5m", async () => {
+    await lockService.run(LOCKS.migrations, "5m", async () => {
       logger.info("Start migration...");
       for (const migrationScript of await this.getMigrationScriptsToExecute()) {
         logger.info("[Migration %s] Executing...", migrationScript.id);

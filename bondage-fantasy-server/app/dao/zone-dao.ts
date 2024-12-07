@@ -7,6 +7,10 @@ import { escapeRegex } from "../utils.js";
 export class ZoneDao {
   constructor(private db: Db) {}
 
+  async getById(id: number): Promise<Zone | null> {
+    return await this.getCollection().findOne({ id });
+  }
+
   async search(params: {
     query: string;
     offset: number;

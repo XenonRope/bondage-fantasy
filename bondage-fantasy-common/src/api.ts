@@ -45,3 +45,7 @@ export interface ZoneSearchResponse {
   }>;
   total: number;
 }
+
+export interface ZoneJoinRequest {
+  zoneId: number;
+}

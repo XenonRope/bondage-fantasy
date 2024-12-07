@@ -70,3 +70,23 @@ export class CharacterNotFoundException extends ApplicationException {
     });
   }
 }
+
+export class ZoneNotFoundException extends ApplicationException {
+  constructor() {
+    super({
+      code: ErrorCode.E_ZONE_NOT_FOUND,
+      message: "Zone doesn't exist or you don't have permission to access it",
+      status: 404,
+    });
+  }
+}
+
+export class CharacterInZoneException extends ApplicationException {
+  constructor() {
+    super({
+      code: ErrorCode.E_CHARACTER_IN_ZONE,
+      message: "Action is impossible because character is in zone",
+      status: 422,
+    });
+  }
+}

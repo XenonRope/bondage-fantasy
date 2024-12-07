@@ -54,3 +54,18 @@ export interface Zone {
   fields: Field[];
   connections: FieldConnection[];
 }
+
+export enum ObjectType {
+  CHARACTER = "CHARACTER",
+}
+
+export interface ZoneObject {
+  type: ObjectType;
+  zoneId: number;
+  position: Position;
+}
+
+export interface CharacterObject extends ZoneObject {
+  type: ObjectType.CHARACTER;
+  characterId: number;
+}

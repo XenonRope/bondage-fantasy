@@ -8,7 +8,7 @@ import {
   Genitals,
   Pronouns,
 } from "bondage-fantasy-common";
-import lockService from "./lock-service.js";
+import lockService, { LOCKS } from "./lock-service.js";
 import { SequenceService } from "./sequence-service.js";
 
 @inject()
@@ -24,9 +24,9 @@ export default class CharacterService {
     pronouns: Pronouns;
     genitals: Genitals;
   }): Promise<Character> {
-    return await lockService.lockAndRun(
-      `characters.account-${params.accountId}`,
-      "5s",
+    return await lockService.run(
+      LOCKS.account(params.accountId),
+      "1s",
       async () => {
         const charactersCount = await this.characterDao.countByAccountId(
           params.accountId,

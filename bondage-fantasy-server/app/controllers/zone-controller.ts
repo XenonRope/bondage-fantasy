@@ -1,12 +1,18 @@
 import { ZoneDao } from "#dao/zone-dao";
+import { CharacterInZoneException } from "#exceptions/exceptions";
 import { ZoneService } from "#services/zone-service";
 import {
   zoneCreateRequestValidator,
+  zoneJoinRequestValidator,
   zoneSearchRequestValidator,
 } from "#validators/zone-validator";
 import { inject } from "@adonisjs/core";
 import { HttpContext } from "@adonisjs/core/http";
-import { ZoneCreateRequest, ZoneSearchResponse } from "bondage-fantasy-common";
+import {
+  ZoneCreateRequest,
+  ZoneJoinRequest,
+  ZoneSearchResponse,
+} from "bondage-fantasy-common";
 import { zoneDto } from "./dto.js";
 import { getCharacterId } from "./utils.js";
 
@@ -53,5 +59,16 @@ export default class ZoneController {
     });
 
     ctx.response.status(201).send(zoneDto(zone));
+  }
+
+  async join(ctx: HttpContext) {
+    const characterId = await getCharacterId(ctx);
+    const { zoneId } = (await ctx.request.validateUsing(
+      zoneJoinRequestValidator,
+    )) as ZoneJoinRequest;
+
+    await this.zoneService.join({ characterId, zoneId });
+
+    return {};
   }
 }

@@ -70,3 +70,9 @@ export const zoneCreateRequestValidator = vine.compile(
     connections: vine.array(zoneFieldConnection),
   }),
 );
+
+export const zoneJoinRequestValidator = vine.compile(
+  vine.object({
+    zoneId: vine.number().withoutDecimals(),
+  }),
+);

@@ -12,7 +12,7 @@ export default [
     },
   },
   {
-    ignores: ["ace.js", "eslint.config.js"],
+    files: ["**/*.ts"],
     languageOptions: {
       parserOptions: {
         projectService: true,

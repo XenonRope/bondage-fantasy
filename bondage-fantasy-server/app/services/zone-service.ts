@@ -1,23 +1,32 @@
 import { ZoneDao } from "#dao/zone-dao";
-import { InvalidZoneException } from "#exceptions/exceptions";
+import {
+  CharacterInZoneException,
+  InvalidZoneException,
+  ZoneNotFoundException,
+} from "#exceptions/exceptions";
 import { SequenceCode } from "#models/sequence-model";
 import { inject } from "@adonisjs/core";
 import {
   arePositionsEqual,
+  CharacterObject,
   Field,
   FieldConnection,
   findFieldByPosition,
   getFieldConnectionKey,
   getFieldKey,
+  ObjectType,
   Position,
   Zone,
 } from "bondage-fantasy-common";
 import { SequenceService } from "./sequence-service.js";
+import lockService, { LOCKS } from "./lock-service.js";
+import { ZoneObjectDao } from "#dao/zone-object-dao";
 
 @inject()
 export class ZoneService {
   constructor(
     private zoneDao: ZoneDao,
+    private zoneObjectDao: ZoneObjectDao,
     private sequenceService: SequenceService,
   ) {}
 
@@ -46,6 +55,31 @@ export class ZoneService {
     await this.zoneDao.insert(zone);
 
     return zone;
+  }
+
+  async join(params: { characterId: number; zoneId: number }): Promise<void> {
+    await lockService.run(
+      LOCKS.character(params.characterId),
+      "1s",
+      async () => {
+        if (await this.zoneObjectDao.isCharacterInAnyZone(params.characterId)) {
+          throw new CharacterInZoneException();
+        }
+
+        const zone = await this.zoneDao.getById(params.zoneId);
+        if (!zone) {
+          throw new ZoneNotFoundException();
+        }
+
+        const chracterObject: CharacterObject = {
+          type: ObjectType.CHARACTER,
+          zoneId: params.zoneId,
+          position: zone.entrance,
+          characterId: params.characterId,
+        };
+        await this.zoneObjectDao.insert(chracterObject);
+      },
+    );
   }
 
   private validateFields(fields: Field[]): void {

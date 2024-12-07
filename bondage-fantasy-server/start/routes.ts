@@ -31,6 +31,7 @@ router
         router.post("/characters", [CharacterController, "create"]);
         router.post("/zones", [ZoneController, "create"]);
         router.post("/zones/search", [ZoneController, "search"]);
+        router.post("/zones/join", [ZoneController, "join"]);
       })
       .use(middleware.auth());
   })
