@@ -12,6 +12,9 @@
     "docker": "docker build -t bondage-fantasy-client ."
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "6.7.1",
+    "@fortawesome/free-solid-svg-icons": "6.7.1",
+    "@fortawesome/react-fontawesome": "0.2.2",
     "@mantine/core": "7.14.3",
     "@mantine/form": "7.14.3",
     "@mantine/hooks": "7.14.3",

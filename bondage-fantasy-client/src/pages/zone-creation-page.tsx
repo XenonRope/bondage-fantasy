@@ -270,6 +270,12 @@ export function ZoneCreationPage() {
                   type: "checkbox",
                 })}
                 key={form.key(`fields.${selectedField}.canLeave`)}
+                onChange={(event) =>
+                  form.setFieldValue(
+                    `fields.${selectedField}.canLeave`,
+                    event.currentTarget.checked,
+                  )
+                }
                 label={t("zoneCreation.allowToLeaveZoneOnThisField")}
                 className="mt-4"
               />

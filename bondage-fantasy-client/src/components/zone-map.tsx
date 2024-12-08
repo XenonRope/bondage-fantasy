@@ -1,4 +1,11 @@
 import {
+  faFlag,
+  faFlagCheckered,
+  faUser,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Center } from "@mantine/core";
+import {
   arePositionsEqual,
   FieldConnection,
   FieldConnectionKey,
@@ -13,9 +20,11 @@ import { useMemo } from "react";
 
 const FIELD_SIZE = 64;
 const CONNECTION_WIDTH = 12;
+const FLAG_SIZE = (FIELD_SIZE - 8) / 2;
 
 interface MapField {
   position: Position;
+  canLeave: boolean;
 }
 
 interface MapConnection {
@@ -33,6 +42,7 @@ export function ZoneMap(props: {
   fields: MapField[];
   connections: MapConnection[];
   entrance?: Position;
+  playerPosition?: Position;
   selectedField?: FieldKey;
   selectedConnection?: FieldConnectionKey;
   editMode?: boolean;
@@ -84,12 +94,7 @@ export function ZoneMap(props: {
   function getFieldClasses(x: number, y: number): string {
     const field = fields[y][x];
     if (field) {
-      let result: string;
-      if (arePositionsEqual({ x, y }, props.entrance)) {
-        result = "bg-gradient-to-br from-green-500 to-green-700";
-      } else {
-        result = "bg-gradient-to-br from-green-200 to-green-400";
-      }
+      let result = "bg-gradient-to-br from-green-200 to-green-400";
       if (
         props.selectedField &&
         props.selectedField === getFieldKey({ x, y })
@@ -145,7 +150,39 @@ export function ZoneMap(props: {
                 onClick={() => props.onFieldClick?.({ x, y })}
                 className={getFieldClasses(x, y)}
                 style={{ width: `${FIELD_SIZE}px`, height: `${FIELD_SIZE}px` }}
-              ></div>
+              >
+                <div className="flex flex-wrap">
+                  {props.playerPosition &&
+                    arePositionsEqual({ x, y }, props.playerPosition) && (
+                      <Center
+                        w={FLAG_SIZE}
+                        h={FLAG_SIZE}
+                        className="text-indigo-700"
+                      >
+                        <FontAwesomeIcon icon={faUser} />
+                      </Center>
+                    )}
+                  {props.entrance &&
+                    arePositionsEqual({ x, y }, props.entrance) && (
+                      <Center
+                        w={FLAG_SIZE}
+                        h={FLAG_SIZE}
+                        className="text-green-700"
+                      >
+                        <FontAwesomeIcon icon={faFlag} />
+                      </Center>
+                    )}
+                  {fields[y][x]?.canLeave && (
+                    <Center
+                      w={FLAG_SIZE}
+                      h={FLAG_SIZE}
+                      className="text-red-700"
+                    >
+                      <FontAwesomeIcon icon={faFlagCheckered} />
+                    </Center>
+                  )}
+                </div>
+              </div>
               {fields[y][x]?.rightConnectionPossible && (
                 <div
                   className={getConnectionClasses(fields[y][x].rightConnection)}
