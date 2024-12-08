@@ -100,7 +100,7 @@ export function ZoneMap(props: {
     } else if (props.editMode) {
       return "bg-gray-100 hover:bg-gray-200";
     } else {
-      return "hidden";
+      return "opacity-0";
     }
   }
 
@@ -117,7 +117,7 @@ export function ZoneMap(props: {
     } else if (props.editMode) {
       return "absolute bg-gray-100 hover:bg-gray-200";
     } else {
-      return "hidden";
+      return "absolute hidden";
     }
   }
 

@@ -93,6 +93,15 @@ export function getPositionsFromConnectionKey(
   ];
 }
 
+export function findConnectionByConnectionKey(
+  connections: FieldConnection[],
+  connectionKey: FieldConnectionKey
+): FieldConnection | undefined {
+  return connections.find(
+    (connection) => getFieldConnectionKey(connection) === connectionKey
+  );
+}
+
 export function doesConnectionKeyContainFieldKey(
   connectionKey: FieldConnectionKey,
   fieldKey: FieldKey

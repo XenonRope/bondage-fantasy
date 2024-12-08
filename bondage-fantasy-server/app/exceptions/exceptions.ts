@@ -121,3 +121,13 @@ export class CannotLeaveException extends ApplicationException {
     });
   }
 }
+
+export class CannotMoveException extends ApplicationException {
+  constructor(message: string) {
+    super({
+      code: ErrorCode.E_CANNOT_MOVE,
+      message,
+      status: 422,
+    });
+  }
+}

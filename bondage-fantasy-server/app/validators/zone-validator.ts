@@ -76,3 +76,9 @@ export const zoneJoinRequestValidator = vine.compile(
     zoneId: vine.number().withoutDecimals(),
   }),
 );
+
+export const zoneMoveRequestValidator = vine.compile(
+  vine.object({
+    destination: zoneFieldPosition,
+  }),
+);

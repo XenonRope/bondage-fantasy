@@ -5,8 +5,10 @@ import { useAppStore } from "../store";
 import { Button } from "@mantine/core";
 import { useMutation } from "@tanstack/react-query";
 import {
+  arePositionsEqual,
   FieldConnectionKey,
   FieldKey,
+  findConnectionByConnectionKey,
   findFieldByPosition,
   getFieldConnectionKey,
   getFieldKey,
@@ -32,11 +34,27 @@ export function ExplorePage() {
       getPositionFromFieldKey(selectedFieldKey),
     );
   }, [selectedFieldKey, zone]);
+  const isSelectedFieldConnectedToCurrentPosition = useMemo(() => {
+    if (!selectedField || !zone) {
+      return false;
+    }
+    return findConnectionByConnectionKey(
+      zone.connections,
+      getFieldConnectionKey([zone.currentPosition, selectedField.position]),
+    );
+  }, [selectedField, zone]);
   const leave = useMutation({
     mutationFn: async () => {
       const sessionData = await zoneApi.leave();
       useAppStore.getState().updateSessionData(sessionData);
       navigate("/zones");
+    },
+    onError: (error) => errorService.handleUnexpectedError(error),
+  });
+  const move = useMutation({
+    mutationFn: async (destination: Position) => {
+      const sessionData = await zoneApi.move({ destination });
+      useAppStore.getState().updateSessionData(sessionData);
     },
     onError: (error) => errorService.handleUnexpectedError(error),
   });
@@ -77,12 +95,26 @@ export function ExplorePage() {
           <>
             <div>{selectedField.name}</div>
             <div>
-              <Button
-                disabled={!selectedField.canLeave}
-                onClick={() => !leave.isPending && leave.mutate()}
-              >
-                <Trans i18nKey="explore.leave" />
-              </Button>
+              {arePositionsEqual(
+                selectedField.position,
+                zone.currentPosition,
+              ) && (
+                <Button
+                  disabled={!selectedField.canLeave}
+                  onClick={() => !leave.isPending && leave.mutate()}
+                >
+                  <Trans i18nKey="explore.leave" />
+                </Button>
+              )}
+              {isSelectedFieldConnectedToCurrentPosition && (
+                <Button
+                  onClick={() =>
+                    !move.isPending && move.mutate(selectedField.position)
+                  }
+                >
+                  <Trans i18nKey="explore.move" />
+                </Button>
+              )}
             </div>
           </>
         )}

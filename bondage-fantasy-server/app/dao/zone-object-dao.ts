@@ -30,6 +30,10 @@ export class ZoneObjectDao {
     await this.getCollection().insertOne(object);
   }
 
+  async updatePosition(id: number, position: Position): Promise<void> {
+    await this.getCollection().updateOne({ id }, { $set: { position } });
+  }
+
   async deleteCharacterObject(characterId: number): Promise<void> {
     await this.getCollection().deleteOne({
       type: ObjectType.CHARACTER,

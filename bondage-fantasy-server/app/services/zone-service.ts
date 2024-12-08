@@ -2,6 +2,7 @@ import { ZoneDao } from "#dao/zone-dao";
 import { ZoneObjectDao } from "#dao/zone-object-dao";
 import {
   CannotLeaveException,
+  CannotMoveException,
   CharacterInZoneException,
   CharacterNotInZoneException,
   InvalidZoneException,
@@ -14,6 +15,7 @@ import {
   CharacterObject,
   Field,
   FieldConnection,
+  findConnectionByConnectionKey,
   findFieldByPosition,
   getFieldConnectionKey,
   getFieldKey,
@@ -118,6 +120,48 @@ export class ZoneService {
         }
 
         await this.zoneObjectDao.deleteCharacterObject(params.characterId);
+      },
+    );
+  }
+
+  async move(params: {
+    characterId: number;
+    destination: Position;
+  }): Promise<void> {
+    await lockService.run(
+      LOCKS.character(params.characterId),
+      "1s",
+      async () => {
+        const characterObject = await this.zoneObjectDao.getCharacterObject(
+          params.characterId,
+        );
+        if (characterObject == null) {
+          throw new CharacterNotInZoneException();
+        }
+
+        const zone = await this.zoneDao.getById(characterObject.zoneId);
+        if (!zone) {
+          throw new ZoneNotFoundException();
+        }
+
+        if (
+          !findConnectionByConnectionKey(
+            zone.connections,
+            getFieldConnectionKey([
+              characterObject.position,
+              params.destination,
+            ]),
+          )
+        ) {
+          throw new CannotMoveException(
+            "Cannot move to field that is not connected",
+          );
+        }
+
+        await this.zoneObjectDao.updatePosition(
+          characterObject.id,
+          params.destination,
+        );
       },
     );
   }

@@ -4,6 +4,7 @@ import { ZoneService } from "#services/zone-service";
 import {
   zoneCreateRequestValidator,
   zoneJoinRequestValidator,
+  zoneMoveRequestValidator,
   zoneSearchRequestValidator,
 } from "#validators/zone-validator";
 import { inject } from "@adonisjs/core";
@@ -81,6 +82,20 @@ export default class ZoneController {
     const characterId = await getCharacterId(ctx);
 
     await this.zoneService.leave({ characterId });
+
+    return await this.sessionService.getSessionData({
+      account: ctx.auth.user?.id,
+      characterId,
+    });
+  }
+
+  async move(ctx: HttpContext): Promise<SessionData> {
+    const characterId = await getCharacterId(ctx);
+    const { destination } = await ctx.request.validateUsing(
+      zoneMoveRequestValidator,
+    );
+
+    await this.zoneService.move({ characterId, destination });
 
     return await this.sessionService.getSessionData({
       account: ctx.auth.user?.id,

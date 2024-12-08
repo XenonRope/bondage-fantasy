@@ -62,5 +62,6 @@ export const en: ResourceLanguage = {
       "Your zone has no entrance. You should decide on which field your guests will start their adventure.",
     "zoneList.join": "Join",
     "explore.leave": "Leave",
+    "explore.move": "Move",
   },
 };

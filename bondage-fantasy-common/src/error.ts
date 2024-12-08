@@ -13,6 +13,7 @@ export enum ErrorCode {
   E_CHARACTER_NOT_IN_ZONE = "E_CHARACTER_NOT_IN_ZONE",
   E_ACCOUNT_NOT_FOUND = "E_ACCOUNT_NOT_FOUND",
   E_CANNOT_LEAVE = "E_CANNOT_LEAVE",
+  E_CANNOT_MOVE = "E_CANNOT_MOVE",
 }
 
 export interface ErrorResponse {

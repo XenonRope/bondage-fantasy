@@ -49,3 +49,7 @@ export interface ZoneSearchResponse {
 export interface ZoneJoinRequest {
   zoneId: number;
 }
+
+export interface ZoneMoveRequest {
+  destination: Position;
+}

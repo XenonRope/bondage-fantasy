@@ -3,6 +3,7 @@ import {
   Zone,
   ZoneCreateRequest,
   ZoneJoinRequest,
+  ZoneMoveRequest,
   ZoneSearchRequest,
   ZoneSearchResponse,
 } from "bondage-fantasy-common";
@@ -23,6 +24,10 @@ class ZoneApi {
 
   async leave(): Promise<SessionData> {
     return await httpClient.post("zones/leave", {});
+  }
+
+  async move(request: ZoneMoveRequest): Promise<SessionData> {
+    return await httpClient.post("zones/move", request);
   }
 }
 

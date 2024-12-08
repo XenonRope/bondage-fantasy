@@ -59,5 +59,6 @@ export const pl: ResourceLanguage = {
       "Twoja strefa nie ma wejścia. Powinieneś zdecydować, na którym polu twoi goście rozpoczną przygodę.",
     "zoneList.join": "Dołącz",
     "explore.leave": "Wyjdź",
+    "explore.move": "Idź",
   },
 };
