@@ -12,6 +12,7 @@ import {
 import { useMemo } from "react";
 
 const FIELD_SIZE = 64;
+const CONNECTION_WIDTH = 12;
 
 interface MapField {
   position: Position;
@@ -85,15 +86,17 @@ export function ZoneMap(props: {
     if (field) {
       let result: string;
       if (arePositionsEqual({ x, y }, props.entrance)) {
-        result = "bg-green-500";
+        result = "bg-gradient-to-br from-green-500 to-green-700";
       } else {
-        result = "bg-green-300";
+        result = "bg-gradient-to-br from-green-200 to-green-400";
       }
       if (
         props.selectedField &&
         props.selectedField === getFieldKey({ x, y })
       ) {
-        result += " border-4 border-yellow-400";
+        result += " border-4 border-blue-600";
+      } else {
+        result += " border-4 border-double border-black";
       }
 
       return result;
@@ -106,12 +109,19 @@ export function ZoneMap(props: {
 
   function getConnectionClasses(connection?: FieldConnection): string {
     if (connection) {
-      let result = "absolute bg-green-300";
+      let result = "absolute bg-gradient-to-br from-gray-200 to-gray-300";
       if (
         props.selectedConnection &&
         props.selectedConnection === getFieldConnectionKey(connection)
       ) {
-        result += " border-4 border-yellow-400";
+        result += " border-4 border-blue-600";
+      } else {
+        result += " border-black";
+        if (connection.positions[0].y === connection.positions[1].y) {
+          result += " border-t-2 border-b-2";
+        } else {
+          result += " border-l-2 border-r-2";
+        }
       }
       return result;
     } else if (props.editMode) {
@@ -147,8 +157,8 @@ export function ZoneMap(props: {
                   }
                   style={{
                     width: `${FIELD_SIZE / 2}px`,
-                    height: `${FIELD_SIZE / 4}px`,
-                    top: `${FIELD_SIZE / 2 - FIELD_SIZE / 8}px`,
+                    height: `${CONNECTION_WIDTH}px`,
+                    top: `${FIELD_SIZE / 2 - CONNECTION_WIDTH / 2}px`,
                     left: `${FIELD_SIZE}px`,
                   }}
                 />
@@ -165,9 +175,9 @@ export function ZoneMap(props: {
                     ])
                   }
                   style={{
-                    width: `${FIELD_SIZE / 4}px`,
+                    width: `${CONNECTION_WIDTH}px`,
                     height: `${FIELD_SIZE / 2}px`,
-                    left: `${FIELD_SIZE / 2 - FIELD_SIZE / 8}px`,
+                    left: `${FIELD_SIZE / 2 - CONNECTION_WIDTH / 2}px`,
                   }}
                 />
               )}
