@@ -14,6 +14,7 @@ export function MainLayout(props: { fixedHeight?: boolean }) {
   const [opened, { toggle }] = useDisclosure();
   const account = useAppStore((state) => state.account);
   const character = useAppStore((state) => state.character);
+  const zone = useAppStore((state) => state.zone);
   const sessionRestoreCompleted = useAppStore(
     (state) => state.sessionInitialized,
   );
@@ -79,16 +80,22 @@ export function MainLayout(props: { fixedHeight?: boolean }) {
         </Group>
       </AppShell.Header>
       <AppShell.Navbar p="md">
-        {account && (
+        {zone && (
           <NavLink
-            onClick={() => navigate("/characters")}
-            label={t("navbar.characters")}
+            onClick={() => navigate("/explore")}
+            label={t("navbar.explore")}
           />
         )}
         {character && (
           <NavLink
             onClick={() => navigate("/zones")}
             label={t("navbar.zones")}
+          />
+        )}
+        {account && (
+          <NavLink
+            onClick={() => navigate("/characters")}
+            label={t("navbar.characters")}
           />
         )}
       </AppShell.Navbar>

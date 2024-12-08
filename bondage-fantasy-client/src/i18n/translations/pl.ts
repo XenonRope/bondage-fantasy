@@ -22,6 +22,7 @@ export const pl: ResourceLanguage = {
     "common.search": "Szukaj",
     "navbar.characters": "Postacie",
     "navbar.zones": "Strefy",
+    "navbar.explore": "Eksploruj",
     "pronouns.SHE_HER": "Ona/Jej",
     "pronouns.HE_HIM": "On/Jego",
     "error.unexpecterError": "Niespodziewany błąd",

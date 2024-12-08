@@ -23,6 +23,7 @@ export const en: ResourceLanguage = {
     "common.search": "Search",
     "navbar.characters": "Characters",
     "navbar.zones": "Zones",
+    "navbar.explore": "Explore",
     "pronouns.SHE_HER": "She/Her",
     "pronouns.HE_HIM": "He/Him",
     "genitals.VAGINA": "Vagina",
