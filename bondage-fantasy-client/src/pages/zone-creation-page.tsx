@@ -97,6 +97,11 @@ export function ZoneCreationPage() {
 
   function onFieldClick(position: Position): void {
     const fieldKey = getFieldKey(position);
+    if (fieldKey === selectedField) {
+      setSelectedField(undefined);
+      return;
+    }
+
     const field = form.getValues().fields[fieldKey];
     if (!field) {
       const newField = {
@@ -113,6 +118,10 @@ export function ZoneCreationPage() {
 
   function onConnectionClick(positions: [Position, Position]): void {
     const connectionKey = getFieldConnectionKey(positions);
+    if (connectionKey === selectedConnection) {
+      setSelectedConnection(undefined);
+      return;
+    }
     const connection = form.getValues().connections[connectionKey];
     if (!connection) {
       form.setFieldValue(`connections.${connectionKey}`, true);

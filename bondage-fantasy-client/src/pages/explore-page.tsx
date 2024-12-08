@@ -62,12 +62,20 @@ export function ExplorePage() {
 
   function onFieldClick(position: Position): void {
     const fieldKey = getFieldKey(position);
+    if (fieldKey === selectedFieldKey) {
+      setSelectedFieldKey(undefined);
+      return;
+    }
     setSelectedFieldKey(fieldKey);
     setSelectedConnectionKey(undefined);
   }
 
   function onConnectionClick(positions: [Position, Position]): void {
     const connectionKey = getFieldConnectionKey(positions);
+    if (connectionKey === selectedConnectionKey) {
+      setSelectedConnectionKey(undefined);
+      return;
+    }
     setSelectedFieldKey(undefined);
     setSelectedConnectionKey(connectionKey);
   }
