@@ -91,6 +91,7 @@ export function ExplorePage() {
           <ZoneMap
             fields={zone.fields}
             connections={zone.connections}
+            entrance={zone.entrance}
             playerPosition={zone.currentPosition}
             selectedField={selectedFieldKey}
             selectedConnection={selectedConnectionKey}

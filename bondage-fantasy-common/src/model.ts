@@ -97,6 +97,7 @@ export interface CharacterZoneVisionObject extends ZoneVisionObject {
 export interface ZoneVision {
   currentPosition: Position;
   currentFieldDescription: string;
+  entrance: Position;
   fields: ZoneVisionField[];
   connections: ZoneVisionConnection[];
 }

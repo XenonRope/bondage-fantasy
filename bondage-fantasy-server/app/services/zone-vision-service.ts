@@ -72,6 +72,7 @@ export class ZoneVisionService {
     return {
       currentPosition: characterObject.position,
       currentFieldDescription: currentField.description,
+      entrance: zone.entrance,
       fields: zone.fields.map((field) => ({
         position: field.position,
         name: field.name,
