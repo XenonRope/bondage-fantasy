@@ -23,6 +23,12 @@ export function ExplorePage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const zone = useAppStore((state) => state.zone);
+  const currentField = useMemo(() => {
+    if (!zone) {
+      return;
+    }
+    return findFieldByPosition(zone.fields, zone.currentPosition);
+  }, [zone]);
   const [selectedFieldKey, setSelectedFieldKey] = useState<FieldKey>();
   const [selectedConnectionKey, setSelectedConnectionKey] =
     useState<FieldConnectionKey>();
@@ -100,23 +106,31 @@ export function ExplorePage() {
           />
         </div>
       </div>
-      <div className="w-1/2 p-md">
-        <div>{zone.currentFieldDescription}</div>
+      <div className="w-1/2">
+        <div className="min-h-40 border-b border-app-shell p-md">
+          <div className="font-medium">{currentField?.name}</div>
+          <div>{zone.currentFieldDescription}</div>
+          <div className="mt-4">
+            {currentField?.canLeave && (
+              <Button onClick={() => !leave.isPending && leave.mutate()}>
+                {t("explore.leave")}
+              </Button>
+            )}
+          </div>
+        </div>
         {selectedField && (
-          <>
-            <div>{selectedField.name}</div>
-            <div>
-              {arePositionsEqual(
-                selectedField.position,
-                zone.currentPosition,
-              ) && (
-                <Button
-                  disabled={!selectedField.canLeave}
-                  onClick={() => !leave.isPending && leave.mutate()}
-                >
-                  {t("explore.leave")}
-                </Button>
-              )}
+          <div className="p-md">
+            <div className="font-medium">{selectedField?.name}</div>
+            <div className="mt-4">
+              {selectedField.canLeave &&
+                arePositionsEqual(
+                  selectedField.position,
+                  zone.currentPosition,
+                ) && (
+                  <Button onClick={() => !leave.isPending && leave.mutate()}>
+                    {t("explore.leave")}
+                  </Button>
+                )}
               {isSelectedFieldConnectedToCurrentPosition && (
                 <Button
                   onClick={() =>
@@ -127,7 +141,7 @@ export function ExplorePage() {
                 </Button>
               )}
             </div>
-          </>
+          </div>
         )}
       </div>
     </div>
