@@ -19,11 +19,10 @@ router
     router.post("/accounts", [AccountController, "register"]);
     router.post("/session/login", [SessionController, "login"]);
     router.post("/session/logout", [SessionController, "logout"]);
-    router.get("/csrf/token", async (ctx) => ctx.response.status(200).send({}));
+    router.get("/session", [SessionController, "getSessionData"]);
 
     router
       .group(() => {
-        router.get("/accounts/my", [AccountController, "getMyAccount"]);
         router.get("/characters", [CharacterController, "list"]);
         router
           .get("/characters/:id", [CharacterController, "getById"])

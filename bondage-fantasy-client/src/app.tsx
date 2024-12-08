@@ -25,7 +25,7 @@ import {
 } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes } from "react-router";
 
-sessionService.restoreSession();
+sessionService.initializeSession();
 
 const queryClient = new QueryClient({
   defaultOptions: {

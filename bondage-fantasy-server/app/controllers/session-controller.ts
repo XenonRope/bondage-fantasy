@@ -1,21 +1,25 @@
 import { AccountDao } from "#dao/account-dao";
 import { InvalidUsernameOrPasswordException } from "#exceptions/exceptions";
 import { SessionUser } from "#models/session-model";
+import { SessionService } from "#services/session-service";
 import { loginRequestValidator } from "#validators/session-validator";
 import { inject } from "@adonisjs/core";
 import { HttpContext } from "@adonisjs/core/http";
 import hash from "@adonisjs/core/services/hash";
-import { LoginRequest } from "bondage-fantasy-common";
-import { accountDto } from "./dto.js";
+import { LoginRequest, SessionData } from "bondage-fantasy-common";
+import { sessionDataDto } from "./dto.js";
+import { getCharacterIdWithoutCheck } from "./utils.js";
 
 @inject()
 export default class SessionController {
-  constructor(private accountDao: AccountDao) {}
+  constructor(
+    private accountDao: AccountDao,
+    private sessionService: SessionService,
+  ) {}
 
-  async login({ request, response, auth }: HttpContext) {
-    const { username, password }: LoginRequest = await request.validateUsing(
-      loginRequestValidator,
-    );
+  async login(ctx: HttpContext): Promise<SessionData> {
+    const { username, password }: LoginRequest =
+      await ctx.request.validateUsing(loginRequestValidator);
 
     const account = await this.accountDao.getByUsername(username, {
       includePassword: true,
@@ -29,13 +33,33 @@ export default class SessionController {
       throw new InvalidUsernameOrPasswordException();
     }
 
-    await auth.use("web").login(new SessionUser(account.id));
+    await ctx.auth.use("web").login(new SessionUser(account.id));
 
-    response.status(200).send(accountDto(account));
+    const sessionData = await this.sessionService.getSessionData({
+      account,
+      characterId: getCharacterIdWithoutCheck(ctx),
+    });
+
+    return sessionDataDto(sessionData);
   }
 
   async logout(ctx: HttpContext) {
     await ctx.auth.use("web").logout();
     ctx.response.status(200).send({});
+  }
+
+  async getSessionData(ctx: HttpContext): Promise<SessionData> {
+    const authenticated = await ctx.auth.use("web").check();
+    if (!authenticated) {
+      return {};
+    }
+
+    const accountId = await ctx.auth.use("web").user?.id;
+    const sessionData = await this.sessionService.getSessionData({
+      account: accountId,
+      characterId: getCharacterIdWithoutCheck(ctx),
+    });
+
+    return sessionDataDto(sessionData);
   }
 }

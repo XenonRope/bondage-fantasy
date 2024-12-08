@@ -2,34 +2,60 @@ import { useAppStore } from "../store";
 import Cookies from "js-cookie";
 
 class HttpClient {
-  private csrfToken?: Promise<string>;
+  private csrfToken?: string;
 
-  async get<T>(url: string): Promise<T> {
+  async get<T>(
+    url: string,
+    params?: {
+      characterId?: number;
+      doNotWaitForSessionInitialization?: boolean;
+    },
+  ): Promise<T> {
     return this.sendRequest(url, {
       method: "GET",
+      characterId: params?.characterId,
+      doNotWaitForSessionInitialization:
+        params?.doNotWaitForSessionInitialization,
     });
   }
 
-  async post<T>(url: string, body?: unknown): Promise<T> {
+  async post<T>(
+    url: string,
+    body?: unknown,
+    params?: { characterId?: number },
+  ): Promise<T> {
     return this.sendRequest(url, {
       method: "POST",
       body,
+      characterId: params?.characterId,
     });
   }
 
   private async sendRequest<T>(
     url: string,
-    params: { method: string; body?: unknown },
+    params: {
+      method: string;
+      body?: unknown;
+      characterId?: number;
+      doNotWaitForSessionInitialization?: boolean;
+    },
   ): Promise<T> {
+    if (!params.doNotWaitForSessionInitialization) {
+      await useAppStore.getState().sessionInitializedPromise;
+    }
     const headers: HeadersInit = {
       Accept: "application/json",
       "Content-Type": "application/json",
-      "X-XSRF-TOKEN": await this.getCsrfToken(),
     };
-    const characterId = useAppStore.getState().character?.id;
+    if (this.csrfToken) {
+      headers["X-XSRF-TOKEN"] = this.csrfToken;
+    }
+    const characterId =
+      params.characterId ?? useAppStore.getState().character?.id;
     if (characterId) {
       headers["X-CHARACTER-ID"] = characterId.toString();
     }
+
     const response = await fetch(`/api/${url}`, {
       method: params.method,
       body: params.body != null ? JSON.stringify(params.body) : undefined,
@@ -38,7 +64,7 @@ class HttpClient {
 
     const newCsrfToken = this.readCsrfTokenFromCookie();
     if (newCsrfToken) {
-      this.csrfToken = Promise.resolve(newCsrfToken);
+      this.csrfToken = newCsrfToken;
     }
 
     if (!response.ok) {
@@ -46,19 +72,6 @@ class HttpClient {
     }
 
     return (await this.tryGetJsonFromResponse(response)) as T;
-  }
-
-  private async getCsrfToken(): Promise<string> {
-    if (this.csrfToken) {
-      return this.csrfToken;
-    }
-    this.csrfToken = this.fetchCsrfToken();
-    return this.csrfToken;
-  }
-
-  private async fetchCsrfToken(): Promise<string> {
-    await fetch("/api/csrf/token", { method: "GET" });
-    return this.readCsrfTokenFromCookie() as string;
   }
 
   private readCsrfTokenFromCookie(): string | undefined {

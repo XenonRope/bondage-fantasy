@@ -25,13 +25,31 @@ export class ZoneVisionService {
     private characterDao: CharacterDao,
   ) {}
 
-  async getVisionForCharacter(chracterId: number): Promise<ZoneVision> {
+  async getVisionForCharacterIfInZone(
+    characterId: number,
+  ): Promise<ZoneVision | undefined> {
     const characterObject =
-      await this.zoneObjectDao.getCharacterObject(chracterId);
+      await this.zoneObjectDao.getCharacterObject(characterId);
+    if (characterObject == null) {
+      return undefined;
+    }
+
+    return this.getVisionForCharacterObject(characterObject);
+  }
+
+  async getVisionForCharacter(characterId: number): Promise<ZoneVision> {
+    const characterObject =
+      await this.zoneObjectDao.getCharacterObject(characterId);
     if (characterObject == null) {
       throw new CharacterNotInZoneException();
     }
 
+    return this.getVisionForCharacterObject(characterObject);
+  }
+
+  async getVisionForCharacterObject(
+    characterObject: CharacterObject,
+  ): Promise<ZoneVision> {
     const zone = await this.zoneDao.getById(characterObject.zoneId);
     if (zone == null) {
       throw new ZoneNotFoundException();

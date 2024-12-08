@@ -4,6 +4,7 @@ import {
   Field,
   FieldConnection,
   Position,
+  SessionData,
   Zone,
 } from "bondage-fantasy-common";
 
@@ -63,5 +64,15 @@ export function zoneDto(zone: Zone): Zone {
     description: zone.description,
     fields: zone.fields.map(zoneFieldDto),
     connections: zone.connections.map(zoneFieldConnectionDto),
+  };
+}
+
+export function sessionDataDto(sessionData: SessionData): SessionData {
+  return {
+    account: sessionData.account ? accountDto(sessionData.account) : undefined,
+    character: sessionData.character
+      ? characterDto(sessionData.character)
+      : undefined,
+    zone: sessionData.zone,
   };
 }

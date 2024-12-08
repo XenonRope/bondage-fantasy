@@ -7,9 +7,16 @@ import { HttpContext } from "@adonisjs/core/http";
 import app from "@adonisjs/core/services/app";
 import { ErrorCode } from "bondage-fantasy-common";
 
-export async function getCharacterId(ctx: HttpContext): Promise<number> {
+export function getCharacterIdWithoutCheck(
+  ctx: HttpContext,
+): number | undefined {
   const characterId = parseInt(ctx.request.header("X-CHARACTER-ID") ?? "");
-  if (isNaN(characterId)) {
+  return isNaN(characterId) ? undefined : characterId;
+}
+
+export async function getCharacterId(ctx: HttpContext): Promise<number> {
+  const characterId = getCharacterIdWithoutCheck(ctx);
+  if (characterId == null) {
     throw new ApplicationException({
       code: ErrorCode.E_NO_CHARACTER_ID,
       message: "Header X-CHARACTER-ID was not provided or has invalid value",

@@ -5,7 +5,7 @@ import { Outlet, useNavigate } from "react-router";
 export function AuthRequired() {
   const navigate = useNavigate();
   const sessionRestoreCompleted = useAppStore(
-    (state) => state.sessionRestoreCompleted,
+    (state) => state.sessionInitialized,
   );
   const account = useAppStore((state) => state.account);
   const [initialized, setInitialized] = useState(false);

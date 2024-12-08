@@ -5,7 +5,11 @@ import { Account, AccountRegisterRequest } from "bondage-fantasy-common";
 export class AccountService {
   async register(request: AccountRegisterRequest): Promise<Account> {
     const account = await accountApi.register(request);
-    useAppStore.getState().setAccount(account);
+    useAppStore.getState().updateSessionData({
+      account,
+      character: undefined,
+      zone: undefined,
+    });
     return account;
   }
 }

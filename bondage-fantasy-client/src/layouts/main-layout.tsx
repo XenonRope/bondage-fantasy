@@ -15,7 +15,7 @@ export function MainLayout(props: { fixedHeight?: boolean }) {
   const account = useAppStore((state) => state.account);
   const character = useAppStore((state) => state.character);
   const sessionRestoreCompleted = useAppStore(
-    (state) => state.sessionRestoreCompleted,
+    (state) => state.sessionInitialized,
   );
   const logout = useMutation({
     mutationFn: () => sessionService.logout(),

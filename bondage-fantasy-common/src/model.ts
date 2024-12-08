@@ -100,3 +100,9 @@ export interface ZoneVision {
   fields: ZoneVisionField[];
   connections: ZoneVisionConnection[];
 }
+
+export interface SessionData {
+  account?: Account;
+  character?: Character;
+  zone?: ZoneVision;
+}
