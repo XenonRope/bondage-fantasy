@@ -30,6 +30,13 @@ export class ZoneObjectDao {
     await this.getCollection().insertOne(object);
   }
 
+  async deleteCharacterObject(characterId: number): Promise<void> {
+    await this.getCollection().deleteOne({
+      type: ObjectType.CHARACTER,
+      characterId,
+    });
+  }
+
   private getCollection(): Collection<ZoneObject> {
     return this.db.collection("zone_objects");
   }

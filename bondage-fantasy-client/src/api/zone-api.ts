@@ -20,6 +20,10 @@ class ZoneApi {
   async join(request: ZoneJoinRequest): Promise<SessionData> {
     return await httpClient.post("zones/join", request);
   }
+
+  async leave(): Promise<SessionData> {
+    return await httpClient.post("zones/leave", {});
+  }
 }
 
 export const zoneApi = new ZoneApi();

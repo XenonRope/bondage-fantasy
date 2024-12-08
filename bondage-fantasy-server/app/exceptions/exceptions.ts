@@ -111,3 +111,13 @@ export class AccountNotFoundException extends ApplicationException {
     });
   }
 }
+
+export class CannotLeaveException extends ApplicationException {
+  constructor(message: string) {
+    super({
+      code: ErrorCode.E_CANNOT_LEAVE,
+      message,
+      status: 422,
+    });
+  }
+}

@@ -31,6 +31,7 @@ router
         router.post("/zones", [ZoneController, "create"]);
         router.post("/zones/search", [ZoneController, "search"]);
         router.post("/zones/join", [ZoneController, "join"]);
+        router.post("/zones/leave", [ZoneController, "leave"]);
       })
       .use(middleware.auth());
   })

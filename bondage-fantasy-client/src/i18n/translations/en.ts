@@ -61,5 +61,6 @@ export const en: ResourceLanguage = {
     "zoneCreation.yourZoneHasNoEntrance":
       "Your zone has no entrance. You should decide on which field your guests will start their adventure.",
     "zoneList.join": "Join",
+    "explore.leave": "Leave",
   },
 };

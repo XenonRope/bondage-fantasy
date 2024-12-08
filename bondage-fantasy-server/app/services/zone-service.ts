@@ -1,7 +1,9 @@
 import { ZoneDao } from "#dao/zone-dao";
 import { ZoneObjectDao } from "#dao/zone-object-dao";
 import {
+  CannotLeaveException,
   CharacterInZoneException,
+  CharacterNotInZoneException,
   InvalidZoneException,
   ZoneNotFoundException,
 } from "#exceptions/exceptions";
@@ -82,6 +84,40 @@ export class ZoneService {
           characterId: params.characterId,
         };
         await this.zoneObjectDao.insert(chracterObject);
+      },
+    );
+  }
+
+  async leave(params: { characterId: number }): Promise<void> {
+    await lockService.run(
+      LOCKS.character(params.characterId),
+      "1s",
+      async () => {
+        const characterObject = await this.zoneObjectDao.getCharacterObject(
+          params.characterId,
+        );
+        if (characterObject == null) {
+          throw new CharacterNotInZoneException();
+        }
+
+        const zone = await this.zoneDao.getById(params.characterId);
+        if (!zone) {
+          throw new ZoneNotFoundException();
+        }
+
+        const field = findFieldByPosition(
+          zone.fields,
+          characterObject.position,
+        );
+
+        // If field doesn't exist that means that character is on field that was removed. In such situation always allow to leave.
+        if (field && !field.canLeave) {
+          throw new CannotLeaveException(
+            `Field [${characterObject.position.x}, ${characterObject.position.y}] is not marked as zone exit`,
+          );
+        }
+
+        await this.zoneObjectDao.deleteCharacterObject(params.characterId);
       },
     );
   }

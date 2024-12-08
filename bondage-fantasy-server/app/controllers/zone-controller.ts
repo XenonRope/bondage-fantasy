@@ -76,4 +76,15 @@ export default class ZoneController {
       characterId,
     });
   }
+
+  async leave(ctx: HttpContext): Promise<SessionData> {
+    const characterId = await getCharacterId(ctx);
+
+    await this.zoneService.leave({ characterId });
+
+    return await this.sessionService.getSessionData({
+      account: ctx.auth.user?.id,
+      characterId,
+    });
+  }
 }

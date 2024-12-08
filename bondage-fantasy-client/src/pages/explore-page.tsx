@@ -1,5 +1,9 @@
+import { zoneApi } from "../api/zone-api";
 import { ZoneMap } from "../components/zone-map";
+import { errorService } from "../services/error-service";
 import { useAppStore } from "../store";
+import { Button } from "@mantine/core";
+import { useMutation } from "@tanstack/react-query";
 import {
   FieldConnectionKey,
   FieldKey,
@@ -10,8 +14,11 @@ import {
   Position,
 } from "bondage-fantasy-common";
 import { useMemo, useState } from "react";
+import { Trans } from "react-i18next";
+import { useNavigate } from "react-router";
 
 export function ExplorePage() {
+  const navigate = useNavigate();
   const zone = useAppStore((state) => state.zone);
   const [selectedFieldKey, setSelectedFieldKey] = useState<FieldKey>();
   const [selectedConnectionKey, setSelectedConnectionKey] =
@@ -25,6 +32,14 @@ export function ExplorePage() {
       getPositionFromFieldKey(selectedFieldKey),
     );
   }, [selectedFieldKey, zone]);
+  const leave = useMutation({
+    mutationFn: async () => {
+      const sessionData = await zoneApi.leave();
+      useAppStore.getState().updateSessionData(sessionData);
+      navigate("/zones");
+    },
+    onError: (error) => errorService.handleUnexpectedError(error),
+  });
 
   function onFieldClick(position: Position): void {
     const fieldKey = getFieldKey(position);
@@ -58,7 +73,19 @@ export function ExplorePage() {
       </div>
       <div className="w-1/2 p-md">
         <div>{zone.currentFieldDescription}</div>
-        {selectedField && <div>{selectedField.name}</div>}
+        {selectedField && (
+          <>
+            <div>{selectedField.name}</div>
+            <div>
+              <Button
+                disabled={!selectedField.canLeave}
+                onClick={() => !leave.isPending && leave.mutate()}
+              >
+                <Trans i18nKey="explore.leave" />
+              </Button>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
