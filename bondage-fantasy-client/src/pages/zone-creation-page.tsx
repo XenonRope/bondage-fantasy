@@ -263,6 +263,7 @@ export function ZoneCreationPage() {
                 {...form.getInputProps(`fields.${selectedField}.description`)}
                 key={form.key(`fields.${selectedField}.description`)}
                 label={t("common.description")}
+                maxLength={ZONE_FIELD_DESCRIPTION_MAX_LENGTH}
                 className="mt-2"
               />
               <Checkbox
