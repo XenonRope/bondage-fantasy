@@ -36,10 +36,10 @@ function comparePositions(
   return 0;
 }
 
-export function findFieldByPosition(
-  fields: Field[],
+export function findFieldByPosition<T extends { position: Position }>(
+  fields: T[],
   position: Position
-): Field | undefined {
+): T | undefined {
   return fields.find((field) => arePositionsEqual(field.position, position));
 }
 

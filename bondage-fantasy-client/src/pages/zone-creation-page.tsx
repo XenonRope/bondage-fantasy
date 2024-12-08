@@ -120,7 +120,6 @@ export function ZoneCreationPage() {
 
     setSelectedField(undefined);
     setSelectedConnection(connectionKey);
-    return;
   }
 
   function removeSelectedField(): void {
@@ -231,6 +230,7 @@ export function ZoneCreationPage() {
             entrance={getPositionFromFieldKey(form.getValues().entrance)}
             selectedField={selectedField}
             selectedConnection={selectedConnection}
+            editMode={true}
             onFieldClick={onFieldClick}
             onConnectionClick={onConnectionClick}
           />

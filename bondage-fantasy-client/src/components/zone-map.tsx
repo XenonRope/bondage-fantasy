@@ -1,6 +1,5 @@
 import {
   arePositionsEqual,
-  Field,
   FieldConnection,
   FieldConnectionKey,
   FieldKey,
@@ -14,24 +13,33 @@ import { useMemo } from "react";
 
 const FIELD_SIZE = 64;
 
-interface MapField extends Field {
-  rightConnection?: FieldConnection;
+interface MapField {
+  position: Position;
+}
+
+interface MapConnection {
+  positions: [Position, Position];
+}
+
+interface MapFieldExtended extends MapField {
+  rightConnection?: MapConnection;
   rightConnectionPossible?: boolean;
-  bottomConnection?: FieldConnection;
+  bottomConnection?: MapConnection;
   bottomConnectionPossible?: boolean;
 }
 
 export function ZoneMap(props: {
-  fields: Field[];
-  connections: FieldConnection[];
+  fields: MapField[];
+  connections: MapConnection[];
   entrance?: Position;
   selectedField?: FieldKey;
   selectedConnection?: FieldConnectionKey;
+  editMode?: boolean;
   onFieldClick?: (position: Position) => void;
   onConnectionClick?: (positions: [Position, Position]) => void;
 }) {
   const fields = useMemo(() => {
-    const fields: MapField[][] = [...Array(ZONE_MAX_HEIGHT)].map(() =>
+    const fields: MapFieldExtended[][] = [...Array(ZONE_MAX_HEIGHT)].map(() =>
       Array(ZONE_MAX_WIDTH),
     );
     props.fields.forEach((field) => {
@@ -89,8 +97,10 @@ export function ZoneMap(props: {
       }
 
       return result;
-    } else {
+    } else if (props.editMode) {
       return "bg-gray-100 hover:bg-gray-200";
+    } else {
+      return "hidden";
     }
   }
 
@@ -104,8 +114,10 @@ export function ZoneMap(props: {
         result += " border-4 border-yellow-400";
       }
       return result;
-    } else {
+    } else if (props.editMode) {
       return "absolute bg-gray-100 hover:bg-gray-200";
+    } else {
+      return "hidden";
     }
   }
 

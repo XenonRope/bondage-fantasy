@@ -1,4 +1,5 @@
 import { ZoneDao } from "#dao/zone-dao";
+import { SessionService } from "#services/session-service";
 import { ZoneService } from "#services/zone-service";
 import {
   zoneCreateRequestValidator,
@@ -12,19 +13,15 @@ import {
   ZoneCreateRequest,
   ZoneJoinRequest,
   ZoneSearchResponse,
-  ZoneVision,
 } from "bondage-fantasy-common";
 import { zoneDto } from "./dto.js";
 import { getCharacterId } from "./utils.js";
-import { ZoneVisionService } from "#services/zone-vision-service";
-import { SessionService } from "#services/session-service";
 
 @inject()
 export default class ZoneController {
   constructor(
     private zoneService: ZoneService,
     private zoneDao: ZoneDao,
-    private zoneVisionService: ZoneVisionService,
     private sessionService: SessionService,
   ) {}
 
