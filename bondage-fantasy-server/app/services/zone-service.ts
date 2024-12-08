@@ -6,6 +6,7 @@ import {
   CharacterInZoneException,
   CharacterNotInZoneException,
   InvalidZoneException,
+  NoAccessToZoneException,
   ZoneNotFoundException,
 } from "#exceptions/exceptions";
 import { SequenceCode } from "#models/sequence-model";
@@ -34,6 +35,20 @@ export class ZoneService {
     private sequenceService: SequenceService,
   ) {}
 
+  async get(
+    zoneId: number,
+    params: { checkAccessForCharacterId: number },
+  ): Promise<Zone> {
+    const zone = await this.zoneDao.getById(zoneId);
+    if (!zone) {
+      throw new ZoneNotFoundException();
+    }
+    if (zone.ownerCharacterId !== params.checkAccessForCharacterId) {
+      throw new NoAccessToZoneException();
+    }
+    return zone;
+  }
+
   async create(params: {
     ownerCharacterId: number;
     name: string;
@@ -59,6 +74,44 @@ export class ZoneService {
     await this.zoneDao.insert(zone);
 
     return zone;
+  }
+
+  async edit(params: {
+    zoneId: number;
+    characterId: number;
+    name: string;
+    description: string;
+    entrance: Position;
+    fields: Field[];
+    connections: FieldConnection[];
+  }): Promise<void> {
+    this.validateFields(params.fields);
+    this.validateConnections(params.connections, params.fields);
+    this.validateEntrance(params.entrance, params.fields);
+    const positions = params.fields.map((field) => field.position);
+
+    await lockService.run(LOCKS.zone(params.zoneId), "1s", async () => {
+      if (
+        !(await this.zoneDao.isCharacterOwnerOfZone(
+          params.characterId,
+          params.zoneId,
+        ))
+      ) {
+        throw new NoAccessToZoneException();
+      }
+
+      await this.zoneObjectDao.deleteManyInZoneExcludingPositions({
+        zoneId: params.zoneId,
+        positions,
+      });
+      await this.zoneDao.update(params.zoneId, {
+        name: params.name,
+        description: params.description,
+        entrance: params.entrance,
+        fields: params.fields,
+        connections: params.connections,
+      });
+    });
   }
 
   async join(params: { characterId: number; zoneId: number }): Promise<void> {

@@ -131,3 +131,13 @@ export class CannotMoveException extends ApplicationException {
     });
   }
 }
+
+export class NoAccessToZoneException extends ApplicationException {
+  constructor() {
+    super({
+      code: ErrorCode.E_NO_ACCESS_TO_ZONE,
+      message: "You have no access to modify or see details of zone",
+      status: 403,
+    });
+  }
+}

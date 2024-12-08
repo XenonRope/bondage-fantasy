@@ -14,6 +14,7 @@ export enum ErrorCode {
   E_ACCOUNT_NOT_FOUND = "E_ACCOUNT_NOT_FOUND",
   E_CANNOT_LEAVE = "E_CANNOT_LEAVE",
   E_CANNOT_MOVE = "E_CANNOT_MOVE",
+  E_NO_ACCESS_TO_ZONE = "E_NO_ACCESS_TO_ZONE",
 }
 
 export interface ErrorResponse {

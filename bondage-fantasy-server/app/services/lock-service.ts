@@ -7,6 +7,7 @@ export const LOCKS = {
   migrations: "migrations",
   account: (id: number) => `account.${id}`,
   character: (id: number) => `character.${id}`,
+  zone: (id: number) => `zone.${id}`,
 };
 
 export class LockService {

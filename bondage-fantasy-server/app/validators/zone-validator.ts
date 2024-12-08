@@ -71,6 +71,23 @@ export const zoneCreateRequestValidator = vine.compile(
   }),
 );
 
+export const zoneEditRequestValidator = vine.compile(
+  vine.object({
+    zoneId: vine.number().withoutDecimals(),
+    name: vine
+      .string()
+      .minLength(ZONE_NAME_MIN_LENGTH)
+      .maxLength(ZONE_NAME_MAX_LENGTH),
+    description: vine
+      .string()
+      .minLength(ZONE_DESCRIPTION_MIN_LENGTH)
+      .maxLength(ZONE_DESCRIPTION_MAX_LENGTH),
+    entrance: zoneFieldPosition,
+    fields: vine.array(zoneField),
+    connections: vine.array(zoneFieldConnection),
+  }),
+);
+
 export const zoneJoinRequestValidator = vine.compile(
   vine.object({
     zoneId: vine.number().withoutDecimals(),

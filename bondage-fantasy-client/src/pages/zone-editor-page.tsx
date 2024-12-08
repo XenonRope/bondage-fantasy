@@ -44,7 +44,7 @@ interface ZoneForm {
   connections: { [key: FieldConnectionKey]: true };
 }
 
-export function ZoneCreationPage() {
+export function ZoneEditorPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const form = useForm<ZoneForm>({

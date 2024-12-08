@@ -3,6 +3,7 @@ import { SessionService } from "#services/session-service";
 import { ZoneService } from "#services/zone-service";
 import {
   zoneCreateRequestValidator,
+  zoneEditRequestValidator,
   zoneJoinRequestValidator,
   zoneMoveRequestValidator,
   zoneSearchRequestValidator,
@@ -11,7 +12,9 @@ import { inject } from "@adonisjs/core";
 import { HttpContext } from "@adonisjs/core/http";
 import {
   SessionData,
+  Zone,
   ZoneCreateRequest,
+  ZoneEditRequest,
   ZoneJoinRequest,
   ZoneSearchResponse,
 } from "bondage-fantasy-common";
@@ -62,6 +65,40 @@ export default class ZoneController {
     });
 
     ctx.response.status(201).send(zoneDto(zone));
+  }
+
+  async getById(ctx: HttpContext): Promise<Zone> {
+    const zoneId: number = ctx.params.id;
+    const characterId = await getCharacterId(ctx);
+
+    const zone = await this.zoneService.get(zoneId, {
+      checkAccessForCharacterId: characterId,
+    });
+
+    return zoneDto(zone);
+  }
+
+  async edit(ctx: HttpContext): Promise<SessionData> {
+    const characterId = await getCharacterId(ctx);
+    const { zoneId, name, description, entrance, fields, connections } =
+      (await ctx.request.validateUsing(
+        zoneEditRequestValidator,
+      )) as ZoneEditRequest;
+
+    await this.zoneService.edit({
+      zoneId,
+      characterId,
+      name,
+      description,
+      entrance,
+      fields,
+      connections,
+    });
+
+    return await this.sessionService.getSessionData({
+      account: ctx.auth.user?.id,
+      characterId,
+    });
   }
 
   async join(ctx: HttpContext): Promise<SessionData> {

@@ -1,3 +1,4 @@
+import { zoneApi } from "./api/zone-api";
 import "./app.css";
 import "./i18n";
 import { MainLayout } from "./layouts/main-layout";
@@ -7,7 +8,7 @@ import CharacterListPage from "./pages/character-list-page";
 import { ExplorePage } from "./pages/explore-page";
 import HomePage from "./pages/home-page";
 import LoginPage from "./pages/login-page";
-import { ZoneCreationPage } from "./pages/zone-creation-page";
+import { ZoneEditorPage } from "./pages/zone-editor-page";
 import { ZoneListPage } from "./pages/zone-list-page";
 import { errorService } from "./services/error-service";
 import { sessionService } from "./services/session-service";
@@ -27,7 +28,13 @@ import {
   QueryClientProvider,
 } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { BrowserRouter, Route, Routes, useNavigate } from "react-router";
+import {
+  BrowserRouter,
+  LoaderFunctionArgs,
+  Route,
+  Routes,
+  useNavigate,
+} from "react-router";
 
 sessionService.initializeSession();
 
@@ -69,6 +76,10 @@ function App() {
   );
 }
 
+async function zoneLoader({ params }: LoaderFunctionArgs) {
+  return await zoneApi.getById(parseInt(params.zoneId ?? ""));
+}
+
 function AppRouter() {
   const navigate = useNavigate();
   useEffect(() => {
@@ -93,7 +104,12 @@ function AppRouter() {
       >
         <Route element={<AuthRequired />}>
           <Route element={<CharacterRequired />}>
-            <Route path="/new-zone" element={<ZoneCreationPage />} />
+            <Route path="/new-zone" element={<ZoneEditorPage />} />
+            <Route
+              path="/zone/:zoneId/edit"
+              element={<ZoneEditorPage />}
+              loader={zoneLoader}
+            />
             <Route element={<ZoneRequired />}>
               <Route path="/explore" element={<ExplorePage />} />
             </Route>

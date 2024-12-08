@@ -1,5 +1,5 @@
 import { inject } from "@adonisjs/core";
-import { Zone } from "bondage-fantasy-common";
+import { Field, FieldConnection, Position, Zone } from "bondage-fantasy-common";
 import { Collection, Db, Filter } from "mongodb";
 import { escapeRegex } from "../utils.js";
 
@@ -31,8 +31,46 @@ export class ZoneDao {
     return { zones, total };
   }
 
+  async isCharacterOwnerOfZone(
+    characterId: number,
+    zoneId: number,
+  ): Promise<boolean> {
+    const zone = await this.getCollection().findOne(
+      {
+        id: zoneId,
+        ownerCharacterId: characterId,
+      },
+      { projection: { _id: 1 } },
+    );
+    return zone != null;
+  }
+
   async insert(zone: Zone): Promise<void> {
     await this.getCollection().insertOne(zone);
+  }
+
+  async update(
+    id: number,
+    params: {
+      name: string;
+      description: string;
+      entrance: Position;
+      fields: Field[];
+      connections: FieldConnection[];
+    },
+  ): Promise<void> {
+    await this.getCollection().updateOne(
+      { id },
+      {
+        $set: {
+          name: params.name,
+          description: params.description,
+          entrance: params.entrance,
+          fields: params.fields,
+          connections: params.connections,
+        },
+      },
+    );
   }
 
   private getCollection(): Collection<Zone> {

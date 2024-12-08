@@ -31,6 +31,15 @@ export interface ZoneCreateRequest {
   connections: FieldConnection[];
 }
 
+export interface ZoneEditRequest {
+  zoneId: number;
+  name: string;
+  description: string;
+  entrance: Position;
+  fields: Field[];
+  connections: FieldConnection[];
+}
+
 export interface ZoneSearchRequest {
   query: string;
   offset: number;

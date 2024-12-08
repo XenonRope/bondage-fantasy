@@ -41,6 +41,26 @@ export class ZoneObjectDao {
     });
   }
 
+  async deleteManyInZoneExcludingPositions(params: {
+    zoneId: number;
+    positions: Position[];
+  }): Promise<void> {
+    if (params.positions.length === 0) {
+      return;
+    }
+
+    const positionsFilters = params.positions.map((position) => ({
+      $or: [
+        { "position.x": { $ne: position.x } },
+        { "position.y": { $ne: position.y } },
+      ],
+    }));
+
+    await this.getCollection().deleteMany({
+      $and: [{ zoneId: params.zoneId, ...positionsFilters }],
+    });
+  }
+
   private getCollection(): Collection<ZoneObject> {
     return this.db.collection("zone_objects");
   }

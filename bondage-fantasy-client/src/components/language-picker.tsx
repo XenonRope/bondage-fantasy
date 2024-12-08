@@ -2,8 +2,8 @@ import { Combobox, Image, InputBase, useCombobox } from "@mantine/core";
 import { useTranslation } from "react-i18next";
 
 const languages = [
-  { language: "en", image: "english.png" },
-  { language: "pl", image: "polish.png" },
+  { language: "en", image: "/english.png" },
+  { language: "pl", image: "/polish.png" },
 ];
 
 function LanguageOption(props: { language: string }) {
