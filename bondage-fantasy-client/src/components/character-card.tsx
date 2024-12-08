@@ -16,7 +16,11 @@ export function CharacterCard(props: { character: Character }) {
       });
       useAppStore.getState().updateSessionData(sessionData);
       characterService.setDefaultCharacter(props.character.id);
-      naviagate("/zones");
+      if (sessionData.zone) {
+        naviagate("/explore");
+      } else {
+        naviagate("/zones");
+      }
     } catch (error) {
       errorService.handleUnexpectedError(error);
     }

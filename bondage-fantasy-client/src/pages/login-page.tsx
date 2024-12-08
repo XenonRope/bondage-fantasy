@@ -1,6 +1,5 @@
 import { errorService } from "../services/error-service";
 import { sessionService } from "../services/session-service";
-import { useAppStore } from "../store";
 import { isErrorResponseWithCode } from "../utils/error";
 import { Anchor, Button, PasswordInput, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
@@ -11,7 +10,6 @@ import { useNavigate } from "react-router";
 
 export default function LoginPage() {
   const { t } = useTranslation();
-  const character = useAppStore((state) => state.character);
   const navigate = useNavigate();
   const form = useForm({
     mode: "uncontrolled",
@@ -26,13 +24,6 @@ export default function LoginPage() {
   });
   const login = useMutation({
     mutationFn: (request: LoginRequest) => sessionService.login(request),
-    onSuccess: () => {
-      if (character) {
-        navigate("/");
-      } else {
-        navigate("/characters");
-      }
-    },
     onError: handleLoginError,
   });
 

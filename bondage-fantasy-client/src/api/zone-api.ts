@@ -5,8 +5,8 @@ import {
   ZoneJoinRequest,
   ZoneSearchRequest,
   ZoneSearchResponse,
-  ZoneVision,
 } from "bondage-fantasy-common";
+import { SessionData } from "react-router";
 
 class ZoneApi {
   async search(request: ZoneSearchRequest): Promise<ZoneSearchResponse> {
@@ -17,12 +17,8 @@ class ZoneApi {
     return await httpClient.post("zones", request);
   }
 
-  async join(request: ZoneJoinRequest): Promise<ZoneVision> {
+  async join(request: ZoneJoinRequest): Promise<SessionData> {
     return await httpClient.post("zones/join", request);
-  }
-
-  async getVision(): Promise<ZoneVision> {
-    return await httpClient.get("zones/vision");
   }
 }
 

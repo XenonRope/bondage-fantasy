@@ -8,6 +8,7 @@ import {
 import { inject } from "@adonisjs/core";
 import { HttpContext } from "@adonisjs/core/http";
 import {
+  SessionData,
   ZoneCreateRequest,
   ZoneJoinRequest,
   ZoneSearchResponse,
@@ -16,6 +17,7 @@ import {
 import { zoneDto } from "./dto.js";
 import { getCharacterId } from "./utils.js";
 import { ZoneVisionService } from "#services/zone-vision-service";
+import { SessionService } from "#services/session-service";
 
 @inject()
 export default class ZoneController {
@@ -23,6 +25,7 @@ export default class ZoneController {
     private zoneService: ZoneService,
     private zoneDao: ZoneDao,
     private zoneVisionService: ZoneVisionService,
+    private sessionService: SessionService,
   ) {}
 
   async search(ctx: HttpContext): Promise<ZoneSearchResponse> {
@@ -63,7 +66,7 @@ export default class ZoneController {
     ctx.response.status(201).send(zoneDto(zone));
   }
 
-  async join(ctx: HttpContext): Promise<ZoneVision> {
+  async join(ctx: HttpContext): Promise<SessionData> {
     const characterId = await getCharacterId(ctx);
     const { zoneId } = (await ctx.request.validateUsing(
       zoneJoinRequestValidator,
@@ -71,11 +74,9 @@ export default class ZoneController {
 
     await this.zoneService.join({ characterId, zoneId });
 
-    return await this.zoneVisionService.getVisionForCharacter(characterId);
-  }
-
-  async getVision(ctx: HttpContext) {
-    const characterId = await getCharacterId(ctx);
-    return await this.zoneVisionService.getVisionForCharacter(characterId);
+    return await this.sessionService.getSessionData({
+      account: ctx.auth.user?.id,
+      characterId,
+    });
   }
 }

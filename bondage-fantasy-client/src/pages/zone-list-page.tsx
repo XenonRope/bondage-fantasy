@@ -23,11 +23,9 @@ export function ZoneListPage() {
   });
   const join = useMutation({
     mutationFn: async (request: ZoneJoinRequest) => {
-      const zone = await zoneApi.join(request);
-      useAppStore.getState().setZone(zone);
-    },
-    onSuccess: () => {
-      navigate("/");
+      const sessionDate = await zoneApi.join(request);
+      useAppStore.getState().updateSessionData(sessionDate);
+      navigate("/explore");
     },
     onError: (error) => errorService.handleUnexpectedError(error),
   });
