@@ -13,7 +13,7 @@ import {
   USERNAME_MIN_LENGTH,
   USERNAME_PATTERN,
 } from "bondage-fantasy-common";
-import { useTranslation } from "react-i18next";
+import { Translation, useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 
 export default function AccountRegistrationPage() {
@@ -39,30 +39,58 @@ export default function AccountRegistrationPage() {
 
   function validateUsername(value: string) {
     if (value.length < USERNAME_MIN_LENGTH) {
-      return t("accountRegistration.usernameTooShort", {
-        minLength: USERNAME_MIN_LENGTH,
-      });
+      return (
+        <Translation>
+          {(t) =>
+            t("accountRegistration.usernameTooShort", {
+              minLength: USERNAME_MIN_LENGTH,
+            })
+          }
+        </Translation>
+      );
     }
     if (value.length > USERNAME_MAX_LENGTH) {
-      return t("accountRegistration.usernameTooLong", {
-        maxLength: USERNAME_MAX_LENGTH,
-      });
+      return (
+        <Translation>
+          {(t) =>
+            t("accountRegistration.usernameTooLong", {
+              maxLength: USERNAME_MAX_LENGTH,
+            })
+          }
+        </Translation>
+      );
     }
     if (!USERNAME_PATTERN.test(value)) {
-      return t("accountRegistration.usernameInvalidFormat");
+      return (
+        <Translation>
+          {(t) => t("accountRegistration.usernameInvalidFormat")}
+        </Translation>
+      );
     }
   }
 
   function validatePassword(value: string) {
     if (value.length < PASSWORD_MIN_LENGTH) {
-      return t("accountRegistration.passwordTooShort", {
-        minLength: PASSWORD_MIN_LENGTH,
-      });
+      return (
+        <Translation>
+          {(t) =>
+            t("accountRegistration.passwordTooShort", {
+              minLength: PASSWORD_MIN_LENGTH,
+            })
+          }
+        </Translation>
+      );
     }
     if (value.length > PASSWORD_MAX_LENGTH) {
-      return t("accountRegistration.passwordTooLong", {
-        maxLength: PASSWORD_MAX_LENGTH,
-      });
+      return (
+        <Translation>
+          {(t) =>
+            t("accountRegistration.passwordTooLong", {
+              maxLength: PASSWORD_MAX_LENGTH,
+            })
+          }
+        </Translation>
+      );
     }
   }
 

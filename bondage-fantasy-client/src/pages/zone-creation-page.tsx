@@ -27,7 +27,7 @@ import {
   ZoneCreateRequest,
 } from "bondage-fantasy-common";
 import { useState } from "react";
-import { Trans, useTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 
 interface ZoneForm {
@@ -267,14 +267,14 @@ export function ZoneCreationPage() {
             </div>
             <div className="mt-4">
               <Button onClick={setSelectedFieldAsEntrance}>
-                <Trans i18nKey="zoneCreation.setAsEntrance" />
+                {t("zoneCreation.setAsEntrance")}
               </Button>
               <Button
                 variant="danger"
                 className="ml-4"
                 onClick={removeSelectedField}
               >
-                <Trans i18nKey="zoneCreation.removeField" />
+                {t("zoneCreation.removeField")}
               </Button>
             </div>
           </>
@@ -282,7 +282,7 @@ export function ZoneCreationPage() {
         {selectedConnection && (
           <div>
             <Button variant="danger" onClick={removeSelectedConnection}>
-              <Trans i18nKey="zoneCreation.removeConnection" />
+              {t("zoneCreation.removeConnection")}
             </Button>
           </div>
         )}

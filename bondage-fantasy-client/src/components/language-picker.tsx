@@ -1,5 +1,5 @@
-import { Combobox, InputBase, useCombobox, Image } from "@mantine/core";
-import { Trans, useTranslation } from "react-i18next";
+import { Combobox, Image, InputBase, useCombobox } from "@mantine/core";
+import { useTranslation } from "react-i18next";
 
 const languages = [
   { language: "en", image: "english.png" },
@@ -7,6 +7,7 @@ const languages = [
 ];
 
 function LanguageOption(props: { language: string }) {
+  const { t } = useTranslation();
   const image = languages.find(
     ({ language }) => language === props.language,
   )!.image;
@@ -14,7 +15,7 @@ function LanguageOption(props: { language: string }) {
   return (
     <div className="flex items-center gap-2">
       <Image src={image} className="w-6 h-6" />
-      <Trans i18nKey={`common.language.${props.language}`} />
+      {t(`common.language.${props.language}`)}
     </div>
   );
 }

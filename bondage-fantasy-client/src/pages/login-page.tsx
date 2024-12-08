@@ -5,7 +5,7 @@ import { Anchor, Button, PasswordInput, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useMutation } from "@tanstack/react-query";
 import { ErrorCode, LoginRequest } from "bondage-fantasy-common";
-import { useTranslation } from "react-i18next";
+import { Translation, useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 
 export default function LoginPage() {
@@ -42,13 +42,17 @@ export default function LoginPage() {
 
   function validateUsername(value: string) {
     if (value.length === 0) {
-      return t("loginForm.usernameCannotBeEmpty");
+      return (
+        <Translation>{(t) => t("loginForm.usernameCannotBeEmpty")}</Translation>
+      );
     }
   }
 
   function validatePassword(value: string) {
     if (value.length === 0) {
-      return t("loginForm.passwordCannotBeEmpty");
+      return (
+        <Translation>{(t) => t("loginForm.passwordCannotBeEmpty")}</Translation>
+      );
     }
   }
 

@@ -1,22 +1,28 @@
 import { ReactNode } from "react";
-import { Trans } from "react-i18next";
+import { Translation } from "react-i18next";
 
 function inRange(min?: number, max?: number) {
   return (value: string) => {
     if (min) {
       if (value.length < min) {
         if (min === 1) {
-          return <Trans i18nKey="common.fieldCannotBeEmpty" />;
+          return (
+            <Translation>{(t) => t("common.fieldCannotBeEmpty")}</Translation>
+          );
         } else {
           return (
-            <Trans i18nKey="common.fieldTooShort" values={{ minLength: min }} />
+            <Translation>
+              {(t) => t("common.fieldTooShort", { minLength: min })}
+            </Translation>
           );
         }
       }
     }
     if (max && value.length > max) {
       return (
-        <Trans i18nKey="common.fieldTooLong" values={{ maxLength: max }} />
+        <Translation>
+          {(t) => t("common.fieldTooLong", { maxLength: max })}
+        </Translation>
       );
     }
   };
@@ -25,7 +31,11 @@ function inRange(min?: number, max?: number) {
 function notEmpty(customMessage?: string | ReactNode) {
   return (value: unknown) => {
     if (value == null || value === "") {
-      return customMessage ?? <Trans i18nKey="common.fieldCannotBeEmpty" />;
+      return (
+        customMessage ?? (
+          <Translation>{(t) => t("common.fieldCannotBeEmpty")}</Translation>
+        )
+      );
     }
   };
 }

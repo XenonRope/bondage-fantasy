@@ -16,10 +16,11 @@ import {
   Position,
 } from "bondage-fantasy-common";
 import { useMemo, useState } from "react";
-import { Trans } from "react-i18next";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 
 export function ExplorePage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const zone = useAppStore((state) => state.zone);
   const [selectedFieldKey, setSelectedFieldKey] = useState<FieldKey>();
@@ -103,7 +104,7 @@ export function ExplorePage() {
                   disabled={!selectedField.canLeave}
                   onClick={() => !leave.isPending && leave.mutate()}
                 >
-                  <Trans i18nKey="explore.leave" />
+                  {t("explore.leave")}
                 </Button>
               )}
               {isSelectedFieldConnectedToCurrentPosition && (
@@ -112,7 +113,7 @@ export function ExplorePage() {
                     !move.isPending && move.mutate(selectedField.position)
                   }
                 >
-                  <Trans i18nKey="explore.move" />
+                  {t("explore.move")}
                 </Button>
               )}
             </div>

@@ -9,10 +9,11 @@ import {
   ZoneJoinRequest,
 } from "bondage-fantasy-common";
 import { useState } from "react";
-import { Trans } from "react-i18next";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 
 export function ZoneListPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const inZone = useAppStore((state) => state.zone != null);
   const [query, setQuery] = useState("");
@@ -35,7 +36,7 @@ export function ZoneListPage() {
       <div>
         <div className="flex items-end">
           <TextInput
-            label={<Trans i18nKey="common.search" />}
+            label={t("common.search")}
             className="w-80"
             maxLength={ZONE_SEARCH_QUERY_MAX_LENGTH}
             onChange={(event) => setQuery(event.currentTarget.value)}
@@ -44,7 +45,7 @@ export function ZoneListPage() {
             className="shrink-0 ml-4"
             onClick={() => navigate("/new-zone")}
           >
-            <Trans i18nKey="common.createNewZone" />
+            {t("common.createNewZone")}
           </Button>
         </div>
       </div>
@@ -69,7 +70,7 @@ export function ZoneListPage() {
                     !join.isPending && join.mutate({ zoneId: zone.id })
                   }
                 >
-                  <Trans i18nKey="zoneList.join" />
+                  {t("zoneList.join")}
                 </Button>
               </div>
               <Text size="sm" c="dimmed" className="mt-2">
