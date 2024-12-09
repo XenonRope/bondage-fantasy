@@ -1,5 +1,6 @@
 import { zoneApi } from "../api/zone-api";
 import { ZoneMap } from "../components/zone-map";
+import { ZoneObjectList } from "../components/zone-object-list";
 import { errorService } from "../services/error-service";
 import { useAppStore } from "../store";
 import { Button } from "@mantine/core";
@@ -110,6 +111,9 @@ export function ExplorePage() {
         <div className="min-h-40 border-b border-app-shell p-md">
           <div className="font-medium">{currentField?.name}</div>
           <div>{zone.currentFieldDescription}</div>
+          <div className="mt-4">
+            <ZoneObjectList objects={currentField?.objects || []} />
+          </div>
           <div className="mt-4">
             {currentField?.canLeave && (
               <Button onClick={() => !leave.isPending && leave.mutate()}>

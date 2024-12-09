@@ -7,6 +7,8 @@ import {
   ZoneObject,
   CharacterObject,
   ObjectType,
+  ZoneVisionObject,
+  CharacterZoneVisionObject,
 } from "./model.js";
 
 export function arePositionsEqual(
@@ -109,6 +111,9 @@ export function doesConnectionKeyContainFieldKey(
   return connectionKey.startsWith(fieldKey) || connectionKey.endsWith(fieldKey);
 }
 
+export function isCharacterObject(
+  object: ZoneVisionObject
+): object is CharacterZoneVisionObject;
 export function isCharacterObject(
   object: ZoneObject
 ): object is CharacterObject {
