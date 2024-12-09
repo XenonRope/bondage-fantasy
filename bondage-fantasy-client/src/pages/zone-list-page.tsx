@@ -1,7 +1,17 @@
 import { zoneApi } from "../api/zone-api";
 import { errorService } from "../services/error-service";
 import { useAppStore } from "../store";
-import { Button, Card, SimpleGrid, Text, TextInput } from "@mantine/core";
+import { faGear } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  ActionIcon,
+  Button,
+  Card,
+  SimpleGrid,
+  Text,
+  TextInput,
+  Tooltip,
+} from "@mantine/core";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   ZONE_SEARCH_QUERY_MAX_LENGTH,
@@ -30,6 +40,7 @@ export function ZoneListPage() {
     },
     onError: (error) => errorService.handleUnexpectedError(error),
   });
+  const characterId = useAppStore((state) => state.character?.id);
 
   return (
     <div>
@@ -62,16 +73,33 @@ export function ZoneListPage() {
             >
               <div className="flex justify-between items-center">
                 <span className="font-medium">{zone.name}</span>
-                <Button
-                  size="compact-sm"
-                  radius="xl"
-                  disabled={inZone}
-                  onClick={() =>
-                    !join.isPending && join.mutate({ zoneId: zone.id })
-                  }
-                >
-                  {t("zoneList.join")}
-                </Button>
+                <div className="flex items-center gap-2">
+                  {zone.ownerCharacterId === characterId && (
+                    <Tooltip
+                      label={t("zoneList.edit")}
+                      openDelay={500}
+                      transitionProps={{ duration: 300 }}
+                    >
+                      <ActionIcon
+                        variant="transparent"
+                        size="sm"
+                        onClick={() => navigate(`/zone/${zone.id}/edit`)}
+                      >
+                        <FontAwesomeIcon icon={faGear} />
+                      </ActionIcon>
+                    </Tooltip>
+                  )}
+                  <Button
+                    size="compact-sm"
+                    radius="xl"
+                    disabled={inZone}
+                    onClick={() =>
+                      !join.isPending && join.mutate({ zoneId: zone.id })
+                    }
+                  >
+                    {t("zoneList.join")}
+                  </Button>
+                </div>
               </div>
               <Text size="sm" c="dimmed" className="mt-2">
                 {zone.description}

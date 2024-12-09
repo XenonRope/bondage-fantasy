@@ -57,7 +57,7 @@ export class ZoneObjectDao {
     }));
 
     await this.getCollection().deleteMany({
-      $and: [{ zoneId: params.zoneId, ...positionsFilters }],
+      $and: [{ zoneId: params.zoneId }, ...positionsFilters],
     });
   }
 

@@ -49,6 +49,7 @@ export interface ZoneSearchRequest {
 export interface ZoneSearchResponse {
   zones: Array<{
     id: number;
+    ownerCharacterId: number;
     name: string;
     description: string;
   }>;

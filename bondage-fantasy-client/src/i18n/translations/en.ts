@@ -53,6 +53,7 @@ export const en: ResourceLanguage = {
     "characterCreation.createCharacter": "Create character",
     "characterList.createNewCharacter": "Create new character",
     "zoneCreation.createZone": "Create zone",
+    "zoneCreation.modifyZone": "Modify zone",
     "zoneCreation.removeField": "Remove field",
     "zoneCreation.allowToLeaveZoneOnThisField":
       "Allow to leave zone on this field",
@@ -61,6 +62,7 @@ export const en: ResourceLanguage = {
     "zoneCreation.yourZoneHasNoEntrance":
       "Your zone has no entrance. You should decide on which field your guests will start their adventure.",
     "zoneList.join": "Join",
+    "zoneList.edit": "Edit",
     "explore.leave": "Leave",
     "explore.move": "Move",
   },

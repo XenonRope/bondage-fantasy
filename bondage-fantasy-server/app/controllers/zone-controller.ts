@@ -41,6 +41,7 @@ export default class ZoneController {
     return {
       zones: zones.map((zone) => ({
         id: zone.id,
+        ownerCharacterId: zone.ownerCharacterId,
         name: zone.name,
         description: zone.description,
       })),

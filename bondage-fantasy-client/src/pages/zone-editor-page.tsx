@@ -1,10 +1,11 @@
 import { zoneApi } from "../api/zone-api";
 import { ZoneMap } from "../components/zone-map";
 import { errorService } from "../services/error-service";
+import { useAppStore } from "../store";
 import { Validators } from "../utils/validators";
 import { Alert, Button, Checkbox, TextInput } from "@mantine/core";
 import { FormErrors, useForm } from "@mantine/form";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   doesConnectionKeyContainFieldKey,
   Field,
@@ -25,23 +26,24 @@ import {
   ZONE_NAME_MAX_LENGTH,
   ZONE_NAME_MIN_LENGTH,
   ZoneCreateRequest,
+  ZoneEditRequest,
 } from "bondage-fantasy-common";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router";
+import { useNavigate, useParams } from "react-router";
+
+interface ZoneFormField {
+  name: string;
+  description: string;
+  canLeave: boolean;
+}
 
 interface ZoneForm {
   name: string;
   description: string;
   entrance?: FieldKey;
-  fields: {
-    [key: FieldKey]: {
-      name: string;
-      description: string;
-      canLeave: boolean;
-    };
-  };
-  connections: { [key: FieldConnectionKey]: true };
+  fields: Record<FieldKey, ZoneFormField>;
+  connections: Record<FieldConnectionKey, true>;
 }
 
 export function ZoneEditorPage() {
@@ -66,6 +68,32 @@ export function ZoneEditorPage() {
     onSuccess: () => navigate("/zones"),
     onError: (error) => errorService.handleUnexpectedError(error),
   });
+  const editZone = useMutation({
+    mutationFn: async (request: ZoneEditRequest) => {
+      const sessionData = await zoneApi.edit(request);
+      useAppStore.getState().updateSessionData(sessionData);
+    },
+    onSuccess: () => navigate("/zones"),
+    onError: (error) => errorService.handleUnexpectedError(error),
+  });
+  const { zoneId } = useParams();
+  const zone = useQuery({
+    queryKey: ["zone", zoneId],
+    queryFn: async () =>
+      zoneId ? await zoneApi.getById(parseInt(zoneId)) : undefined,
+  });
+  useEffect(() => {
+    if (zone.data) {
+      form.setValues({
+        name: zone.data.name,
+        description: zone.data.description,
+        entrance: getFieldKey(zone.data.entrance),
+        fields: mapFieldsToFormFields(zone.data.fields),
+        connections: mapConnectionsToFormConnections(zone.data.connections),
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [zone.data]);
 
   function validateForm(values: ZoneForm): FormErrors {
     const errors: FormErrors = {
@@ -203,14 +231,59 @@ export function ZoneEditorPage() {
     };
   }
 
+  function prepareZoneEditRequest(): ZoneEditRequest {
+    return {
+      zoneId: parseInt(zoneId!),
+      name: form.getValues().name,
+      description: form.getValues().description,
+      entrance: getPositionFromFieldKey(form.getValues().entrance!),
+      fields: getFieldsAsArray(),
+      connections: getConnectionsAsArray(),
+    };
+  }
+
+  function mapFieldsToFormFields(
+    fields: Field[],
+  ): Record<FieldKey, ZoneFormField> {
+    const result: Record<FieldKey, ZoneFormField> = {};
+    for (const field of fields) {
+      result[getFieldKey(field)] = {
+        name: field.name,
+        description: field.description,
+        canLeave: field.canLeave,
+      };
+    }
+    return result;
+  }
+
+  function mapConnectionsToFormConnections(
+    connections: FieldConnection[],
+  ): Record<FieldConnectionKey, true> {
+    const result: Record<FieldConnectionKey, true> = {};
+    for (const connection of connections) {
+      result[getFieldConnectionKey(connection)] = true;
+    }
+    return result;
+  }
+
+  if (zoneId && !zone.data) {
+    return <></>;
+  }
+
   return (
     <div className="flex h-full">
       <form
-        onSubmit={form.onSubmit(
-          () =>
-            !createZone.isPending &&
-            createZone.mutate(prepareZoneCreateRequest()),
-        )}
+        onSubmit={form.onSubmit(() => {
+          if (zoneId) {
+            if (!editZone.isPending) {
+              editZone.mutate(prepareZoneEditRequest());
+            }
+          } else {
+            if (!createZone.isPending) {
+              createZone.mutate(prepareZoneCreateRequest());
+            }
+          }
+        })}
         className="flex flex-col h-full w-1/2 border-r border-app-shell p-md"
       >
         {form.errors.entrance && (
@@ -245,9 +318,16 @@ export function ZoneEditorPage() {
           />
         </div>
         <div>
-          <Button type="submit" className="mt-4">
-            {t("zoneCreation.createZone")}
-          </Button>
+          {zoneId && (
+            <Button type="submit" className="mt-4">
+              {t("zoneCreation.modifyZone")}
+            </Button>
+          )}
+          {!zoneId && (
+            <Button type="submit" className="mt-4">
+              {t("zoneCreation.createZone")}
+            </Button>
+          )}
         </div>
       </form>
       <div className="w-1/2 p-md">

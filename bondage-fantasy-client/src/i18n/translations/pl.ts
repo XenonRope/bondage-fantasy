@@ -50,6 +50,7 @@ export const pl: ResourceLanguage = {
     "characterCreation.createCharacter": "Stwórz postać",
     "characterList.createNewCharacter": "Stwórz nową postać",
     "zoneCreation.createZone": "Stwórz strefę",
+    "zoneCreation.modifyZone": "Modyfikuj strefę",
     "zoneCreation.removeField": "Usuń pole",
     "zoneCreation.allowToLeaveZoneOnThisField":
       "Pozwól opuścić strefę na tym polu",
@@ -58,6 +59,7 @@ export const pl: ResourceLanguage = {
     "zoneCreation.yourZoneHasNoEntrance":
       "Twoja strefa nie ma wejścia. Powinieneś zdecydować, na którym polu twoi goście rozpoczną przygodę.",
     "zoneList.join": "Dołącz",
+    "zoneList.edit": "Edytuj",
     "explore.leave": "Wyjdź",
     "explore.move": "Idź",
   },
