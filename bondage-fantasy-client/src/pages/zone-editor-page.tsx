@@ -29,7 +29,7 @@ import {
   ZoneEditRequest,
 } from "bondage-fantasy-common";
 import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { Translation, useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router";
 
 interface ZoneFormField {
@@ -105,9 +105,11 @@ export function ZoneEditorPage() {
         ZONE_DESCRIPTION_MIN_LENGTH,
         ZONE_DESCRIPTION_MAX_LENGTH,
       )(values.description),
-      entrance: Validators.notEmpty(t("zoneCreation.yourZoneHasNoEntrance"))(
-        values.entrance,
-      ),
+      entrance: Validators.notEmpty(
+        <Translation>
+          {(t) => t("zoneCreation.yourZoneHasNoEntrance")}
+        </Translation>,
+      )(values.entrance),
     };
     for (const [fieldKey, field] of Object.entries(values.fields)) {
       errors[`fields.${fieldKey}.name`] = Validators.inRange(
