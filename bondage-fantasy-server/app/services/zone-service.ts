@@ -91,14 +91,10 @@ export class ZoneService {
     const positions = params.fields.map((field) => field.position);
 
     await lockService.run(LOCKS.zone(params.zoneId), "1s", async () => {
-      if (
-        !(await this.zoneDao.isCharacterOwnerOfZone(
-          params.characterId,
-          params.zoneId,
-        ))
-      ) {
-        throw new NoAccessToZoneException();
-      }
+      await this.assertCharacterIsOwnerOfZone(
+        params.characterId,
+        params.zoneId,
+      );
 
       await this.zoneObjectDao.deleteManyInZoneExcludingPositions({
         zoneId: params.zoneId,
@@ -217,6 +213,15 @@ export class ZoneService {
         );
       },
     );
+  }
+
+  async assertCharacterIsOwnerOfZone(
+    characterId: number,
+    zoneId: number,
+  ): Promise<void> {
+    if (!(await this.zoneDao.isCharacterOwnerOfZone(characterId, zoneId))) {
+      throw new NoAccessToZoneException();
+    }
   }
 
   private validateFields(fields: Field[]): void {

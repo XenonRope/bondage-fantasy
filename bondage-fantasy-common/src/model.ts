@@ -107,3 +107,9 @@ export interface SessionData {
   character?: Character;
   zone?: ZoneVision;
 }
+
+export class Npc {
+  id: number;
+  zoneId: number;
+  name: string;
+}

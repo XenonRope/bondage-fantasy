@@ -63,3 +63,8 @@ export interface ZoneJoinRequest {
 export interface ZoneMoveRequest {
   destination: Position;
 }
+
+export interface NpcCreateRequest {
+  zoneId: number;
+  name: string;
+}

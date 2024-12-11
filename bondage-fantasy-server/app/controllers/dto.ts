@@ -3,6 +3,7 @@ import {
   Character,
   Field,
   FieldConnection,
+  Npc,
   Position,
   SessionData,
   Zone,
@@ -74,5 +75,13 @@ export function sessionDataDto(sessionData: SessionData): SessionData {
       ? characterDto(sessionData.character)
       : undefined,
     zone: sessionData.zone,
+  };
+}
+
+export function npcDto(npc: Npc): Npc {
+  return {
+    id: npc.id,
+    name: npc.name,
+    zoneId: npc.zoneId,
   };
 }
