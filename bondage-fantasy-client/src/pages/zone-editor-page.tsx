@@ -3,7 +3,7 @@ import { ZoneMap } from "../components/zone-map";
 import { errorService } from "../services/error-service";
 import { useAppStore } from "../store";
 import { Validators } from "../utils/validators";
-import { Alert, Button, Checkbox, TextInput } from "@mantine/core";
+import { Alert, Button, Checkbox, Textarea, TextInput } from "@mantine/core";
 import { FormErrors, useForm } from "@mantine/form";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
@@ -293,16 +293,20 @@ export function ZoneEditorPage() {
             {form.errors.entrance}
           </Alert>
         )}
-        <div className="max-w-xs">
+        <div>
           <TextInput
             {...form.getInputProps("name")}
             key={form.key("name")}
             label={t("common.name")}
+            className="max-w-xs"
           />
-          <TextInput
+          <Textarea
             {...form.getInputProps("description")}
             key={form.key("description")}
             label={t("common.description")}
+            autosize
+            minRows={2}
+            maxRows={10}
             className="mt-2"
           />
         </div>
@@ -335,16 +339,20 @@ export function ZoneEditorPage() {
       <div className="w-1/2 p-md">
         {selectedField && (
           <>
-            <div className="max-w-xs">
+            <div>
               <TextInput
                 {...form.getInputProps(`fields.${selectedField}.name`)}
                 key={form.key(`fields.${selectedField}.name`)}
                 label={t("common.name")}
+                className="max-w-xs"
               />
-              <TextInput
+              <Textarea
                 {...form.getInputProps(`fields.${selectedField}.description`)}
                 key={form.key(`fields.${selectedField}.description`)}
                 label={t("common.description")}
+                autosize
+                minRows={2}
+                maxRows={10}
                 maxLength={ZONE_FIELD_DESCRIPTION_MAX_LENGTH}
                 className="mt-2"
               />

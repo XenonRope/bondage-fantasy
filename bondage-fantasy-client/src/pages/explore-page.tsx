@@ -6,7 +6,6 @@ import { useAppStore } from "../store";
 import { Button } from "@mantine/core";
 import { useMutation } from "@tanstack/react-query";
 import {
-  arePositionsEqual,
   FieldConnectionKey,
   FieldKey,
   findConnectionByConnectionKey,
@@ -126,15 +125,6 @@ export function ExplorePage() {
           <div className="p-md">
             <div className="font-medium">{selectedField?.name}</div>
             <div className="mt-4">
-              {selectedField.canLeave &&
-                arePositionsEqual(
-                  selectedField.position,
-                  zone.currentPosition,
-                ) && (
-                  <Button onClick={() => !leave.isPending && leave.mutate()}>
-                    {t("explore.leave")}
-                  </Button>
-                )}
               {isSelectedFieldConnectedToCurrentPosition && (
                 <Button
                   onClick={() =>
