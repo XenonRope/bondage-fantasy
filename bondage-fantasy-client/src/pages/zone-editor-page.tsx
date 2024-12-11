@@ -80,7 +80,7 @@ export function ZoneEditorPage() {
   const zone = useQuery({
     queryKey: ["zone", zoneId],
     queryFn: async () =>
-      zoneId ? await zoneApi.getById(parseInt(zoneId)) : undefined,
+      zoneId ? await zoneApi.getById(parseInt(zoneId)) : null,
   });
   useEffect(() => {
     if (zone.data) {
