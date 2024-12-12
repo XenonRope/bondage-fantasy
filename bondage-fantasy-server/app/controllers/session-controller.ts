@@ -33,7 +33,7 @@ export default class SessionController {
       throw new InvalidUsernameOrPasswordException();
     }
 
-    await ctx.auth.use("web").login(new SessionUser(account.id));
+    await ctx.auth.use("web").login(new SessionUser(account.id), true);
 
     const sessionData = await this.sessionService.getSessionData({
       account,
