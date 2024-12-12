@@ -110,10 +110,11 @@ export default function AccountRegistrationPage() {
 
   return (
     <form
-      onSubmit={form.onSubmit(
-        (values) =>
-          !registerAccount.isPending && registerAccount.mutate(values),
-      )}
+      onSubmit={form.onSubmit((values) => {
+        if (!registerAccount.isPending) {
+          registerAccount.mutate(values);
+        }
+      })}
       className="max-w-xs"
     >
       <TextInput

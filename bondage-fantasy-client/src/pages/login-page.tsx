@@ -58,9 +58,11 @@ export default function LoginPage() {
 
   return (
     <form
-      onSubmit={form.onSubmit(
-        (values) => !login.isPending && login.mutate(values),
-      )}
+      onSubmit={form.onSubmit((values) => {
+        if (!login.isPending) {
+          login.mutate(values);
+        }
+      })}
       className="max-w-xs"
     >
       <TextInput

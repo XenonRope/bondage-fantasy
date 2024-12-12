@@ -69,11 +69,11 @@ export function CharacterCreationPage() {
 
   return (
     <form
-      onSubmit={form.onSubmit(
-        (values) =>
-          !createCharacter.isPending &&
-          createCharacter.mutate(values as CharacterCreateRequest),
-      )}
+      onSubmit={form.onSubmit((values) => {
+        if (!createCharacter.isPending) {
+          createCharacter.mutate(values as CharacterCreateRequest);
+        }
+      })}
       className="max-w-xs"
     >
       <TextInput
