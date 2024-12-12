@@ -7,6 +7,7 @@ import {
   ActionIcon,
   Button,
   Card,
+  Pagination,
   SimpleGrid,
   Text,
   TextInput,
@@ -22,15 +23,25 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 
+const PAGE_SIZE = 24;
+
 export function ZoneListPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const inZone = useAppStore((state) => state.zone != null);
-  const [query, setQuery] = useState("");
+  const [filter, setFilter] = useState({
+    query: "",
+    page: 1,
+  });
   const searchResult = useQuery({
-    queryKey: ["zones", query],
-    queryFn: () => zoneApi.search({ query, offset: 0, limit: 24 }),
-    enabled: () => query.length >= ZONE_SEARCH_QUERY_MIN_LENGTH,
+    queryKey: ["zones", filter],
+    queryFn: () =>
+      zoneApi.search({
+        query: filter.query,
+        offset: (filter.page - 1) * PAGE_SIZE,
+        limit: PAGE_SIZE,
+      }),
+    enabled: () => filter.query.length >= ZONE_SEARCH_QUERY_MIN_LENGTH,
   });
   const join = useMutation({
     mutationFn: async (request: ZoneJoinRequest) => {
@@ -50,7 +61,9 @@ export function ZoneListPage() {
             label={t("common.search")}
             className="w-80"
             maxLength={ZONE_SEARCH_QUERY_MAX_LENGTH}
-            onChange={(event) => setQuery(event.currentTarget.value)}
+            onChange={(event) =>
+              setFilter({ query: event.currentTarget.value, page: 1 })
+            }
           />
           <Button
             className="shrink-0 ml-4"
@@ -107,6 +120,15 @@ export function ZoneListPage() {
             </Card>
           ))}
         </SimpleGrid>
+      </div>
+      <div className="flex flex-col items-center mt-8">
+        {searchResult.data && (
+          <Pagination
+            value={filter.page}
+            onChange={(page) => setFilter((filter) => ({ ...filter, page }))}
+            total={Math.ceil(searchResult.data.total / PAGE_SIZE)}
+          />
+        )}
       </div>
     </div>
   );
