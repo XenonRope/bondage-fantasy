@@ -4,7 +4,6 @@ import { RememberMeToken, sessionGuard } from "@adonisjs/auth/session";
 import type { Authenticators, InferAuthEvents } from "@adonisjs/auth/types";
 import {
   SessionGuardUser,
-  SessionUserProviderContract,
   SessionWithTokensUserProviderContract,
 } from "@adonisjs/auth/types/session";
 import { Secret } from "@adonisjs/core/helpers";
