@@ -311,7 +311,7 @@ export function ZoneEditorPage() {
           />
         </div>
 
-        <div className="min-h-[256px] max-w-fit overflow-auto mt-4">
+        <div className="min-h-[256px] max-w-fit overflow-auto mt-8">
           <ZoneMap
             fields={getFieldsAsArray()}
             connections={getConnectionsAsArray()}
@@ -323,16 +323,12 @@ export function ZoneEditorPage() {
             onConnectionClick={onConnectionClick}
           />
         </div>
-        <div>
+        <div className="mt-8">
           {zoneId && (
-            <Button type="submit" className="mt-4">
-              {t("zoneCreation.modifyZone")}
-            </Button>
+            <Button type="submit">{t("zoneCreation.modifyZone")}</Button>
           )}
           {!zoneId && (
-            <Button type="submit" className="mt-4">
-              {t("zoneCreation.createZone")}
-            </Button>
+            <Button type="submit">{t("zoneCreation.createZone")}</Button>
           )}
         </div>
       </form>
