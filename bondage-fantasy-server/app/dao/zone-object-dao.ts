@@ -20,9 +20,12 @@ export class ZoneObjectDao {
     })) as CharacterObject | null;
   }
 
-  async getManyByPosition(position: Position): Promise<ZoneObject[]> {
+  async getManyByZoneAndPosition(
+    zoneId: number,
+    position: Position,
+  ): Promise<ZoneObject[]> {
     return await this.getCollection()
-      .find({ "position.x": position.x, "position.y": position.y })
+      .find({ zoneId, "position.x": position.x, "position.y": position.y })
       .toArray();
   }
 

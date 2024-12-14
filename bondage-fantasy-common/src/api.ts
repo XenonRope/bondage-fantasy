@@ -26,6 +26,7 @@ export interface CharacterCreateRequest {
 export interface ZoneCreateRequest {
   name: string;
   description: string;
+  draft: boolean;
   entrance: Position;
   fields: Field[];
   connections: FieldConnection[];
@@ -35,6 +36,7 @@ export interface ZoneEditRequest {
   zoneId: number;
   name: string;
   description: string;
+  draft: boolean;
   entrance: Position;
   fields: Field[];
   connections: FieldConnection[];
@@ -52,6 +54,7 @@ export interface ZoneSearchResponse {
     ownerCharacterId: number;
     name: string;
     description: string;
+    draft: boolean;
   }>;
   total: number;
 }

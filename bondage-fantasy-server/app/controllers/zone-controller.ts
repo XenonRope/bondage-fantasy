@@ -30,11 +30,13 @@ export default class ZoneController {
   ) {}
 
   async search(ctx: HttpContext): Promise<ZoneSearchResponse> {
+    const characterId = await getCharacterId(ctx);
     const { query, offset, limit } = await ctx.request.validateUsing(
       zoneSearchRequestValidator,
     );
     const { zones, total } = await this.zoneDao.search({
       query,
+      characterId,
       offset,
       limit,
     });
@@ -44,6 +46,7 @@ export default class ZoneController {
         ownerCharacterId: zone.ownerCharacterId,
         name: zone.name,
         description: zone.description,
+        draft: zone.draft,
       })),
       total,
     };
@@ -51,7 +54,7 @@ export default class ZoneController {
 
   async create(ctx: HttpContext) {
     const characterId = await getCharacterId(ctx);
-    const { name, description, entrance, fields, connections } =
+    const { name, description, draft, entrance, fields, connections } =
       (await ctx.request.validateUsing(
         zoneCreateRequestValidator,
       )) as ZoneCreateRequest;
@@ -60,6 +63,7 @@ export default class ZoneController {
       ownerCharacterId: characterId,
       name,
       description,
+      draft,
       entrance,
       fields,
       connections,
@@ -81,7 +85,7 @@ export default class ZoneController {
 
   async edit(ctx: HttpContext): Promise<SessionData> {
     const characterId = await getCharacterId(ctx);
-    const { zoneId, name, description, entrance, fields, connections } =
+    const { zoneId, name, description, draft, entrance, fields, connections } =
       (await ctx.request.validateUsing(
         zoneEditRequestValidator,
       )) as ZoneEditRequest;
@@ -91,6 +95,7 @@ export default class ZoneController {
       characterId,
       name,
       description,
+      draft,
       entrance,
       fields,
       connections,

@@ -13,15 +13,19 @@ export class ZoneDao {
 
   async search(params: {
     query: string;
+    characterId: number;
     offset: number;
     limit: number;
   }): Promise<{ zones: Zone[]; total: number }> {
-    const filter: Filter<Zone> = params.query
-      ? {
-          name: { $regex: escapeRegex(params.query), $options: "i" },
-        }
-      : {};
-
+    const filters: Filter<Zone>[] = [
+      { $or: [{ ownerCharacterId: params.characterId }, { draft: false }] },
+    ];
+    if (params.query) {
+      filters.push({
+        name: { $regex: escapeRegex(params.query), $options: "i" },
+      });
+    }
+    const filter: Filter<Zone> = { $and: filters };
     const zones = await this.getCollection()
       .find(filter)
       .skip(params.offset)
@@ -54,6 +58,7 @@ export class ZoneDao {
     params: {
       name: string;
       description: string;
+      draft: boolean;
       entrance: Position;
       fields: Field[];
       connections: FieldConnection[];
@@ -65,6 +70,7 @@ export class ZoneDao {
         $set: {
           name: params.name,
           description: params.description,
+          draft: params.draft,
           entrance: params.entrance,
           fields: params.fields,
           connections: params.connections,

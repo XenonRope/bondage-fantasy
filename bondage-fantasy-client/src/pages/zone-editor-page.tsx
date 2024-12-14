@@ -28,7 +28,7 @@ import {
   ZoneCreateRequest,
   ZoneEditRequest,
 } from "bondage-fantasy-common";
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { Translation, useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router";
 
@@ -41,12 +41,14 @@ interface ZoneFormField {
 interface ZoneForm {
   name: string;
   description: string;
+  draft: boolean;
   entrance?: FieldKey;
   fields: Record<FieldKey, ZoneFormField>;
   connections: Record<FieldConnectionKey, true>;
 }
 
 export function ZoneEditorPage() {
+  const uniqueId = useId();
   const { t } = useTranslation();
   const navigate = useNavigate();
   const form = useForm<ZoneForm>({
@@ -54,6 +56,7 @@ export function ZoneEditorPage() {
     initialValues: {
       name: "",
       description: "",
+      draft: true,
       entrance: undefined,
       fields: {},
       connections: {},
@@ -78,15 +81,19 @@ export function ZoneEditorPage() {
   });
   const { zoneId } = useParams();
   const zone = useQuery({
-    queryKey: ["zone", zoneId],
+    queryKey: ["zone", zoneId, uniqueId],
     queryFn: async () =>
       zoneId ? await zoneApi.getById(parseInt(zoneId)) : null,
+    gcTime: 0,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
   useEffect(() => {
     if (zone.data) {
       form.setValues({
         name: zone.data.name,
         description: zone.data.description,
+        draft: zone.data.draft,
         entrance: getFieldKey(zone.data.entrance),
         fields: mapFieldsToFormFields(zone.data.fields),
         connections: mapConnectionsToFormConnections(zone.data.connections),
@@ -227,6 +234,7 @@ export function ZoneEditorPage() {
     return {
       name: form.getValues().name,
       description: form.getValues().description,
+      draft: form.getValues().draft,
       entrance: getPositionFromFieldKey(form.getValues().entrance!),
       fields: getFieldsAsArray(),
       connections: getConnectionsAsArray(),
@@ -238,6 +246,7 @@ export function ZoneEditorPage() {
       zoneId: parseInt(zoneId!),
       name: form.getValues().name,
       description: form.getValues().description,
+      draft: form.getValues().draft,
       entrance: getPositionFromFieldKey(form.getValues().entrance!),
       fields: getFieldsAsArray(),
       connections: getConnectionsAsArray(),
@@ -308,6 +317,14 @@ export function ZoneEditorPage() {
             minRows={2}
             maxRows={10}
             className="mt-2"
+          />
+          <Checkbox
+            {...form.getInputProps("draft", {
+              type: "checkbox",
+            })}
+            key={form.key("draft")}
+            label={t("common.draft")}
+            className="mt-4"
           />
         </div>
 

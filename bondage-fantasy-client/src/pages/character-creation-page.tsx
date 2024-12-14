@@ -1,4 +1,5 @@
 import { characterApi } from "../api/character-api";
+import { characterService } from "../services/character-service";
 import { errorService } from "../services/error-service";
 import { Button, ComboboxData, Select, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
@@ -11,11 +12,9 @@ import {
   Pronouns,
 } from "bondage-fantasy-common";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router";
 
 export function CharacterCreationPage() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const form = useForm({
     mode: "uncontrolled",
     initialValues: {
@@ -32,7 +31,7 @@ export function CharacterCreationPage() {
   const createCharacter = useMutation({
     mutationFn: (request: CharacterCreateRequest) =>
       characterApi.create(request),
-    onSuccess: () => navigate("/characters"),
+    onSuccess: (character) => characterService.selectCharacter(character.id),
     onError: (error) => errorService.handleUnexpectedError(error),
   });
 

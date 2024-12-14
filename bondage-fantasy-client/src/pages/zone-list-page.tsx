@@ -5,6 +5,7 @@ import { faGear } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   ActionIcon,
+  Badge,
   Button,
   Card,
   Pagination,
@@ -19,22 +20,24 @@ import {
   ZONE_SEARCH_QUERY_MIN_LENGTH,
   ZoneJoinRequest,
 } from "bondage-fantasy-common";
-import { useState } from "react";
+import { useId, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 
 const PAGE_SIZE = 24;
 
 export function ZoneListPage() {
+  const uniqueId = useId();
   const { t } = useTranslation();
   const navigate = useNavigate();
   const inZone = useAppStore((state) => state.zone != null);
+  const characterId = useAppStore((state) => state.character?.id);
   const [filter, setFilter] = useState({
     query: "",
     page: 1,
   });
   const searchResult = useQuery({
-    queryKey: ["zones", filter],
+    queryKey: ["zones", filter, characterId, uniqueId],
     queryFn: () =>
       zoneApi.search({
         query: filter.query,
@@ -51,7 +54,6 @@ export function ZoneListPage() {
     },
     onError: (error) => errorService.handleUnexpectedError(error),
   });
-  const characterId = useAppStore((state) => state.character?.id);
 
   return (
     <div>
@@ -85,7 +87,14 @@ export function ZoneListPage() {
               className="h-32"
             >
               <div className="flex justify-between items-center">
-                <span className="font-medium">{zone.name}</span>
+                <span>
+                  <span className="font-medium">{zone.name}</span>
+                  {zone.draft && (
+                    <Badge size="sm" className="ml-2">
+                      {t("common.draft")}
+                    </Badge>
+                  )}
+                </span>
                 <div className="flex items-center gap-2">
                   {zone.ownerCharacterId === characterId && (
                     <Tooltip
@@ -105,7 +114,7 @@ export function ZoneListPage() {
                   <Button
                     size="compact-sm"
                     radius="xl"
-                    disabled={inZone}
+                    disabled={inZone || zone.draft}
                     onClick={() =>
                       !join.isPending && join.mutate({ zoneId: zone.id })
                     }

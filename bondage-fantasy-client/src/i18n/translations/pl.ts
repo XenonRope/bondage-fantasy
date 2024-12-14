@@ -20,6 +20,7 @@ export const pl: ResourceLanguage = {
     "common.name": "Nazwa",
     "common.description": "Opis",
     "common.search": "Szukaj",
+    "common.draft": "Wersja robocza",
     "navbar.characters": "Postacie",
     "navbar.zones": "Strefy",
     "navbar.explore": "Eksploruj",

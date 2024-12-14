@@ -65,6 +65,7 @@ export const zoneCreateRequestValidator = vine.compile(
       .string()
       .minLength(ZONE_DESCRIPTION_MIN_LENGTH)
       .maxLength(ZONE_DESCRIPTION_MAX_LENGTH),
+    draft: vine.boolean(),
     entrance: zoneFieldPosition,
     fields: vine.array(zoneField),
     connections: vine.array(zoneFieldConnection),
@@ -82,6 +83,7 @@ export const zoneEditRequestValidator = vine.compile(
       .string()
       .minLength(ZONE_DESCRIPTION_MIN_LENGTH)
       .maxLength(ZONE_DESCRIPTION_MAX_LENGTH),
+    draft: vine.boolean(),
     entrance: zoneFieldPosition,
     fields: vine.array(zoneField),
     connections: vine.array(zoneFieldConnection),

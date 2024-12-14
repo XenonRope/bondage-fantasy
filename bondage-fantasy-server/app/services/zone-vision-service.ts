@@ -60,7 +60,8 @@ export class ZoneVisionService {
       throw new ZoneNotFoundException();
     }
 
-    const objects = await this.zoneObjectDao.getManyByPosition(
+    const objects = await this.zoneObjectDao.getManyByZoneAndPosition(
+      zone.id,
       characterObject.position,
     );
     const charactersIds = objects

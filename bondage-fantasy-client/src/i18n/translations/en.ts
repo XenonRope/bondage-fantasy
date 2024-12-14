@@ -21,6 +21,7 @@ export const en: ResourceLanguage = {
     "common.name": "Name",
     "common.description": "Description",
     "common.search": "Search",
+    "common.draft": "Draft",
     "navbar.characters": "Characters",
     "navbar.zones": "Zones",
     "navbar.explore": "Explore",

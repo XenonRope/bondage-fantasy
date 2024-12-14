@@ -7,6 +7,7 @@ import {
   CharacterNotInZoneException,
   InvalidZoneException,
   NoAccessToZoneException,
+  ZoneIsDraftException,
   ZoneNotFoundException,
 } from "#exceptions/exceptions";
 import { SequenceCode } from "#models/sequence-model";
@@ -37,13 +38,26 @@ export class ZoneService {
 
   async get(
     zoneId: number,
-    params: { checkAccessForCharacterId: number },
+    params?: {
+      checkAccessForCharacterId?: number;
+      checkLimitedAccessForCharacterId?: number;
+    },
   ): Promise<Zone> {
     const zone = await this.zoneDao.getById(zoneId);
     if (!zone) {
       throw new ZoneNotFoundException();
     }
-    if (zone.ownerCharacterId !== params.checkAccessForCharacterId) {
+    if (
+      params?.checkLimitedAccessForCharacterId != null &&
+      params.checkLimitedAccessForCharacterId !== zone.ownerCharacterId &&
+      zone.draft
+    ) {
+      throw new ZoneNotFoundException();
+    }
+    if (
+      params?.checkAccessForCharacterId != null &&
+      params.checkAccessForCharacterId !== zone.ownerCharacterId
+    ) {
       throw new NoAccessToZoneException();
     }
     return zone;
@@ -53,6 +67,7 @@ export class ZoneService {
     ownerCharacterId: number;
     name: string;
     description: string;
+    draft: boolean;
     entrance: Position;
     fields: Field[];
     connections: FieldConnection[];
@@ -66,6 +81,7 @@ export class ZoneService {
       id: await this.sequenceService.nextSequence(SequenceCode.ZONE),
       name: params.name,
       description: params.description,
+      draft: params.draft,
       entrance: params.entrance,
       fields: params.fields,
       connections: params.connections,
@@ -81,6 +97,7 @@ export class ZoneService {
     characterId: number;
     name: string;
     description: string;
+    draft: boolean;
     entrance: Position;
     fields: Field[];
     connections: FieldConnection[];
@@ -103,6 +120,7 @@ export class ZoneService {
       await this.zoneDao.update(params.zoneId, {
         name: params.name,
         description: params.description,
+        draft: params.draft,
         entrance: params.entrance,
         fields: params.fields,
         connections: params.connections,
@@ -122,9 +140,11 @@ export class ZoneService {
           throw new CharacterInZoneException();
         }
 
-        const zone = await this.zoneDao.getById(params.zoneId);
-        if (!zone) {
-          throw new ZoneNotFoundException();
+        const zone = await this.get(params.zoneId, {
+          checkLimitedAccessForCharacterId: params.characterId,
+        });
+        if (zone.draft) {
+          throw new ZoneIsDraftException();
         }
 
         const chracterObject: CharacterObject = {
