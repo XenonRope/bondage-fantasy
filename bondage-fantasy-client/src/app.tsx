@@ -1,3 +1,4 @@
+import { sessionApi } from "./api/session-api";
 import { zoneApi } from "./api/zone-api";
 import "./app.css";
 import "./i18n";
@@ -10,8 +11,8 @@ import HomePage from "./pages/home-page";
 import LoginPage from "./pages/login-page";
 import { ZoneEditorPage } from "./pages/zone-editor-page";
 import { ZoneListPage } from "./pages/zone-list-page";
+import { characterService } from "./services/character-service";
 import { errorService } from "./services/error-service";
-import { sessionService } from "./services/session-service";
 import { useAppStore } from "./store";
 import alertClasses from "./theme/Alert.module.css";
 import buttonClasses from "./theme/Button.module.css";
@@ -26,6 +27,7 @@ import {
   QueryCache,
   QueryClient,
   QueryClientProvider,
+  useQuery,
 } from "@tanstack/react-query";
 import { useEffect } from "react";
 import {
@@ -35,8 +37,6 @@ import {
   Routes,
   useNavigate,
 } from "react-router";
-
-sessionService.initializeSession();
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -85,6 +85,23 @@ function AppRouter() {
   useEffect(() => {
     useAppStore.getState().initialize({ navigate });
   }, [navigate]);
+  const sessionData = useQuery({
+    queryKey: ["sessionData"],
+    queryFn: async () => {
+      const characterId =
+        useAppStore.getState().character?.id ??
+        characterService.getDefaultCharacter();
+      return await sessionApi.getSessionData({
+        characterId,
+      });
+    },
+    gcTime: 0,
+  });
+  useEffect(() => {
+    if (sessionData.data) {
+      useAppStore.getState().updateSessionData(sessionData.data);
+    }
+  }, [sessionData.data]);
 
   return (
     <Routes>

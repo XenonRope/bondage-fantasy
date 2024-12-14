@@ -13,11 +13,6 @@ export interface Store {
   zone?: ZoneVision;
   initialize: (params: { navigate: NavigateFunction }) => void;
   updateSessionData: (sessionData: SessionData) => void;
-  selectCharacters: (params: {
-    character: Character;
-    zone?: ZoneVision;
-  }) => void;
-  setZone: (zone?: ZoneVision) => void;
 }
 
 export const useAppStore = create<Store>()((set) => ({
@@ -40,11 +35,4 @@ export const useAppStore = create<Store>()((set) => ({
       zone,
     }));
   },
-  selectCharacters: ({ character, zone }) =>
-    set((state) => ({
-      ...state,
-      character,
-      zone,
-    })),
-  setZone: (zone) => set((state) => ({ ...state, zone })),
 }));

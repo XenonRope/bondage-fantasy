@@ -5,7 +5,7 @@ import { errorService } from "./error-service";
 import { LoginRequest } from "bondage-fantasy-common";
 
 export class SessionService {
-  async initializeSession(): Promise<void> {
+  async refreshSession(): Promise<void> {
     try {
       const characterId = characterService.getDefaultCharacter();
       const sessionData = await sessionApi.getSessionData({
