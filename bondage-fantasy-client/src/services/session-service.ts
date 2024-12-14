@@ -18,19 +18,15 @@ export class SessionService {
   }
 
   async login(request: LoginRequest): Promise<void> {
-    try {
-      const characterId = characterService.getDefaultCharacter();
-      const sessionData = await sessionApi.login(request, { characterId });
-      useAppStore.getState().updateSessionData(sessionData);
-      if (sessionData.zone) {
-        useAppStore.getState().navigate?.("/explore");
-      } else if (sessionData.character) {
-        useAppStore.getState().navigate?.("/zones");
-      } else {
-        useAppStore.getState().navigate?.("/characters");
-      }
-    } catch (error) {
-      errorService.handleUnexpectedError(error);
+    const characterId = characterService.getDefaultCharacter();
+    const sessionData = await sessionApi.login(request, { characterId });
+    useAppStore.getState().updateSessionData(sessionData);
+    if (sessionData.zone) {
+      useAppStore.getState().navigate?.("/explore");
+    } else if (sessionData.character) {
+      useAppStore.getState().navigate?.("/zones");
+    } else {
+      useAppStore.getState().navigate?.("/characters");
     }
   }
 
