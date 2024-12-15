@@ -82,7 +82,7 @@ export function sessionDataDto(sessionData: SessionData): SessionData {
 export function npcDto(npc: Npc): Npc {
   return {
     id: npc.id,
+    ownerCharacterId: npc.ownerCharacterId,
     name: npc.name,
-    zoneId: npc.zoneId,
   };
 }

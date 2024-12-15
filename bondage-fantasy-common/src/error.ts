@@ -16,6 +16,7 @@ export enum ErrorCode {
   E_CANNOT_LEAVE = "E_CANNOT_LEAVE",
   E_CANNOT_MOVE = "E_CANNOT_MOVE",
   E_NO_ACCESS_TO_ZONE = "E_NO_ACCESS_TO_ZONE",
+  E_NPC_LIMIT_REACHED = "E_NPC_LIMIT_REACHED",
 }
 
 export interface ErrorResponse {

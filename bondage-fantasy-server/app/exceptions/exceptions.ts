@@ -151,3 +151,13 @@ export class NoAccessToZoneException extends ApplicationException {
     });
   }
 }
+
+export class NpcLimitReachedException extends ApplicationException {
+  constructor() {
+    super({
+      code: ErrorCode.E_NPC_LIMIT_REACHED,
+      message: "You cannot have more NPCs",
+      status: 422,
+    });
+  }
+}

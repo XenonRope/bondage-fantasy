@@ -111,6 +111,6 @@ export interface SessionData {
 
 export class Npc {
   id: number;
-  zoneId: number;
+  ownerCharacterId: number;
   name: string;
 }

@@ -68,6 +68,5 @@ export interface ZoneMoveRequest {
 }
 
 export interface NpcCreateRequest {
-  zoneId: number;
   name: string;
 }

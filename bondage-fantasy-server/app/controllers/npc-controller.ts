@@ -1,38 +1,35 @@
+import { NpcDao } from "#dao/npc-dao";
 import { NpcService } from "#services/npc-service";
 import { npcCreateRequestValidator } from "#validators/npc-validator";
 import { inject } from "@adonisjs/core";
 import { HttpContext } from "@adonisjs/core/http";
-import { Npc } from "bondage-fantasy-common";
+import { Npc, NpcCreateRequest } from "bondage-fantasy-common";
+import { npcDto } from "./dto.js";
 import { getCharacterId } from "./utils.js";
-import { ZoneService } from "#services/zone-service";
-import { NpcDao } from "#dao/npc-dao";
 
 @inject()
 export default class NpcController {
   constructor(
     private npcService: NpcService,
     private npcDao: NpcDao,
-    private zoneService: ZoneService,
   ) {}
 
-  async create(ctx: HttpContext): Promise<Npc> {
+  async create(ctx: HttpContext): Promise<void> {
     const characterId = await getCharacterId(ctx);
-    const { zoneId, name } = await ctx.request.validateUsing(
+    const { name }: NpcCreateRequest = await ctx.request.validateUsing(
       npcCreateRequestValidator,
     );
 
-    return await this.npcService.create({
+    await this.npcService.create({
       characterId,
-      zoneId,
       name,
     });
   }
 
-  async listByZoneId(ctx: HttpContext): Promise<Npc[]> {
-    const zoneId: number = ctx.params.zoneId;
+  async list(ctx: HttpContext): Promise<Npc[]> {
     const characterId = await getCharacterId(ctx);
-    await this.zoneService.assertCharacterIsOwnerOfZone(characterId, zoneId);
+    const npcList = await this.npcDao.getManyByCharacterId(characterId);
 
-    return await this.npcDao.getManyByZoneId(zoneId);
+    return npcList.map(npcDto);
   }
 }

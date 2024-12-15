@@ -23,3 +23,4 @@ export const ZONE_SEARCH_QUERY_MAX_LENGTH = ZONE_NAME_MAX_LENGTH;
 
 export const NPC_NAME_MIN_LENGTH = 1;
 export const NPC_NAME_MAX_LENGTH = 40;
+export const NPC_MAX_COUNT = 5;

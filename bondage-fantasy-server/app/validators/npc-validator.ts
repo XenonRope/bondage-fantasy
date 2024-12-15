@@ -6,7 +6,6 @@ import {
 
 export const npcCreateRequestValidator = vine.compile(
   vine.object({
-    zoneId: vine.number().withoutDecimals(),
     name: vine
       .string()
       .minLength(NPC_NAME_MIN_LENGTH)
