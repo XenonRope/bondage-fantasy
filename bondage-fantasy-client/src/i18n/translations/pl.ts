@@ -24,6 +24,7 @@ export const pl: ResourceLanguage = {
     "navbar.characters": "Postacie",
     "navbar.zones": "Strefy",
     "navbar.explore": "Eksploruj",
+    "navbar.npc": "NPC",
     "pronouns.SHE_HER": "Ona/Jej",
     "pronouns.HE_HIM": "On/Jego",
     "error.unexpecterError": "Niespodziewany błąd",
@@ -63,5 +64,7 @@ export const pl: ResourceLanguage = {
     "zoneList.edit": "Edytuj",
     "explore.leave": "Wyjdź",
     "explore.move": "Idź",
+    "npcList.createNewNpc": "Stwórz nowego NPC",
+    "npcCreation.createNpc": "Stwórz NPC",
   },
 };

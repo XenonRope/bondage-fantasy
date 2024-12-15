@@ -9,6 +9,8 @@ import CharacterListPage from "./pages/character-list-page";
 import { ExplorePage } from "./pages/explore-page";
 import HomePage from "./pages/home-page";
 import LoginPage from "./pages/login-page";
+import { NpcCreationPage } from "./pages/npc-creation-page";
+import NpcListPage from "./pages/npc-list";
 import { ZoneEditorPage } from "./pages/zone-editor-page";
 import { ZoneListPage } from "./pages/zone-list-page";
 import { characterService } from "./services/character-service";
@@ -113,6 +115,8 @@ function AppRouter() {
           <Route path="/characters" element={<CharacterListPage />} />
           <Route path="/new-character" element={<CharacterCreationPage />} />
           <Route path="/zones" element={<ZoneListPage />} />
+          <Route path="/npc" element={<NpcListPage />} />
+          <Route path="/new-npc" element={<NpcCreationPage />} />
         </Route>
       </Route>
       <Route

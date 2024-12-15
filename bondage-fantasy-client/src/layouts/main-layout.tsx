@@ -87,10 +87,13 @@ export function MainLayout(props: { fixedHeight?: boolean }) {
           />
         )}
         {character && (
-          <NavLink
-            onClick={() => navigate("/zones")}
-            label={t("navbar.zones")}
-          />
+          <>
+            <NavLink
+              onClick={() => navigate("/zones")}
+              label={t("navbar.zones")}
+            />
+            <NavLink onClick={() => navigate("/npc")} label={t("navbar.npc")} />
+          </>
         )}
         {account && (
           <NavLink

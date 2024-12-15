@@ -38,8 +38,8 @@ router
         router.post("/zones/join", [ZoneController, "join"]);
         router.post("/zones/leave", [ZoneController, "leave"]);
         router.post("/zones/move", [ZoneController, "move"]);
-        router.post("/npc", [NpcController, "create"]);
         router.get("/npc", [NpcController, "list"]);
+        router.post("/npc", [NpcController, "create"]);
       })
       .use(middleware.auth());
   })

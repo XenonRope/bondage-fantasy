@@ -25,6 +25,7 @@ export const en: ResourceLanguage = {
     "navbar.characters": "Characters",
     "navbar.zones": "Zones",
     "navbar.explore": "Explore",
+    "navbar.npc": "NPC",
     "pronouns.SHE_HER": "She/Her",
     "pronouns.HE_HIM": "He/Him",
     "genitals.VAGINA": "Vagina",
@@ -66,5 +67,7 @@ export const en: ResourceLanguage = {
     "zoneList.edit": "Edit",
     "explore.leave": "Leave",
     "explore.move": "Move",
+    "npcList.createNewNpc": "Create new NPC",
+    "npcCreation.createNpc": "Create NPC",
   },
 };
