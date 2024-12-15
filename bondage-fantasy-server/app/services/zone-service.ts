@@ -117,6 +117,9 @@ export class ZoneService {
         zoneId: params.zoneId,
         positions,
       });
+      if (params.draft) {
+        await this.zoneObjectDao.deleteCharacterObjectsByZoneId(params.zoneId);
+      }
       await this.zoneDao.update(params.zoneId, {
         name: params.name,
         description: params.description,

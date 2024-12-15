@@ -9,9 +9,7 @@ export function CharacterRequired() {
     if (!character) {
       navigate("/characters");
     }
-    // Check if character is selected only at the first render
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [character, navigate]);
 
   return character ? <Outlet /> : <></>;
 }

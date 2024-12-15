@@ -9,9 +9,7 @@ export function ZoneRequired() {
     if (!zone) {
       navigate("/zones");
     }
-    // Check if character is inside zone only at the first render
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [zone, navigate]);
 
   return zone ? <Outlet /> : <></>;
 }

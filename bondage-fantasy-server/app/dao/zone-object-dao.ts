@@ -44,6 +44,13 @@ export class ZoneObjectDao {
     });
   }
 
+  async deleteCharacterObjectsByZoneId(zoneId: number): Promise<void> {
+    await this.getCollection().deleteMany({
+      type: ObjectType.CHARACTER,
+      zoneId,
+    });
+  }
+
   async deleteManyInZoneExcludingPositions(params: {
     zoneId: number;
     positions: Position[];
