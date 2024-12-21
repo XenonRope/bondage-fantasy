@@ -294,7 +294,7 @@ export function ZoneEditorPage() {
     return result;
   }
 
-  if (zoneId && !zone.data) {
+  if (zoneId && (!zone.data || objects.data == null)) {
     return <></>;
   }
 
