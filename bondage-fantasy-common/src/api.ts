@@ -1,10 +1,9 @@
 import {
-  Genitals,
-  Pronouns,
   Field,
   FieldConnection,
+  Genitals,
   Position,
-  Zone,
+  Pronouns,
 } from "./model.js";
 
 export interface AccountRegisterRequest {

@@ -1,6 +1,8 @@
 import { ZoneDao } from "#dao/zone-dao";
+import { ZoneObjectDao } from "#dao/zone-object-dao";
 import { SessionService } from "#services/session-service";
 import { ZoneService } from "#services/zone-service";
+import { ZoneVisionService } from "#services/zone-vision-service";
 import {
   zoneCreateRequestValidator,
   zoneEditRequestValidator,
@@ -17,6 +19,7 @@ import {
   ZoneEditRequest,
   ZoneJoinRequest,
   ZoneSearchResponse,
+  ZoneVisionObject
 } from "bondage-fantasy-common";
 import { zoneDto } from "./dto.js";
 import { getCharacterId } from "./utils.js";
@@ -27,6 +30,8 @@ export default class ZoneController {
     private zoneService: ZoneService,
     private zoneDao: ZoneDao,
     private sessionService: SessionService,
+    private zoneObjectDao: ZoneObjectDao,
+    private zoneVisionService: ZoneVisionService,
   ) {}
 
   async search(ctx: HttpContext): Promise<ZoneSearchResponse> {
@@ -81,6 +86,16 @@ export default class ZoneController {
     });
 
     return zoneDto(zone);
+  }
+
+  async getObjectsByZoneId(ctx: HttpContext): Promise<ZoneVisionObject[]> {
+    const zoneId: number = ctx.params.id;
+    const characterId = await getCharacterId(ctx);
+
+    await this.zoneService.assertCharacterIsOwnerOfZone(characterId, zoneId);
+    const objects = await this.zoneObjectDao.getManyByZone(zoneId);
+
+    return this.zoneVisionService.mapObjectsToZoneVisionObjects(objects);
   }
 
   async edit(ctx: HttpContext): Promise<SessionData> {

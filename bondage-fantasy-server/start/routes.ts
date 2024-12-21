@@ -33,6 +33,9 @@ router
         router
           .get("/zones/:id", [ZoneController, "getById"])
           .where("id", router.matchers.number());
+        router
+          .get("/zones/:id/objects", [ZoneController, "getObjectsByZoneId"])
+          .where("id", router.matchers.number());
         router.post("/zones/edit", [ZoneController, "edit"]);
         router.post("/zones/search", [ZoneController, "search"]);
         router.post("/zones/join", [ZoneController, "join"]);

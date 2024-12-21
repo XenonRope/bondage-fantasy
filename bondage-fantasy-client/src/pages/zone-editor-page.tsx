@@ -1,5 +1,6 @@
 import { zoneApi } from "../api/zone-api";
 import { ZoneMap } from "../components/zone-map";
+import { ZoneObjectList } from "../components/zone-object-list";
 import { errorService } from "../services/error-service";
 import { useAppStore } from "../store";
 import { Validators } from "../utils/validators";
@@ -7,6 +8,7 @@ import { Alert, Button, Checkbox, Textarea, TextInput } from "@mantine/core";
 import { FormErrors, useForm } from "@mantine/form";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
+  arePositionsEqual,
   doesConnectionKeyContainFieldKey,
   Field,
   FieldConnection,
@@ -27,6 +29,7 @@ import {
   ZONE_NAME_MIN_LENGTH,
   ZoneCreateRequest,
   ZoneEditRequest,
+  ZoneVisionObject,
 } from "bondage-fantasy-common";
 import { useEffect, useId, useState } from "react";
 import { Translation, useTranslation } from "react-i18next";
@@ -36,6 +39,7 @@ interface ZoneFormField {
   name: string;
   description: string;
   canLeave: boolean;
+  objects: ZoneVisionObject[];
 }
 
 interface ZoneForm {
@@ -88,19 +92,27 @@ export function ZoneEditorPage() {
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
   });
+  const objects = useQuery({
+    queryKey: ["zoneObjects", zoneId, uniqueId],
+    queryFn: async () =>
+      zoneId ? await zoneApi.getObjectsByZoneId(parseInt(zoneId)) : null,
+    gcTime: 0,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+  });
   useEffect(() => {
-    if (zone.data) {
+    if (zone.data && objects.data) {
       form.setValues({
         name: zone.data.name,
         description: zone.data.description,
         draft: zone.data.draft,
         entrance: getFieldKey(zone.data.entrance),
-        fields: mapFieldsToFormFields(zone.data.fields),
+        fields: mapFieldsToFormFields(zone.data.fields, objects.data),
         connections: mapConnectionsToFormConnections(zone.data.connections),
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [zone.data]);
+  }, [zone.data, objects.data]);
 
   function validateForm(values: ZoneForm): FormErrors {
     const errors: FormErrors = {
@@ -145,6 +157,7 @@ export function ZoneEditorPage() {
         name: "",
         description: "",
         canLeave: false,
+        objects: [],
       };
       form.setFieldValue(`fields.${fieldKey}`, newField);
     }
@@ -255,6 +268,7 @@ export function ZoneEditorPage() {
 
   function mapFieldsToFormFields(
     fields: Field[],
+    objects: ZoneVisionObject[],
   ): Record<FieldKey, ZoneFormField> {
     const result: Record<FieldKey, ZoneFormField> = {};
     for (const field of fields) {
@@ -262,6 +276,9 @@ export function ZoneEditorPage() {
         name: field.name,
         description: field.description,
         canLeave: field.canLeave,
+        objects: objects.filter((object) =>
+          arePositionsEqual(object.position, field.position),
+        ),
       };
     }
     return result;
@@ -382,6 +399,11 @@ export function ZoneEditorPage() {
                 }
                 label={t("zoneCreation.allowToLeaveZoneOnThisField")}
                 className="mt-4"
+              />
+            </div>
+            <div className="mt-4">
+              <ZoneObjectList
+                objects={form.getValues().fields[selectedField].objects}
               />
             </div>
             <div className="mt-4">

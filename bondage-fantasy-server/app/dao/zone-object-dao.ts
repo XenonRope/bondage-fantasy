@@ -20,6 +20,10 @@ export class ZoneObjectDao {
     })) as CharacterObject | null;
   }
 
+  async getManyByZone(zoneId: number): Promise<ZoneObject[]> {
+    return await this.getCollection().find({ zoneId }).toArray();
+  }
+
   async getManyByZoneAndPosition(
     zoneId: number,
     position: Position,

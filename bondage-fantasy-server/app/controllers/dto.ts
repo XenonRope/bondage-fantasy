@@ -6,7 +6,7 @@ import {
   Npc,
   Position,
   SessionData,
-  Zone,
+  Zone
 } from "bondage-fantasy-common";
 
 export function accountDto(account: Account): Account {
@@ -29,7 +29,7 @@ export function characterDto(character: Character): Character {
   return dto as Character;
 }
 
-export function zoneFieldPositionDto(position: Position): Position {
+export function positionDto(position: Position): Position {
   return {
     x: position.x,
     y: position.y,
@@ -38,7 +38,7 @@ export function zoneFieldPositionDto(position: Position): Position {
 
 export function zoneFieldDto(field: Field): Field {
   return {
-    position: zoneFieldPositionDto(field.position),
+    position: positionDto(field.position),
     name: field.name,
     description: field.description,
     canLeave: field.canLeave,
@@ -50,8 +50,8 @@ export function zoneFieldConnectionDto(
 ): FieldConnection {
   return {
     positions: [
-      zoneFieldPositionDto(connection.positions[0]),
-      zoneFieldPositionDto(connection.positions[1]),
+      positionDto(connection.positions[0]),
+      positionDto(connection.positions[1]),
     ],
   };
 }

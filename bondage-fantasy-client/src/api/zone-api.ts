@@ -8,11 +8,16 @@ import {
   ZoneMoveRequest,
   ZoneSearchRequest,
   ZoneSearchResponse,
+  ZoneVisionObject,
 } from "bondage-fantasy-common";
 
 class ZoneApi {
   async getById(id: number): Promise<Zone> {
     return await httpClient.get(`zones/${id}`);
+  }
+
+  async getObjectsByZoneId(zoneId: number): Promise<ZoneVisionObject[]> {
+    return await httpClient.get(`zones/${zoneId}/objects`);
   }
 
   async search(request: ZoneSearchRequest): Promise<ZoneSearchResponse> {

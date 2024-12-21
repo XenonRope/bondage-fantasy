@@ -64,13 +64,7 @@ export class ZoneVisionService {
       zone.id,
       characterObject.position,
     );
-    const charactersIds = objects
-      .filter((object) => object.type === ObjectType.CHARACTER)
-      .map((object) => (object as CharacterObject).characterId);
-    const characters = await this.characterDao.getNamesByIds(charactersIds);
-    const charactersNamesByIds = new Map(
-      characters.map(({ id, name }) => [id, name]),
-    );
+    const zoneVisionObjects = await this.mapObjectsToZoneVisionObjects(objects);
     const currentField = zone.fields.find((field) =>
       arePositionsEqual(field.position, characterObject.position),
     )!;
@@ -87,11 +81,8 @@ export class ZoneVisionService {
         position: field.position,
         name: field.name,
         canLeave: field.canLeave,
-        objects: this.mapObjectsToZoneVisionObjects(
-          objects.filter((object) =>
-            arePositionsEqual(object.position, field.position),
-          ),
-          charactersNamesByIds,
+        objects: zoneVisionObjects.filter((object) =>
+          arePositionsEqual(object.position, field.position),
         ),
       })),
       connections: zone.connections.map((connection) => ({
@@ -100,10 +91,17 @@ export class ZoneVisionService {
     };
   }
 
-  private mapObjectsToZoneVisionObjects(
+  async mapObjectsToZoneVisionObjects(
     objects: ZoneObject[],
-    charactersNamesByIds: Map<number, string>,
-  ): ZoneVisionObject[] {
+  ): Promise<ZoneVisionObject[]> {
+    const charactersIds = objects
+      .filter((object) => object.type === ObjectType.CHARACTER)
+      .map((object) => (object as CharacterObject).characterId);
+    const characters = await this.characterDao.getNamesByIds(charactersIds);
+    const charactersNamesByIds = new Map(
+      characters.map(({ id, name }) => [id, name]),
+    );
+
     return objects.map((object) => {
       if (isCharacterObject(object)) {
         return {

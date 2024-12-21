@@ -109,8 +109,20 @@ export interface SessionData {
   zone?: ZoneVision;
 }
 
-export class Npc {
+export interface Npc {
   id: number;
   ownerCharacterId: number;
+  name: string;
+}
+
+export interface ZoneDtoObject {
+  id: number;
+  type: ObjectType;
+  position: Position;
+}
+
+export interface CharacterZoneDtoObject extends ZoneDtoObject {
+  type: ObjectType.CHARACTER;
+  characterId: number;
   name: string;
 }
