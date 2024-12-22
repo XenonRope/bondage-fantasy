@@ -251,6 +251,7 @@ export function ZoneEditorPage() {
       entrance: getPositionFromFieldKey(form.getValues().entrance!),
       fields: getFieldsAsArray(),
       connections: getConnectionsAsArray(),
+      objects: [],
     };
   }
 
@@ -263,6 +264,7 @@ export function ZoneEditorPage() {
       entrance: getPositionFromFieldKey(form.getValues().entrance!),
       fields: getFieldsAsArray(),
       connections: getConnectionsAsArray(),
+      objects: [],
     };
   }
 

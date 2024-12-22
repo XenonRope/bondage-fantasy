@@ -1,4 +1,5 @@
 import { CharacterDao } from "#dao/character-dao";
+import { NpcDao } from "#dao/npc-dao";
 import { ZoneDao } from "#dao/zone-dao";
 import { ZoneObjectDao } from "#dao/zone-object-dao";
 import {
@@ -10,10 +11,8 @@ import { inject } from "@adonisjs/core";
 import {
   arePositionsEqual,
   CharacterObject,
-  CharacterZoneVisionObject,
   Field,
   Genitals,
-  isCharacterObject,
   ObjectType,
   Pronouns,
   ZoneObject,
@@ -28,6 +27,7 @@ export class ZoneVisionService {
     private zoneObjectDao: ZoneObjectDao,
     private zoneDao: ZoneDao,
     private characterDao: CharacterDao,
+    private npcDao: NpcDao,
   ) {}
 
   async getVisionForCharacterIfInZone(
@@ -96,23 +96,35 @@ export class ZoneVisionService {
   ): Promise<ZoneVisionObject[]> {
     const charactersIds = objects
       .filter((object) => object.type === ObjectType.CHARACTER)
-      .map((object) => (object as CharacterObject).characterId);
+      .map((object) => object.characterId);
     const characters = await this.characterDao.getNamesByIds(charactersIds);
     const charactersNamesByIds = new Map(
       characters.map(({ id, name }) => [id, name]),
     );
+    const npcIds = objects
+      .filter((object) => object.type === ObjectType.NPC)
+      .map((object) => object.npcId);
+    const npcList = await this.npcDao.getNamesByIds(npcIds);
+    const npcNamesByIds = new Map(npcList.map(({ id, name }) => [id, name]));
 
     return objects.map((object) => {
-      if (isCharacterObject(object)) {
-        return {
-          id: object.id,
-          type: object.type,
-          position: object.position,
-          characterId: object.characterId,
-          name: charactersNamesByIds.get(object.characterId),
-        } as CharacterZoneVisionObject;
-      } else {
-        throw new Error(`Object type "${object.type}" is not supported`);
+      switch (object.type) {
+        case ObjectType.CHARACTER:
+          return {
+            id: object.id,
+            type: object.type,
+            position: object.position,
+            characterId: object.characterId,
+            name: charactersNamesByIds.get(object.characterId) ?? "",
+          };
+        case ObjectType.NPC:
+          return {
+            id: object.id,
+            type: object.type,
+            position: object.position,
+            npcId: object.npcId,
+            name: npcNamesByIds.get(object.npcId) ?? "",
+          };
       }
     });
   }

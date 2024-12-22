@@ -6,7 +6,7 @@ import {
   Npc,
   Position,
   SessionData,
-  Zone
+  Zone,
 } from "bondage-fantasy-common";
 
 export function accountDto(account: Account): Account {

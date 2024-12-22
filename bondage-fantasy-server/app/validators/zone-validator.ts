@@ -1,5 +1,6 @@
 import vine from "@vinejs/vine";
 import {
+  ObjectType,
   ZONE_DESCRIPTION_MAX_LENGTH,
   ZONE_DESCRIPTION_MIN_LENGTH,
   ZONE_FIELD_DESCRIPTION_MAX_LENGTH,
@@ -14,7 +15,7 @@ import {
   ZONE_SEARCH_QUERY_MIN_LENGTH,
 } from "bondage-fantasy-common";
 
-const zoneFieldPosition = vine.object({
+const position = vine.object({
   x: vine
     .number()
     .withoutDecimals()
@@ -28,7 +29,7 @@ const zoneFieldPosition = vine.object({
 });
 
 const zoneField = vine.object({
-  position: zoneFieldPosition,
+  position: position,
   name: vine
     .string()
     .minLength(ZONE_FIELD_NAME_MIN_LENGTH)
@@ -41,7 +42,7 @@ const zoneField = vine.object({
 });
 
 const zoneFieldConnection = vine.object({
-  positions: vine.array(zoneFieldPosition).fixedLength(2),
+  positions: vine.array(position).fixedLength(2),
 });
 
 export const zoneSearchRequestValidator = vine.compile(
@@ -55,6 +56,15 @@ export const zoneSearchRequestValidator = vine.compile(
   }),
 );
 
+export const zoneRequestNpcObject = vine.object({
+  id: vine.number().withoutDecimals().optional(),
+  type: vine.literal(ObjectType.NPC),
+  position: position,
+  npcId: vine.number().withoutDecimals(),
+});
+
+export const zoneRequestObject = vine.unionOfTypes([zoneRequestNpcObject]);
+
 export const zoneCreateRequestValidator = vine.compile(
   vine.object({
     name: vine
@@ -66,9 +76,10 @@ export const zoneCreateRequestValidator = vine.compile(
       .minLength(ZONE_DESCRIPTION_MIN_LENGTH)
       .maxLength(ZONE_DESCRIPTION_MAX_LENGTH),
     draft: vine.boolean(),
-    entrance: zoneFieldPosition,
+    entrance: position,
     fields: vine.array(zoneField),
     connections: vine.array(zoneFieldConnection),
+    objects: vine.array(zoneRequestObject),
   }),
 );
 
@@ -84,9 +95,10 @@ export const zoneEditRequestValidator = vine.compile(
       .minLength(ZONE_DESCRIPTION_MIN_LENGTH)
       .maxLength(ZONE_DESCRIPTION_MAX_LENGTH),
     draft: vine.boolean(),
-    entrance: zoneFieldPosition,
+    entrance: position,
     fields: vine.array(zoneField),
     connections: vine.array(zoneFieldConnection),
+    objects: vine.array(zoneRequestObject),
   }),
 );
 
@@ -98,6 +110,6 @@ export const zoneJoinRequestValidator = vine.compile(
 
 export const zoneMoveRequestValidator = vine.compile(
   vine.object({
-    destination: zoneFieldPosition,
+    destination: position,
   }),
 );

@@ -2,6 +2,7 @@ import {
   Field,
   FieldConnection,
   Genitals,
+  ObjectType,
   Position,
   Pronouns,
 } from "./model.js";
@@ -22,6 +23,18 @@ export interface CharacterCreateRequest {
   genitals: Genitals;
 }
 
+export type ZoneRequestObject = ZoneRequestNpcObject;
+
+export interface ZoneRequestObjectBase {
+  id?: number;
+  type: ObjectType;
+  position: Position;
+}
+
+export interface ZoneRequestNpcObject extends ZoneRequestObjectBase {
+  npcId: number;
+}
+
 export interface ZoneCreateRequest {
   name: string;
   description: string;
@@ -29,6 +42,7 @@ export interface ZoneCreateRequest {
   entrance: Position;
   fields: Field[];
   connections: FieldConnection[];
+  objects: ZoneRequestObject[];
 }
 
 export interface ZoneEditRequest {
@@ -39,6 +53,7 @@ export interface ZoneEditRequest {
   entrance: Position;
   fields: Field[];
   connections: FieldConnection[];
+  objects: ZoneRequestObject[];
 }
 
 export interface ZoneSearchRequest {

@@ -110,12 +110,3 @@ export function doesConnectionKeyContainFieldKey(
 ): boolean {
   return connectionKey.startsWith(fieldKey) || connectionKey.endsWith(fieldKey);
 }
-
-export function isCharacterObject(
-  object: ZoneVisionObject
-): object is CharacterZoneVisionObject;
-export function isCharacterObject(
-  object: ZoneObject
-): object is CharacterObject {
-  return object.type === ObjectType.CHARACTER;
-}

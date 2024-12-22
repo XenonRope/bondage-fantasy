@@ -3,7 +3,7 @@ import { faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   CharacterZoneVisionObject,
-  isCharacterObject,
+  ObjectType,
   ZoneVisionObject,
 } from "bondage-fantasy-common";
 import { useMemo } from "react";
@@ -30,10 +30,12 @@ export function ZoneObjectList(props: { objects: ZoneVisionObject[] }) {
   const characterId = useAppStore((state) => state.character?.id);
   const sortedObjects = useMemo(() => {
     function getPriority(object: ZoneVisionObject): number {
-      if (isCharacterObject(object) && object.characterId === characterId) {
-        return 100;
+      switch (object.type) {
+        case ObjectType.CHARACTER:
+          return object.characterId === characterId ? 100 : 50;
+        case ObjectType.NPC:
+          return 0;
       }
-      return 0;
     }
 
     const objects = [...props.objects];
@@ -45,7 +47,9 @@ export function ZoneObjectList(props: { objects: ZoneVisionObject[] }) {
     <div>
       {sortedObjects.map((object) => (
         <div key={object.id}>
-          {isCharacterObject(object) && <CharacterItem object={object} />}
+          {object.type === ObjectType.CHARACTER && (
+            <CharacterItem object={object} />
+          )}
         </div>
       ))}
     </div>

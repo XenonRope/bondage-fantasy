@@ -12,6 +12,14 @@ export class NpcDao {
       .toArray();
   }
 
+  async getNamesByIds(
+    ids: number[],
+  ): Promise<Array<{ id: number; name: string }>> {
+    return await this.getCollection()
+      .find({ id: { $in: ids } }, { projection: { _id: 0, id: 1, name: 1 } })
+      .toArray();
+  }
+
   async countByCharacterId(characterId: number): Promise<number> {
     return await this.getCollection().countDocuments({
       ownerCharacterId: characterId,

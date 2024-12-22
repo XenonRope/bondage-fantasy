@@ -19,7 +19,7 @@ import {
   ZoneEditRequest,
   ZoneJoinRequest,
   ZoneSearchResponse,
-  ZoneVisionObject
+  ZoneVisionObject,
 } from "bondage-fantasy-common";
 import { zoneDto } from "./dto.js";
 import { getCharacterId } from "./utils.js";

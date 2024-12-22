@@ -58,18 +58,26 @@ export interface Zone {
 
 export enum ObjectType {
   CHARACTER = "CHARACTER",
+  NPC = "NPC",
 }
 
-export interface ZoneObject {
+export type ZoneObject = CharacterObject | NpcObject;
+
+export interface ZoneObjectBase {
   id: number;
   type: ObjectType;
   zoneId: number;
   position: Position;
 }
 
-export interface CharacterObject extends ZoneObject {
+export interface CharacterObject extends ZoneObjectBase {
   type: ObjectType.CHARACTER;
   characterId: number;
+}
+
+export interface NpcObject extends ZoneObjectBase {
+  type: ObjectType.NPC;
+  npcId: number;
 }
 
 export interface ZoneVisionField {
@@ -83,15 +91,23 @@ export interface ZoneVisionConnection {
   positions: [Position, Position];
 }
 
-export interface ZoneVisionObject {
+export type ZoneVisionObject = CharacterZoneVisionObject | NpcZoneVisionObject;
+
+export interface ZoneVisionObjectBase {
   id: number;
   type: ObjectType;
   position: Position;
 }
 
-export interface CharacterZoneVisionObject extends ZoneVisionObject {
+export interface CharacterZoneVisionObject extends ZoneVisionObjectBase {
   type: ObjectType.CHARACTER;
   characterId: number;
+  name: string;
+}
+
+export interface NpcZoneVisionObject extends ZoneVisionObjectBase {
+  type: ObjectType.NPC;
+  npcId: number;
   name: string;
 }
 
@@ -112,17 +128,5 @@ export interface SessionData {
 export interface Npc {
   id: number;
   ownerCharacterId: number;
-  name: string;
-}
-
-export interface ZoneDtoObject {
-  id: number;
-  type: ObjectType;
-  position: Position;
-}
-
-export interface CharacterZoneDtoObject extends ZoneDtoObject {
-  type: ObjectType.CHARACTER;
-  characterId: number;
   name: string;
 }
