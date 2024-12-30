@@ -59,19 +59,20 @@ export default class ZoneController {
 
   async create(ctx: HttpContext) {
     const characterId = await getCharacterId(ctx);
-    const { name, description, draft, entrance, fields, connections } =
+    const { name, description, draft, entrance, fields, connections, objects } =
       (await ctx.request.validateUsing(
         zoneCreateRequestValidator,
       )) as ZoneCreateRequest;
 
     const zone = await this.zoneService.create({
-      ownerCharacterId: characterId,
+      characterId,
       name,
       description,
       draft,
       entrance,
       fields,
       connections,
+      objects,
     });
 
     ctx.response.status(201).send(zoneDto(zone));

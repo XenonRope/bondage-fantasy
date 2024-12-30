@@ -1,14 +1,9 @@
 import {
   Field,
-  Position,
-  FieldKey,
-  FieldConnectionKey,
   FieldConnection,
-  ZoneObject,
-  CharacterObject,
-  ObjectType,
-  ZoneVisionObject,
-  CharacterZoneVisionObject,
+  FieldConnectionKey,
+  FieldKey,
+  Position,
 } from "./model.js";
 
 export function arePositionsEqual(
@@ -109,4 +104,8 @@ export function doesConnectionKeyContainFieldKey(
   fieldKey: FieldKey
 ): boolean {
   return connectionKey.startsWith(fieldKey) || connectionKey.endsWith(fieldKey);
+}
+
+export function hasDuplicates(array: unknown[]): boolean {
+  return new Set(array).size !== array.length;
 }

@@ -1,3 +1,4 @@
+import { NpcDao } from "#dao/npc-dao";
 import { ZoneDao } from "#dao/zone-dao";
 import { ZoneObjectDao } from "#dao/zone-object-dao";
 import {
@@ -21,11 +22,17 @@ import {
   findFieldByPosition,
   getFieldConnectionKey,
   getFieldKey,
+  hasDuplicates,
+  NpcObject,
   ObjectType,
   Position,
   Zone,
+  ZoneObject,
+  ZoneRequestNpcObject,
+  ZoneRequestObject,
 } from "bondage-fantasy-common";
 import lockService, { LOCKS } from "./lock-service.js";
+import { NpcAccessService } from "./npc-access-service.js";
 import { SequenceService } from "./sequence-service.js";
 
 @inject()
@@ -34,6 +41,8 @@ export class ZoneService {
     private zoneDao: ZoneDao,
     private zoneObjectDao: ZoneObjectDao,
     private sequenceService: SequenceService,
+    private npcAccessService: NpcAccessService,
+    private npcDao: NpcDao,
   ) {}
 
   async get(
@@ -64,21 +73,27 @@ export class ZoneService {
   }
 
   async create(params: {
-    ownerCharacterId: number;
+    characterId: number;
     name: string;
     description: string;
     draft: boolean;
     entrance: Position;
     fields: Field[];
     connections: FieldConnection[];
+    objects: ZoneRequestObject[];
   }): Promise<Zone> {
     this.validateFields(params.fields);
     this.validateConnections(params.connections, params.fields);
     this.validateEntrance(params.entrance, params.fields);
+    this.validateObjects(params.objects, params.fields);
+    await this.validateCharacterHasAccessToAllNpc(
+      params.characterId,
+      params.objects,
+    );
 
     const zone: Zone = {
-      ownerCharacterId: params.ownerCharacterId,
       id: await this.sequenceService.nextSequence(SequenceCode.ZONE),
+      ownerCharacterId: params.characterId,
       name: params.name,
       description: params.description,
       draft: params.draft,
@@ -86,8 +101,9 @@ export class ZoneService {
       fields: params.fields,
       connections: params.connections,
     };
-
     await this.zoneDao.insert(zone);
+
+    await this.createObjects(params.objects, [], zone.id);
 
     return zone;
   }
@@ -309,6 +325,51 @@ export class ZoneService {
     }
   }
 
+  private validateObjects(objects: ZoneRequestObject[], fields: Field[]) {
+    for (const object of objects) {
+      if (!findFieldByPosition(fields, object.position)) {
+        throw new InvalidZoneException(
+          `Cannot create object of field [${object.position.x}, ${object.position.y}] because the field doesn't exist`,
+        );
+      }
+    }
+    const ids = objects.map((object) => object.id).filter((id) => id != null);
+    if (hasDuplicates(ids)) {
+      throw new InvalidZoneException(`At least two objects have the same id`);
+    }
+    const npcObjects = objects.filter(
+      (object) => object.type === ObjectType.NPC,
+    );
+    for (let i = 0; i < npcObjects.length; i++) {
+      for (let j = i + 1; j < npcObjects.length; j++) {
+        if (
+          npcObjects[i].npcId === npcObjects[j].npcId &&
+          arePositionsEqual(npcObjects[i].position, npcObjects[j].position)
+        ) {
+          throw new InvalidZoneException(
+            `There are two NPC with id ${npcObjects[i].npcId} on field [${npcObjects[i].position.x}, {${npcObjects[i].position.y}}]`,
+          );
+        }
+      }
+    }
+  }
+
+  private async validateCharacterHasAccessToAllNpc(
+    characterId: number,
+    objects: ZoneRequestObject[],
+  ) {
+    const npcIds = objects
+      .filter((object) => object.type === ObjectType.NPC)
+      .map((object) => object.npcId);
+    const npcList = await this.npcDao.getManyByIds(npcIds);
+
+    for (const npc of npcList) {
+      if (!this.npcAccessService.hasAccessToNpc({ characterId, npc })) {
+        throw new InvalidZoneException(`No access to NPC with id ${npc.id}`);
+      }
+    }
+  }
+
   private arePositionsAdjacent(
     { x: x1, y: y1 }: Position,
     { x: x2, y: y2 }: Position,
@@ -317,5 +378,81 @@ export class ZoneService {
       (x1 == x2 && Math.abs(y1 - y2) === 1) ||
       (y1 === y2 && Math.abs(x1 - x2) === 1)
     );
+  }
+
+  private async createObjects(
+    requestedObjects: ZoneRequestObject[],
+    currentObjects: ZoneObject[],
+    zoneId: number,
+  ) {
+    for (const requestedObject of requestedObjects) {
+      await this.createObject(requestedObject, currentObjects, zoneId);
+    }
+  }
+
+  private async createObject(
+    requestedObject: ZoneRequestObject,
+    currentObjects: ZoneObject[],
+    zoneId: number,
+  ) {
+    const currentObject =
+      requestedObject.id == null
+        ? undefined
+        : currentObjects.find(
+            (object) =>
+              object.id === requestedObject.id &&
+              object.type === requestedObject.type,
+          );
+    if (requestedObject.id != null) {
+      if (!currentObject) {
+        throw new InvalidZoneException(
+          `Object with id ${requestedObject.id} doesn't exist in zone ${zoneId}`,
+        );
+      }
+      if (
+        !arePositionsEqual(requestedObject.position, currentObject.position)
+      ) {
+        throw new InvalidZoneException(
+          `Cannot move object with id ${currentObject.id}`,
+        );
+      }
+    }
+
+    switch (requestedObject.type) {
+      case ObjectType.NPC:
+        await this.createNpcObject(
+          requestedObject,
+          currentObject as NpcObject | undefined,
+          zoneId,
+        );
+        break;
+      default:
+        throw new InvalidZoneException(
+          `Cannot create object with type ${requestedObject.type}`,
+        );
+    }
+  }
+
+  private async createNpcObject(
+    requestedObject: ZoneRequestNpcObject,
+    currentObject: NpcObject | undefined,
+    zoneId: number,
+  ) {
+    if (requestedObject.id != null) {
+      if ((requestedObject.npcId, currentObject!.npcId)) {
+        throw new InvalidZoneException(
+          "Cannot change NPC id of existing NPC object",
+        );
+      }
+    }
+
+    const object: NpcObject = {
+      id: await this.sequenceService.nextSequence(SequenceCode.ZONE_OBJECT),
+      type: ObjectType.NPC,
+      zoneId,
+      position: requestedObject.position,
+      npcId: requestedObject.npcId,
+    };
+    await this.zoneObjectDao.insert(object);
   }
 }

@@ -6,6 +6,12 @@ import { Collection, Db } from "mongodb";
 export class NpcDao {
   constructor(private db: Db) {}
 
+  async getManyByIds(ids: number[]): Promise<Npc[]> {
+    return await this.getCollection()
+      .find({ id: { $in: ids } })
+      .toArray();
+  }
+
   async getManyByCharacterId(characterId: number): Promise<Npc[]> {
     return await this.getCollection()
       .find({ ownerCharacterId: characterId })
