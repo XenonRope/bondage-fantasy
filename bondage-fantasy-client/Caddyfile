@@ -8,6 +8,19 @@
 	handle {
 		root * /usr/share/caddy
 		try_files {path} /index.html
+
+		@notfound {
+			not file
+		}
+
+		header @notfound {
+			Cache-Control no-cache
+		}
+
+		header /index.html {
+			Cache-Control no-cache
+		}
+
 		file_server
 	}
 }
