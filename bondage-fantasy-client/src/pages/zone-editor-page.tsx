@@ -310,26 +310,27 @@ export function ZoneEditorPage() {
     return result;
   }
 
+  function submitForm(): void {
+    form.onSubmit(() => {
+      if (zoneId) {
+        if (!editZone.isPending) {
+          editZone.mutate(prepareZoneEditRequest());
+        }
+      } else {
+        if (!createZone.isPending) {
+          createZone.mutate(prepareZoneCreateRequest());
+        }
+      }
+    })();
+  }
+
   if (zoneId && !zone.data) {
     return <></>;
   }
 
   return (
     <div className="flex h-full">
-      <form
-        onSubmit={form.onSubmit(() => {
-          if (zoneId) {
-            if (!editZone.isPending) {
-              editZone.mutate(prepareZoneEditRequest());
-            }
-          } else {
-            if (!createZone.isPending) {
-              createZone.mutate(prepareZoneCreateRequest());
-            }
-          }
-        })}
-        className="flex flex-col h-full w-1/2 border-r border-app-shell p-md"
-      >
+      <div className="flex flex-col h-full w-1/2 border-r border-app-shell p-md">
         {form.errors.entrance && (
           <Alert variant="error" className="mb-4">
             {form.errors.entrance}
@@ -375,13 +376,13 @@ export function ZoneEditorPage() {
         </div>
         <div className="mt-8">
           {zoneId && (
-            <Button type="submit">{t("zoneCreation.modifyZone")}</Button>
+            <Button onClick={submitForm}>{t("zoneCreation.modifyZone")}</Button>
           )}
           {!zoneId && (
-            <Button type="submit">{t("zoneCreation.createZone")}</Button>
+            <Button onClick={submitForm}>{t("zoneCreation.createZone")}</Button>
           )}
         </div>
-      </form>
+      </div>
       <div className="w-1/2 p-md">
         {selectedField && (
           <>
