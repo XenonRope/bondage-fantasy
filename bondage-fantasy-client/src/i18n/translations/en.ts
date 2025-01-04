@@ -62,6 +62,9 @@ export const en: ResourceLanguage = {
     "zoneCreation.removeConnection": "Remove connection",
     "zoneCreation.yourZoneHasNoEntrance":
       "Your zone has no entrance. You should decide on which field your guests will start their adventure.",
+    "zoneCreation.tabs.basic": "Basic",
+    "zoneCreation.tabs.map": "Map",
+    "zoneCreation.tabs.npc": "NPC",
     "zoneList.join": "Join",
     "zoneList.edit": "Edit",
     "explore.leave": "Leave",

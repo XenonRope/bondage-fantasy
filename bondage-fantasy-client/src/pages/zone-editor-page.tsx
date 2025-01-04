@@ -343,9 +343,9 @@ export function ZoneEditorPage() {
       className="flex flex-col h-full"
     >
       <Tabs.List className="border-b border-app-shell">
-        <Tabs.Tab value="basic">Basic</Tabs.Tab>
-        <Tabs.Tab value="map">Map</Tabs.Tab>
-        <Tabs.Tab value="npc">NPC</Tabs.Tab>
+        <Tabs.Tab value="basic">{t("zoneCreation.tabs.basic")}</Tabs.Tab>
+        <Tabs.Tab value="map">{t("zoneCreation.tabs.map")}</Tabs.Tab>
+        <Tabs.Tab value="npc">{t("zoneCreation.tabs.npc")}</Tabs.Tab>
       </Tabs.List>
 
       <Tabs.Panel value="basic" className="p-md w-1/2">

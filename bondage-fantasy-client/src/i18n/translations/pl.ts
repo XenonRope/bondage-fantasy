@@ -59,6 +59,9 @@ export const pl: ResourceLanguage = {
     "zoneCreation.removeConnection": "Usuń połączenie",
     "zoneCreation.yourZoneHasNoEntrance":
       "Twoja strefa nie ma wejścia. Powinieneś zdecydować, na którym polu twoi goście rozpoczną przygodę.",
+    "zoneCreation.tabs.basic": "Podstawowe",
+    "zoneCreation.tabs.map": "Mapa",
+    "zoneCreation.tabs.npc": "NPC",
     "zoneList.join": "Dołącz",
     "zoneList.edit": "Edytuj",
     "explore.leave": "Wyjdź",
