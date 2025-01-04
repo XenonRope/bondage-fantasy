@@ -1,8 +1,6 @@
 import { ZoneDao } from "#dao/zone-dao";
-import { ZoneObjectDao } from "#dao/zone-object-dao";
 import { SessionService } from "#services/session-service";
 import { ZoneService } from "#services/zone-service";
-import { ZoneVisionService } from "#services/zone-vision-service";
 import {
   zoneCreateRequestValidator,
   zoneEditRequestValidator,
@@ -19,9 +17,7 @@ import {
   ZoneEditRequest,
   ZoneJoinRequest,
   ZoneSearchResponse,
-  ZoneVisionObject,
 } from "bondage-fantasy-common";
-import { zoneDto } from "./dto.js";
 import { getCharacterId } from "./utils.js";
 
 @inject()
@@ -30,8 +26,6 @@ export default class ZoneController {
     private zoneService: ZoneService,
     private zoneDao: ZoneDao,
     private sessionService: SessionService,
-    private zoneObjectDao: ZoneObjectDao,
-    private zoneVisionService: ZoneVisionService,
   ) {}
 
   async search(ctx: HttpContext): Promise<ZoneSearchResponse> {
@@ -59,10 +53,18 @@ export default class ZoneController {
 
   async create(ctx: HttpContext) {
     const characterId = await getCharacterId(ctx);
-    const { name, description, draft, entrance, fields, connections, objects } =
-      (await ctx.request.validateUsing(
-        zoneCreateRequestValidator,
-      )) as ZoneCreateRequest;
+    const {
+      name,
+      description,
+      draft,
+      entrance,
+      fields,
+      connections,
+      npcList,
+      objects,
+    } = (await ctx.request.validateUsing(
+      zoneCreateRequestValidator,
+    )) as ZoneCreateRequest;
 
     const zone = await this.zoneService.create({
       characterId,
@@ -72,10 +74,11 @@ export default class ZoneController {
       entrance,
       fields,
       connections,
+      npcList,
       objects,
     });
 
-    ctx.response.status(201).send(zoneDto(zone));
+    ctx.response.status(201).send(zone);
   }
 
   async getById(ctx: HttpContext): Promise<Zone> {
@@ -86,25 +89,24 @@ export default class ZoneController {
       checkAccessForCharacterId: characterId,
     });
 
-    return zoneDto(zone);
-  }
-
-  async getObjectsByZoneId(ctx: HttpContext): Promise<ZoneVisionObject[]> {
-    const zoneId: number = ctx.params.id;
-    const characterId = await getCharacterId(ctx);
-
-    await this.zoneService.assertCharacterIsOwnerOfZone(characterId, zoneId);
-    const objects = await this.zoneObjectDao.getManyByZone(zoneId);
-
-    return this.zoneVisionService.mapObjectsToZoneVisionObjects(objects);
+    return zone;
   }
 
   async edit(ctx: HttpContext): Promise<SessionData> {
     const characterId = await getCharacterId(ctx);
-    const { zoneId, name, description, draft, entrance, fields, connections } =
-      (await ctx.request.validateUsing(
-        zoneEditRequestValidator,
-      )) as ZoneEditRequest;
+    const {
+      zoneId,
+      name,
+      description,
+      draft,
+      entrance,
+      fields,
+      connections,
+      npcList,
+      objects,
+    } = (await ctx.request.validateUsing(
+      zoneEditRequestValidator,
+    )) as ZoneEditRequest;
 
     await this.zoneService.edit({
       zoneId,
@@ -115,6 +117,8 @@ export default class ZoneController {
       entrance,
       fields,
       connections,
+      npcList,
+      objects,
     });
 
     return await this.sessionService.getSessionData({

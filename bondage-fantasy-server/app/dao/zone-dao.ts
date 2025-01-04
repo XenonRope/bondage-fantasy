@@ -1,6 +1,6 @@
 import { inject } from "@adonisjs/core";
-import { Field, FieldConnection, Position, Zone } from "bondage-fantasy-common";
-import { Collection, Db, Filter } from "mongodb";
+import { ObjectType, Zone } from "bondage-fantasy-common";
+import { Collection, Db, Document, Filter } from "mongodb";
 import { escapeRegex } from "../utils.js";
 
 @inject()
@@ -9,6 +9,31 @@ export class ZoneDao {
 
   async getById(id: number): Promise<Zone | null> {
     return await this.getCollection().findOne({ id });
+  }
+
+  async getByCharacterObject(characterId: number): Promise<Zone | null> {
+    return await this.getByCharacterObjectWithProjection(characterId);
+  }
+
+  async getZoneIdByCharacterObject(
+    characterId: number,
+  ): Promise<number | undefined> {
+    const zone = await this.getByCharacterObjectWithProjection(characterId, {
+      id: 1,
+    });
+    return zone?.id;
+  }
+
+  private async getByCharacterObjectWithProjection(
+    characterId: number,
+    projection?: Document,
+  ): Promise<Zone | null> {
+    return await this.getCollection().findOne(
+      {
+        objects: { $elemMatch: { type: ObjectType.CHARACTER, characterId } },
+      },
+      { projection },
+    );
   }
 
   async search(params: {
@@ -53,30 +78,8 @@ export class ZoneDao {
     await this.getCollection().insertOne(zone);
   }
 
-  async update(
-    id: number,
-    params: {
-      name: string;
-      description: string;
-      draft: boolean;
-      entrance: Position;
-      fields: Field[];
-      connections: FieldConnection[];
-    },
-  ): Promise<void> {
-    await this.getCollection().updateOne(
-      { id },
-      {
-        $set: {
-          name: params.name,
-          description: params.description,
-          draft: params.draft,
-          entrance: params.entrance,
-          fields: params.fields,
-          connections: params.connections,
-        },
-      },
-    );
+  async replace(zone: Zone): Promise<void> {
+    await this.getCollection().replaceOne({ id: zone.id }, zone);
   }
 
   private getCollection(): Collection<Zone> {

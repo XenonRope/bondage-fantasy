@@ -45,8 +45,8 @@ export function ZoneObjectList(props: { objects: ZoneVisionObject[] }) {
 
   return (
     <div>
-      {sortedObjects.map((object) => (
-        <div key={object.id}>
+      {sortedObjects.map((object, index) => (
+        <div key={index}>
           {object.type === ObjectType.CHARACTER && (
             <CharacterItem object={object} />
           )}

@@ -92,7 +92,6 @@ export function MainLayout(props: { fixedHeight?: boolean }) {
               onClick={() => navigate("/zones")}
               label={t("navbar.zones")}
             />
-            <NavLink onClick={() => navigate("/npc")} label={t("navbar.npc")} />
           </>
         )}
         {account && (

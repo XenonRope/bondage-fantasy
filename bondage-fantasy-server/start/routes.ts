@@ -11,7 +11,6 @@ const AccountController = () => import("#controllers/account-controller");
 const SessionController = () => import("#controllers/session-controller");
 const CharacterController = () => import("#controllers/character-controller");
 const ZoneController = () => import("#controllers/zone-controller");
-const NpcController = () => import("#controllers/npc-controller");
 import router from "@adonisjs/core/services/router";
 import { middleware } from "./kernel.js";
 
@@ -33,16 +32,11 @@ router
         router
           .get("/zones/:id", [ZoneController, "getById"])
           .where("id", router.matchers.number());
-        router
-          .get("/zones/:id/objects", [ZoneController, "getObjectsByZoneId"])
-          .where("id", router.matchers.number());
         router.post("/zones/edit", [ZoneController, "edit"]);
         router.post("/zones/search", [ZoneController, "search"]);
         router.post("/zones/join", [ZoneController, "join"]);
         router.post("/zones/leave", [ZoneController, "leave"]);
         router.post("/zones/move", [ZoneController, "move"]);
-        router.get("/npc", [NpcController, "list"]);
-        router.post("/npc", [NpcController, "create"]);
       })
       .use(middleware.auth());
   })

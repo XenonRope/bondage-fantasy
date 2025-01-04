@@ -1,20 +1,14 @@
 import { CharacterDao } from "#dao/character-dao";
-import { NpcDao } from "#dao/npc-dao";
 import { ZoneDao } from "#dao/zone-dao";
-import { ZoneObjectDao } from "#dao/zone-object-dao";
-import {
-  CharacterNotFoundException,
-  CharacterNotInZoneException,
-  ZoneNotFoundException,
-} from "#exceptions/exceptions";
+import { CharacterNotFoundException } from "#exceptions/exceptions";
 import { inject } from "@adonisjs/core";
 import {
   arePositionsEqual,
-  CharacterObject,
   Field,
   Genitals,
   ObjectType,
   Pronouns,
+  Zone,
   ZoneObject,
   ZoneVision,
   ZoneVisionObject,
@@ -24,53 +18,34 @@ import mustache from "mustache";
 @inject()
 export class ZoneVisionService {
   constructor(
-    private zoneObjectDao: ZoneObjectDao,
     private zoneDao: ZoneDao,
     private characterDao: CharacterDao,
-    private npcDao: NpcDao,
   ) {}
 
-  async getVisionForCharacterIfInZone(
-    characterId: number,
-  ): Promise<ZoneVision | undefined> {
-    const characterObject =
-      await this.zoneObjectDao.getCharacterObject(characterId);
-    if (characterObject == null) {
+  async tryGetZoneVision(characterId: number): Promise<ZoneVision | undefined> {
+    const zone = await this.zoneDao.getByCharacterObject(characterId);
+    if (zone == null) {
       return undefined;
     }
 
-    return this.getVisionForCharacterObject(characterObject);
-  }
-
-  async getVisionForCharacter(characterId: number): Promise<ZoneVision> {
-    const characterObject =
-      await this.zoneObjectDao.getCharacterObject(characterId);
-    if (characterObject == null) {
-      throw new CharacterNotInZoneException();
-    }
-
-    return this.getVisionForCharacterObject(characterObject);
-  }
-
-  async getVisionForCharacterObject(
-    characterObject: CharacterObject,
-  ): Promise<ZoneVision> {
-    const zone = await this.zoneDao.getById(characterObject.zoneId);
-    if (zone == null) {
-      throw new ZoneNotFoundException();
-    }
-
-    const objects = await this.zoneObjectDao.getManyByZoneAndPosition(
-      zone.id,
-      characterObject.position,
+    const characterObject = zone.objects.find(
+      (object) =>
+        object.type === ObjectType.CHARACTER &&
+        object.characterId === characterId,
+    )!;
+    const objects = zone.objects.filter((object) =>
+      arePositionsEqual(object.position, characterObject.position),
     );
-    const zoneVisionObjects = await this.mapObjectsToZoneVisionObjects(objects);
+    const zoneVisionObjects = await this.mapObjectsToZoneVisionObjects(
+      objects,
+      zone,
+    );
     const currentField = zone.fields.find((field) =>
       arePositionsEqual(field.position, characterObject.position),
     )!;
     const currentFieldDescription = await this.renderFieldDescription({
       field: currentField,
-      characterId: characterObject.characterId,
+      characterId,
     });
 
     return {
@@ -93,37 +68,32 @@ export class ZoneVisionService {
 
   async mapObjectsToZoneVisionObjects(
     objects: ZoneObject[],
+    zone: Zone,
   ): Promise<ZoneVisionObject[]> {
     const charactersIds = objects
       .filter((object) => object.type === ObjectType.CHARACTER)
       .map((object) => object.characterId);
     const characters = await this.characterDao.getNamesByIds(charactersIds);
-    const charactersNamesByIds = new Map(
-      characters.map(({ id, name }) => [id, name]),
-    );
-    const npcIds = objects
-      .filter((object) => object.type === ObjectType.NPC)
-      .map((object) => object.npcId);
-    const npcList = await this.npcDao.getNamesByIds(npcIds);
-    const npcNamesByIds = new Map(npcList.map(({ id, name }) => [id, name]));
 
     return objects.map((object) => {
       switch (object.type) {
         case ObjectType.CHARACTER:
           return {
-            id: object.id,
-            type: object.type,
+            type: ObjectType.CHARACTER,
             position: object.position,
             characterId: object.characterId,
-            name: charactersNamesByIds.get(object.characterId) ?? "",
+            name:
+              characters.find(
+                (character) => character.id === object.characterId,
+              )?.name ?? "",
           };
         case ObjectType.NPC:
           return {
-            id: object.id,
-            type: object.type,
+            type: ObjectType.NPC,
             position: object.position,
             npcId: object.npcId,
-            name: npcNamesByIds.get(object.npcId) ?? "",
+            name:
+              zone.npcList.find((npc) => npc.id === object.npcId)?.name ?? "",
           };
       }
     });

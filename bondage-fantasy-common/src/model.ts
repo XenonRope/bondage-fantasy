@@ -54,6 +54,8 @@ export interface Zone {
   entrance: Position;
   fields: Field[];
   connections: FieldConnection[];
+  npcList: Npc[];
+  objects: ZoneObject[];
 }
 
 export enum ObjectType {
@@ -64,9 +66,7 @@ export enum ObjectType {
 export type ZoneObject = CharacterObject | NpcObject;
 
 export interface ZoneObjectBase {
-  id: number;
   type: ObjectType;
-  zoneId: number;
   position: Position;
 }
 
@@ -94,7 +94,6 @@ export interface ZoneVisionConnection {
 export type ZoneVisionObject = CharacterZoneVisionObject | NpcZoneVisionObject;
 
 export interface ZoneVisionObjectBase {
-  id: number;
   type: ObjectType;
   position: Position;
 }
@@ -127,6 +126,5 @@ export interface SessionData {
 
 export interface Npc {
   id: number;
-  ownerCharacterId: number;
   name: string;
 }

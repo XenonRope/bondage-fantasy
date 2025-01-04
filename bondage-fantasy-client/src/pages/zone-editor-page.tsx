@@ -18,7 +18,9 @@ import {
   getFieldKey,
   getPositionFromFieldKey,
   getPositionsFromConnectionKey,
+  ObjectType,
   Position,
+  Zone,
   ZONE_DESCRIPTION_MAX_LENGTH,
   ZONE_DESCRIPTION_MIN_LENGTH,
   ZONE_FIELD_DESCRIPTION_MAX_LENGTH,
@@ -29,6 +31,7 @@ import {
   ZONE_NAME_MIN_LENGTH,
   ZoneCreateRequest,
   ZoneEditRequest,
+  ZoneObject,
   ZoneVisionObject,
 } from "bondage-fantasy-common";
 import { useEffect, useId, useState } from "react";
@@ -92,27 +95,19 @@ export function ZoneEditorPage() {
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
   });
-  const objects = useQuery({
-    queryKey: ["zoneObjects", zoneId, uniqueId],
-    queryFn: async () =>
-      zoneId ? await zoneApi.getObjectsByZoneId(parseInt(zoneId)) : null,
-    gcTime: 0,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-  });
   useEffect(() => {
-    if (zone.data && objects.data) {
+    if (zone.data) {
       form.setValues({
         name: zone.data.name,
         description: zone.data.description,
         draft: zone.data.draft,
         entrance: getFieldKey(zone.data.entrance),
-        fields: mapFieldsToFormFields(zone.data.fields, objects.data),
+        fields: mapFieldsToFormFields(zone.data.fields, zone.data),
         connections: mapConnectionsToFormConnections(zone.data.connections),
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [zone.data, objects.data]);
+  }, [zone.data]);
 
   function validateForm(values: ZoneForm): FormErrors {
     const errors: FormErrors = {
@@ -251,6 +246,7 @@ export function ZoneEditorPage() {
       entrance: getPositionFromFieldKey(form.getValues().entrance!),
       fields: getFieldsAsArray(),
       connections: getConnectionsAsArray(),
+      npcList: [],
       objects: [],
     };
   }
@@ -264,13 +260,14 @@ export function ZoneEditorPage() {
       entrance: getPositionFromFieldKey(form.getValues().entrance!),
       fields: getFieldsAsArray(),
       connections: getConnectionsAsArray(),
+      npcList: [],
       objects: [],
     };
   }
 
   function mapFieldsToFormFields(
     fields: Field[],
-    objects: ZoneVisionObject[],
+    zone: Zone,
   ): Record<FieldKey, ZoneFormField> {
     const result: Record<FieldKey, ZoneFormField> = {};
     for (const field of fields) {
@@ -278,12 +275,29 @@ export function ZoneEditorPage() {
         name: field.name,
         description: field.description,
         canLeave: field.canLeave,
-        objects: objects.filter((object) =>
-          arePositionsEqual(object.position, field.position),
-        ),
+        objects: zone.objects
+          .filter((object) =>
+            arePositionsEqual(object.position, field.position),
+          )
+          .map((object) => mapObjectToZoneVisionObject(object, zone))
+          .filter((object) => object != null),
       };
     }
     return result;
+  }
+
+  function mapObjectToZoneVisionObject(
+    object: ZoneObject,
+    zone: Zone,
+  ): ZoneVisionObject | undefined {
+    if (object.type === ObjectType.NPC) {
+      return {
+        type: ObjectType.NPC,
+        position: object.position,
+        npcId: object.npcId,
+        name: zone.npcList.find((npc) => npc.id === object.npcId)?.name ?? "",
+      };
+    }
   }
 
   function mapConnectionsToFormConnections(
@@ -296,7 +310,7 @@ export function ZoneEditorPage() {
     return result;
   }
 
-  if (zoneId && (!zone.data || objects.data == null)) {
+  if (zoneId && !zone.data) {
     return <></>;
   }
 

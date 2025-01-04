@@ -11,7 +11,25 @@ export const LOCKS = {
 };
 
 export class LockService {
-  async run<T>(name: string, ttl: Duration, run: () => Promise<T>): Promise<T> {
+  async run<T>(
+    name: string | string[],
+    ttl: Duration,
+    run: () => Promise<T>,
+  ): Promise<T> {
+    if (Array.isArray(name)) {
+      if (name.length === 0) {
+        throw new Error("Argument 'name' must not be an empty array");
+      }
+      if (name.length === 1) {
+        return await this.run(name[0], ttl, run);
+      }
+      return await this.run(
+        name[0],
+        ttl,
+        async () => await this.run(name.slice(1), ttl, run),
+      );
+    }
+
     const [executed, result] = await lock
       .createLock(name, ttl)
       .run(() => run());

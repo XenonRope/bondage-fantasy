@@ -42,7 +42,7 @@ export class SessionService {
       };
     }
 
-    const zone = await this.zoneVisionService.getVisionForCharacterIfInZone(
+    const zone = await this.zoneVisionService.tryGetZoneVision(
       params.characterId,
     );
     if (zone == null) {

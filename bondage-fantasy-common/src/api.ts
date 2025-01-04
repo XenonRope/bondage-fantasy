@@ -2,9 +2,10 @@ import {
   Field,
   FieldConnection,
   Genitals,
-  ObjectType,
+  Npc,
   Position,
   Pronouns,
+  ZoneObject
 } from "./model.js";
 
 export interface AccountRegisterRequest {
@@ -23,18 +24,6 @@ export interface CharacterCreateRequest {
   genitals: Genitals;
 }
 
-export type ZoneRequestObject = ZoneRequestNpcObject;
-
-export interface ZoneRequestObjectBase {
-  id?: number;
-  type: ObjectType;
-  position: Position;
-}
-
-export interface ZoneRequestNpcObject extends ZoneRequestObjectBase {
-  npcId: number;
-}
-
 export interface ZoneCreateRequest {
   name: string;
   description: string;
@@ -42,7 +31,8 @@ export interface ZoneCreateRequest {
   entrance: Position;
   fields: Field[];
   connections: FieldConnection[];
-  objects: ZoneRequestObject[];
+  npcList: Npc[];
+  objects: ZoneObject[];
 }
 
 export interface ZoneEditRequest {
@@ -53,7 +43,8 @@ export interface ZoneEditRequest {
   entrance: Position;
   fields: Field[];
   connections: FieldConnection[];
-  objects: ZoneRequestObject[];
+  npcList: Npc[];
+  objects: ZoneObject[];
 }
 
 export interface ZoneSearchRequest {
@@ -79,8 +70,4 @@ export interface ZoneJoinRequest {
 
 export interface ZoneMoveRequest {
   destination: Position;
-}
-
-export interface NpcCreateRequest {
-  name: string;
 }
