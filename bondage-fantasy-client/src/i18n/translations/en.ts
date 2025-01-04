@@ -65,6 +65,7 @@ export const en: ResourceLanguage = {
     "zoneCreation.tabs.basic": "Basic",
     "zoneCreation.tabs.map": "Map",
     "zoneCreation.tabs.npc": "NPC",
+    "zoneCreation.addNpc": "Add NPC",
     "zoneList.join": "Join",
     "zoneList.edit": "Edit",
     "explore.leave": "Leave",

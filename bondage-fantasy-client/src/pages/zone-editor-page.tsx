@@ -4,15 +4,19 @@ import { ZoneObjectList } from "../components/zone-object-list";
 import { errorService } from "../services/error-service";
 import { useAppStore } from "../store";
 import { Validators } from "../utils/validators";
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
+  ActionIcon,
   Alert,
   Button,
   Checkbox,
+  Paper,
   Tabs,
   Textarea,
   TextInput,
 } from "@mantine/core";
-import { FormErrors, useForm } from "@mantine/form";
+import { FormErrors, useForm, UseFormReturnType } from "@mantine/form";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   arePositionsEqual,
@@ -25,6 +29,9 @@ import {
   getFieldKey,
   getPositionFromFieldKey,
   getPositionsFromConnectionKey,
+  Npc,
+  NPC_NAME_MAX_LENGTH,
+  NPC_NAME_MIN_LENGTH,
   ObjectType,
   Position,
   Zone,
@@ -49,7 +56,7 @@ interface ZoneFormField {
   name: string;
   description: string;
   canLeave: boolean;
-  objects: ZoneVisionObject[];
+  objects: ZoneObject[];
 }
 
 interface ZoneForm {
@@ -59,6 +66,45 @@ interface ZoneForm {
   entrance?: FieldKey;
   fields: Record<FieldKey, ZoneFormField>;
   connections: Record<FieldConnectionKey, true>;
+  npcList: Npc[];
+}
+
+function NpcForm(props: {
+  form: UseFormReturnType<ZoneForm, (values: ZoneForm) => ZoneForm>;
+  index: number;
+  onRemove?: () => void;
+}) {
+  const { t } = useTranslation();
+  const [npcName, setNpcName] = useState(
+    props.form.getValues().npcList[props.index].name,
+  );
+  props.form.watch(`npcList.${props.index}.name`, ({ value }) => {
+    setNpcName(value as string);
+  });
+
+  return (
+    <Paper withBorder radius="md" className="mb-4 p-md">
+      <div className="flex justify-between items-center">
+        <div className="font-medium">{npcName}</div>
+        <ActionIcon
+          variant="transparent"
+          color="red"
+          onClick={() => props.onRemove?.()}
+        >
+          <FontAwesomeIcon icon={faTrash} />
+        </ActionIcon>
+      </div>
+      <div className="mt-4">
+        <TextInput
+          {...props.form.getInputProps(`npcList.${props.index}.name`)}
+          key={props.form.key(`npcList.${props.index}.name`)}
+          label={t("common.characterNameShort")}
+          className="max-w-xs"
+          maxLength={NPC_NAME_MAX_LENGTH}
+        />
+      </div>
+    </Paper>
+  );
 }
 
 export function ZoneEditorPage() {
@@ -74,6 +120,7 @@ export function ZoneEditorPage() {
       entrance: undefined,
       fields: {},
       connections: {},
+      npcList: [],
     },
     validate: validateForm,
   });
@@ -102,6 +149,7 @@ export function ZoneEditorPage() {
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
   });
+  const [nextNpcId, setNextNpcId] = useState(1);
   useEffect(() => {
     if (zone.data) {
       form.setValues({
@@ -111,7 +159,9 @@ export function ZoneEditorPage() {
         entrance: getFieldKey(zone.data.entrance),
         fields: mapFieldsToFormFields(zone.data.fields, zone.data),
         connections: mapConnectionsToFormConnections(zone.data.connections),
+        npcList: zone.data.npcList,
       });
+      setNextNpcId(Math.max(...zone.data.npcList.map((npc) => npc.id), 0) + 1);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [zone.data]);
@@ -141,6 +191,12 @@ export function ZoneEditorPage() {
         ZONE_FIELD_DESCRIPTION_MIN_LENGTH,
         ZONE_FIELD_DESCRIPTION_MAX_LENGTH,
       )(field.description);
+    }
+    for (const [npcIndex, npc] of values.npcList.entries()) {
+      errors[`npcList.${npcIndex}.name`] = Validators.inRange(
+        NPC_NAME_MIN_LENGTH,
+        NPC_NAME_MAX_LENGTH,
+      )(npc.name);
     }
 
     return errors;
@@ -267,7 +323,7 @@ export function ZoneEditorPage() {
       entrance: getPositionFromFieldKey(form.getValues().entrance!),
       fields: getFieldsAsArray(),
       connections: getConnectionsAsArray(),
-      npcList: [],
+      npcList: form.getValues().npcList,
       objects: [],
     };
   }
@@ -282,27 +338,33 @@ export function ZoneEditorPage() {
         name: field.name,
         description: field.description,
         canLeave: field.canLeave,
-        objects: zone.objects
-          .filter((object) =>
-            arePositionsEqual(object.position, field.position),
-          )
-          .map((object) => mapObjectToZoneVisionObject(object, zone))
-          .filter((object) => object != null),
+        objects: zone.objects.filter((object) =>
+          arePositionsEqual(object.position, field.position),
+        ),
       };
     }
     return result;
   }
 
+  function mapObjectsToZoneVisionObjects(
+    objects: ZoneObject[],
+  ): ZoneVisionObject[] {
+    return objects
+      .map((object) => mapObjectToZoneVisionObject(object))
+      .filter((object) => object != null);
+  }
+
   function mapObjectToZoneVisionObject(
     object: ZoneObject,
-    zone: Zone,
   ): ZoneVisionObject | undefined {
     if (object.type === ObjectType.NPC) {
       return {
         type: ObjectType.NPC,
         position: object.position,
         npcId: object.npcId,
-        name: zone.npcList.find((npc) => npc.id === object.npcId)?.name ?? "",
+        name:
+          form.getValues().npcList.find((npc) => npc.id === object.npcId)
+            ?.name ?? "",
       };
     }
   }
@@ -329,6 +391,22 @@ export function ZoneEditorPage() {
         }
       }
     })();
+  }
+
+  function addNpc(): void {
+    form.setFieldValue("npcList", (npcList) => [
+      ...npcList,
+      { id: nextNpcId, name: "" },
+    ]);
+    setNextNpcId((id) => id + 1);
+  }
+
+  function removeNpc(index: number): void {
+    form.setFieldValue("npcList", (npcList) => {
+      const npcListCopy = [...npcList];
+      npcListCopy.splice(index, 1);
+      return npcListCopy;
+    });
   }
 
   if (zoneId && !zone.data) {
@@ -438,7 +516,9 @@ export function ZoneEditorPage() {
               </div>
               <div className="mt-4">
                 <ZoneObjectList
-                  objects={form.getValues().fields[selectedField].objects}
+                  objects={mapObjectsToZoneVisionObjects(
+                    form.getValues().fields[selectedField].objects,
+                  )}
                 />
               </div>
               <div className="mt-4">
@@ -464,8 +544,18 @@ export function ZoneEditorPage() {
           )}
         </div>
       </Tabs.Panel>
-      <Tabs.Panel value="npc">
-        <></>
+      <Tabs.Panel value="npc" className="p-md">
+        {form.getValues().npcList.map((npc, index) => (
+          <NpcForm
+            key={npc.id}
+            form={form}
+            index={index}
+            onRemove={() => removeNpc(index)}
+          />
+        ))}
+        <div>
+          <Button onClick={addNpc}>{t("zoneCreation.addNpc")}</Button>
+        </div>
       </Tabs.Panel>
     </Tabs>
   );
