@@ -4,7 +4,14 @@ import { ZoneObjectList } from "../components/zone-object-list";
 import { errorService } from "../services/error-service";
 import { useAppStore } from "../store";
 import { Validators } from "../utils/validators";
-import { Alert, Button, Checkbox, Textarea, TextInput } from "@mantine/core";
+import {
+  Alert,
+  Button,
+  Checkbox,
+  Tabs,
+  Textarea,
+  TextInput,
+} from "@mantine/core";
 import { FormErrors, useForm } from "@mantine/form";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
@@ -329,52 +336,48 @@ export function ZoneEditorPage() {
   }
 
   return (
-    <div className="flex h-full">
-      <div className="flex flex-col h-full w-1/2 border-r border-app-shell p-md">
+    <Tabs
+      variant="pills"
+      radius="xs"
+      defaultValue="basic"
+      className="flex flex-col h-full"
+    >
+      <Tabs.List className="border-b border-app-shell">
+        <Tabs.Tab value="basic">Basic</Tabs.Tab>
+        <Tabs.Tab value="map">Map</Tabs.Tab>
+        <Tabs.Tab value="npc">NPC</Tabs.Tab>
+      </Tabs.List>
+
+      <Tabs.Panel value="basic" className="p-md w-1/2">
         {form.errors.entrance && (
           <Alert variant="error" className="mb-4">
             {form.errors.entrance}
           </Alert>
         )}
-        <div>
-          <TextInput
-            {...form.getInputProps("name")}
-            key={form.key("name")}
-            label={t("common.name")}
-            className="max-w-xs"
-          />
-          <Textarea
-            {...form.getInputProps("description")}
-            key={form.key("description")}
-            label={t("common.description")}
-            autosize
-            minRows={2}
-            maxRows={10}
-            className="mt-2"
-          />
-          <Checkbox
-            {...form.getInputProps("draft", {
-              type: "checkbox",
-            })}
-            key={form.key("draft")}
-            label={t("common.draft")}
-            className="mt-4"
-          />
-        </div>
-
-        <div className="min-h-[256px] max-w-fit overflow-auto mt-8">
-          <ZoneMap
-            fields={getFieldsAsArray()}
-            connections={getConnectionsAsArray()}
-            entrance={getPositionFromFieldKey(form.getValues().entrance)}
-            selectedField={selectedField}
-            selectedConnection={selectedConnection}
-            editMode={true}
-            onFieldClick={onFieldClick}
-            onConnectionClick={onConnectionClick}
-          />
-        </div>
-        <div className="mt-8">
+        <TextInput
+          {...form.getInputProps("name")}
+          key={form.key("name")}
+          label={t("common.name")}
+          className="max-w-xs"
+        />
+        <Textarea
+          {...form.getInputProps("description")}
+          key={form.key("description")}
+          label={t("common.description")}
+          autosize
+          minRows={2}
+          maxRows={10}
+          className="mt-2"
+        />
+        <Checkbox
+          {...form.getInputProps("draft", {
+            type: "checkbox",
+          })}
+          key={form.key("draft")}
+          label={t("common.draft")}
+          className="mt-4"
+        />
+        <div className="mt-4">
           {zoneId && (
             <Button onClick={submitForm}>{t("zoneCreation.modifyZone")}</Button>
           )}
@@ -382,69 +385,88 @@ export function ZoneEditorPage() {
             <Button onClick={submitForm}>{t("zoneCreation.createZone")}</Button>
           )}
         </div>
-      </div>
-      <div className="w-1/2 p-md">
-        {selectedField && (
-          <>
-            <div>
-              <TextInput
-                {...form.getInputProps(`fields.${selectedField}.name`)}
-                key={form.key(`fields.${selectedField}.name`)}
-                label={t("common.name")}
-                className="max-w-xs"
-              />
-              <Textarea
-                {...form.getInputProps(`fields.${selectedField}.description`)}
-                key={form.key(`fields.${selectedField}.description`)}
-                label={t("common.description")}
-                autosize
-                minRows={2}
-                maxRows={10}
-                maxLength={ZONE_FIELD_DESCRIPTION_MAX_LENGTH}
-                className="mt-2"
-              />
-              <Checkbox
-                {...form.getInputProps(`fields.${selectedField}.canLeave`, {
-                  type: "checkbox",
-                })}
-                key={form.key(`fields.${selectedField}.canLeave`)}
-                onChange={(event) =>
-                  form.setFieldValue(
-                    `fields.${selectedField}.canLeave`,
-                    event.currentTarget.checked,
-                  )
-                }
-                label={t("zoneCreation.allowToLeaveZoneOnThisField")}
-                className="mt-4"
-              />
-            </div>
-            <div className="mt-4">
-              <ZoneObjectList
-                objects={form.getValues().fields[selectedField].objects}
-              />
-            </div>
-            <div className="mt-4">
-              <Button onClick={setSelectedFieldAsEntrance}>
-                {t("zoneCreation.setAsEntrance")}
-              </Button>
-              <Button
-                variant="danger"
-                className="ml-4"
-                onClick={removeSelectedField}
-              >
-                {t("zoneCreation.removeField")}
-              </Button>
-            </div>
-          </>
-        )}
-        {selectedConnection && (
-          <div>
-            <Button variant="danger" onClick={removeSelectedConnection}>
-              {t("zoneCreation.removeConnection")}
-            </Button>
+      </Tabs.Panel>
+      <Tabs.Panel value="map" className="flex flex-grow">
+        <div className="flex flex-col h-full w-1/2 border-r border-app-shell p-md">
+          <div className="min-h-[256px] max-w-fit overflow-auto">
+            <ZoneMap
+              fields={getFieldsAsArray()}
+              connections={getConnectionsAsArray()}
+              entrance={getPositionFromFieldKey(form.getValues().entrance)}
+              selectedField={selectedField}
+              selectedConnection={selectedConnection}
+              editMode={true}
+              onFieldClick={onFieldClick}
+              onConnectionClick={onConnectionClick}
+            />
           </div>
-        )}
-      </div>
-    </div>
+        </div>
+        <div className="w-1/2 p-md">
+          {selectedField && (
+            <>
+              <div>
+                <TextInput
+                  {...form.getInputProps(`fields.${selectedField}.name`)}
+                  key={form.key(`fields.${selectedField}.name`)}
+                  label={t("common.name")}
+                  className="max-w-xs"
+                />
+                <Textarea
+                  {...form.getInputProps(`fields.${selectedField}.description`)}
+                  key={form.key(`fields.${selectedField}.description`)}
+                  label={t("common.description")}
+                  autosize
+                  minRows={2}
+                  maxRows={10}
+                  maxLength={ZONE_FIELD_DESCRIPTION_MAX_LENGTH}
+                  className="mt-2"
+                />
+                <Checkbox
+                  {...form.getInputProps(`fields.${selectedField}.canLeave`, {
+                    type: "checkbox",
+                  })}
+                  key={form.key(`fields.${selectedField}.canLeave`)}
+                  onChange={(event) =>
+                    form.setFieldValue(
+                      `fields.${selectedField}.canLeave`,
+                      event.currentTarget.checked,
+                    )
+                  }
+                  label={t("zoneCreation.allowToLeaveZoneOnThisField")}
+                  className="mt-4"
+                />
+              </div>
+              <div className="mt-4">
+                <ZoneObjectList
+                  objects={form.getValues().fields[selectedField].objects}
+                />
+              </div>
+              <div className="mt-4">
+                <Button onClick={setSelectedFieldAsEntrance}>
+                  {t("zoneCreation.setAsEntrance")}
+                </Button>
+                <Button
+                  variant="danger"
+                  className="ml-4"
+                  onClick={removeSelectedField}
+                >
+                  {t("zoneCreation.removeField")}
+                </Button>
+              </div>
+            </>
+          )}
+          {selectedConnection && (
+            <div>
+              <Button variant="danger" onClick={removeSelectedConnection}>
+                {t("zoneCreation.removeConnection")}
+              </Button>
+            </div>
+          )}
+        </div>
+      </Tabs.Panel>
+      <Tabs.Panel value="npc">
+        <></>
+      </Tabs.Panel>
+    </Tabs>
   );
 }
