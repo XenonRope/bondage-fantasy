@@ -51,7 +51,7 @@ import {
   ZoneObject,
   ZoneVisionObject,
 } from "bondage-fantasy-common";
-import { ReactNode, useEffect, useId, useState } from "react";
+import { ReactNode, useEffect, useId, useReducer, useState } from "react";
 import { Translation, useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router";
 
@@ -77,13 +77,10 @@ function NpcEditForm(props: {
   index: number;
   onRemove?: () => void;
 }) {
+  const [, forceUpdate] = useReducer((x) => x + 1, 0);
   const { t } = useTranslation();
-  const [npcName, setNpcName] = useState(
-    props.form.getValues().npcList[props.index].name,
-  );
-  props.form.watch(`npcList.${props.index}.name`, ({ value }) => {
-    setNpcName(value as string);
-  });
+  const npcName = props.form.getValues().npcList[props.index].name;
+  props.form.watch(`npcList.${props.index}.name`, forceUpdate);
 
   return (
     <Paper withBorder radius="md" className="mb-4 p-md">
@@ -496,11 +493,23 @@ export function ZoneEditorPage() {
     setNextNpcId((id) => id + 1);
   }
 
-  function removeNpc(index: number): void {
-    form.setFieldValue("npcList", (npcList) => {
-      const npcListCopy = [...npcList];
-      npcListCopy.splice(index, 1);
-      return npcListCopy;
+  function removeNpc(npcId: number): void {
+    form.setValues((values) => {
+      return {
+        fields: Object.fromEntries(
+          Object.entries(values.fields ?? {}).map(([positionKey, field]) => [
+            positionKey,
+            {
+              ...field,
+              objects: field.objects.filter(
+                (object) =>
+                  object.type !== ObjectType.NPC || object.npcId !== npcId,
+              ),
+            },
+          ]),
+        ),
+        npcList: (values.npcList ?? []).filter((npc) => npc.id !== npcId),
+      };
     });
   }
 
@@ -743,7 +752,7 @@ export function ZoneEditorPage() {
             key={npc.id}
             form={form}
             index={index}
-            onRemove={() => removeNpc(index)}
+            onRemove={() => removeNpc(npc.id)}
           />
         ))}
         <div>
