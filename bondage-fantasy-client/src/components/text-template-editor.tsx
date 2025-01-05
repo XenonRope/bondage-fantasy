@@ -67,6 +67,7 @@ export function TextTemplateEditor(props: {
           extensions={[
             minimalSetup({ drawSelection: false }),
             EditorState.changeFilter.of(isValid),
+            EditorView.lineWrapping,
           ]}
           onChange={(value) => handleChange(value)}
         />
