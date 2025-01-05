@@ -1,4 +1,5 @@
 import { zoneApi } from "../api/zone-api";
+import { TextTemplateEditor } from "../components/text-template-editor";
 import { ZoneMap } from "../components/zone-map";
 import { ZoneObjectList } from "../components/zone-object-list";
 import { errorService } from "../services/error-service";
@@ -670,17 +671,15 @@ export function ZoneEditorPage() {
                     label={t("common.name")}
                     className="max-w-xs"
                   />
-                  <Textarea
+                  <TextTemplateEditor
                     {...form.getInputProps(
                       `fields.${selectedField}.description`,
                     )}
                     key={form.key(`fields.${selectedField}.description`)}
                     label={t("common.description")}
-                    autosize
-                    minRows={2}
-                    maxRows={10}
                     maxLength={ZONE_FIELD_DESCRIPTION_MAX_LENGTH}
                     className="mt-2"
+                    classNames={{ input: "min-h-14 max-h-52 overflow-auto" }}
                   />
                   <Checkbox
                     {...form.getInputProps(`fields.${selectedField}.canLeave`, {
