@@ -13,6 +13,12 @@ importers:
 
   bondage-fantasy-client:
     dependencies:
+      '@codemirror/autocomplete':
+        specifier: 6.18.4
+        version: 6.18.4
+      '@codemirror/language':
+        specifier: 6.10.8
+        version: 6.10.8
       '@fortawesome/fontawesome-svg-core':
         specifier: 6.7.1
         version: 6.7.1
@@ -22,6 +28,9 @@ importers:
       '@fortawesome/react-fontawesome':
         specifier: 0.2.2
         version: 0.2.2(@fortawesome/fontawesome-svg-core@6.7.1)(react@19.0.0)
+      '@grumptech/lezer-mustache':
+        specifier: 1.0.2
+        version: 1.0.2
       '@mantine/core':
         specifier: 7.15.1
         version: 7.15.1(@mantine/hooks@7.15.1(react@19.0.0))(@types/react@19.0.1)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -761,6 +770,9 @@ packages:
     peerDependencies:
       '@fortawesome/fontawesome-svg-core': ~1 || ~6
       react: '>=16.3'
+
+  '@grumptech/lezer-mustache@1.0.2':
+    resolution: {integrity: sha512-LXxQC+nDeBi4FhRgNWtsa8XWyxOu8qUPzROAIysv3rhCjKk47ODDR4IPGHd/ea0enh90GSMHYJdiRcrMrKTDmA==}
 
   '@humanfs/core@0.19.1':
     resolution: {integrity: sha512-5DyQ4+1JEUzejeK1JGICcideyfUbGixgS9jNgex5nqkW+cY7WZhxBigmieN5Qnw9ZosSNVC9KQKyb+GUaGyKUA==}
@@ -4686,6 +4698,12 @@ snapshots:
       '@fortawesome/fontawesome-svg-core': 6.7.1
       prop-types: 15.8.1
       react: 19.0.0
+
+  '@grumptech/lezer-mustache@1.0.2':
+    dependencies:
+      '@lezer/common': 1.2.3
+      '@lezer/highlight': 1.2.1
+      '@lezer/lr': 1.4.2
 
   '@humanfs/core@0.19.1': {}
 

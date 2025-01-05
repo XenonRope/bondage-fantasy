@@ -1,3 +1,10 @@
+import {
+  autocompletion,
+  CompletionContext,
+  CompletionResult,
+} from "@codemirror/autocomplete";
+import { LanguageSupport, LRLanguage } from "@codemirror/language";
+import { parser } from "@grumptech/lezer-mustache";
 import { Input } from "@mantine/core";
 import { useUncontrolled } from "@mantine/hooks";
 import CodeMirror, {
@@ -23,6 +30,42 @@ const theme = EditorView.theme({
     padding: "0",
   },
 });
+
+function prepareMustacheLanguage() {
+  function autocomplete(context: CompletionContext): CompletionResult | null {
+    const word = context.matchBefore(/{{[#/]?[a-zA-Z]*/);
+    if (word == null || word.from == word.to) {
+      return null;
+    }
+    return {
+      from: ["#", "/"].includes(word.text[2]) ? word.from + 3 : word.from + 2,
+      options: [
+        { label: "name" },
+        { label: "hasVagina" },
+        { label: "hasOnlyVagina" },
+        { label: "hasPenis" },
+        { label: "hasOnlyPenis" },
+        { label: "isFuta" },
+        { label: "sheHer" },
+        { label: "heHim" },
+      ],
+    };
+  }
+
+  const languageSupport = new LanguageSupport(
+    LRLanguage.define({
+      name: "mustache",
+      parser,
+      languageData: {
+        autocomplete,
+      },
+    }),
+  );
+
+  return languageSupport;
+}
+
+const mustacheLanguage = prepareMustacheLanguage();
 
 export function TextTemplateEditor(props: {
   value?: string;
@@ -68,6 +111,8 @@ export function TextTemplateEditor(props: {
             minimalSetup({ drawSelection: false }),
             EditorState.changeFilter.of(isValid),
             EditorView.lineWrapping,
+            autocompletion(),
+            mustacheLanguage,
           ]}
           onChange={(value) => handleChange(value)}
         />
