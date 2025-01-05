@@ -40,7 +40,16 @@ function notEmpty(customMessage?: string | ReactNode) {
   };
 }
 
+function notInList<T>(invalidValues: T[], customMessage: string | ReactNode) {
+  return (value: T | null | undefined) => {
+    if (invalidValues.includes(value as T)) {
+      return customMessage;
+    }
+  };
+}
+
 export const Validators = {
   inRange,
   notEmpty,
+  notInList,
 };

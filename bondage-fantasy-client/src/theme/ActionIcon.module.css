@@ -1,0 +1,10 @@
+.root {
+  &[data-variant="transparent"][data-variant-color="danger"] {
+    & {
+      color: var(--mantine-color-red-8);
+    }
+    &:hover {
+      color: var(--mantine-color-red-9);
+    }
+  }
+}

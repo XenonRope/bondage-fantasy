@@ -12,6 +12,7 @@ import {
   Button,
   Checkbox,
   Paper,
+  Select,
   Tabs,
   Textarea,
   TextInput,
@@ -32,6 +33,7 @@ import {
   Npc,
   NPC_NAME_MAX_LENGTH,
   NPC_NAME_MIN_LENGTH,
+  NpcObject,
   ObjectType,
   Position,
   Zone,
@@ -48,7 +50,7 @@ import {
   ZoneObject,
   ZoneVisionObject,
 } from "bondage-fantasy-common";
-import { useEffect, useId, useState } from "react";
+import { ReactNode, useEffect, useId, useState } from "react";
 import { Translation, useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router";
 
@@ -69,7 +71,7 @@ interface ZoneForm {
   npcList: Npc[];
 }
 
-function NpcForm(props: {
+function NpcEditForm(props: {
   form: UseFormReturnType<ZoneForm, (values: ZoneForm) => ZoneForm>;
   index: number;
   onRemove?: () => void;
@@ -88,7 +90,7 @@ function NpcForm(props: {
         <div className="font-medium">{npcName}</div>
         <ActionIcon
           variant="transparent"
-          color="red"
+          data-variant-color="danger"
           onClick={() => props.onRemove?.()}
         >
           <FontAwesomeIcon icon={faTrash} />
@@ -104,6 +106,83 @@ function NpcForm(props: {
         />
       </div>
     </Paper>
+  );
+}
+
+function NpcPlaceForm(props: {
+  initialNpcObject?: NpcObject;
+  position: Position;
+  zoneForm: ZoneForm;
+  onConfirm?: (npcObject: NpcObject) => void;
+  onCancel?: () => void;
+}) {
+  const { t } = useTranslation();
+  const alreadyUsedNpcIds = prepareAlreadyUsedNpcIds();
+  const form = useForm({
+    mode: "uncontrolled",
+    initialValues: {
+      npcId: props.initialNpcObject?.npcId?.toString(),
+    },
+    validate: {
+      npcId: (value) =>
+        Validators.notEmpty()(value) ||
+        Validators.notInList(
+          alreadyUsedNpcIds,
+          <Translation>
+            {(t) => t("zoneCreation.npcCannotBePlacedTwiceOnTheSameField")}
+          </Translation>,
+        )(value),
+    },
+  });
+
+  function prepareAlreadyUsedNpcIds(): string[] {
+    return props.zoneForm.fields[getFieldKey(props.position)].objects
+      .filter((object) => object.type === ObjectType.NPC)
+      .map((object) => object.npcId)
+      .filter((npcId) => npcId !== props.initialNpcObject?.npcId)
+      .map((npcId) => npcId.toString());
+  }
+
+  function onConfirm(): void {
+    const npcId = form.getValues().npcId;
+    if (npcId == null) {
+      return;
+    }
+
+    const npcObject: NpcObject = {
+      type: ObjectType.NPC,
+      position: props.position,
+      npcId: parseInt(npcId),
+    };
+
+    props.onConfirm?.(npcObject);
+  }
+
+  return (
+    <div>
+      <Select
+        {...form.getInputProps("npcId")}
+        key={form.key("npcId")}
+        label={t("zoneCreation.selectNpc")}
+        data={props.zoneForm.npcList.map((npc) => ({
+          value: npc.id.toString(),
+          label: npc.name,
+        }))}
+        allowDeselect={false}
+        withCheckIcon={false}
+        searchable
+        comboboxProps={{ offset: 0, shadow: "xs" }}
+        className="max-w-xs"
+      />
+      <div className="mt-4">
+        <Button onClick={() => form.onSubmit(onConfirm)()}>
+          {t("zoneCreation.placeNpc")}
+        </Button>
+        <Button onClick={() => props.onCancel?.()} className="ml-4">
+          {t("common.cancel")}
+        </Button>
+      </div>
+    </div>
   );
 }
 
@@ -150,6 +229,11 @@ export function ZoneEditorPage() {
     refetchOnReconnect: false,
   });
   const [nextNpcId, setNextNpcId] = useState(1);
+  const [placeNpcData, setPlaceNpcData] = useState<{
+    npcObject?: NpcObject;
+    position: Position;
+  }>();
+  const [activeTab, setActiveTab] = useState<string | null>("basic");
   useEffect(() => {
     if (zone.data) {
       form.setValues({
@@ -309,8 +393,8 @@ export function ZoneEditorPage() {
       entrance: getPositionFromFieldKey(form.getValues().entrance!),
       fields: getFieldsAsArray(),
       connections: getConnectionsAsArray(),
-      npcList: [],
-      objects: [],
+      npcList: form.getValues().npcList,
+      objects: prepareObjects(),
     };
   }
 
@@ -324,8 +408,16 @@ export function ZoneEditorPage() {
       fields: getFieldsAsArray(),
       connections: getConnectionsAsArray(),
       npcList: form.getValues().npcList,
-      objects: [],
+      objects: prepareObjects(),
     };
+  }
+
+  function prepareObjects(): ZoneObject[] {
+    const objects: ZoneObject[] = [];
+    for (const field of Object.values(form.getValues().fields)) {
+      objects.push(...field.objects);
+    }
+    return objects;
   }
 
   function mapFieldsToFormFields(
@@ -338,8 +430,10 @@ export function ZoneEditorPage() {
         name: field.name,
         description: field.description,
         canLeave: field.canLeave,
-        objects: zone.objects.filter((object) =>
-          arePositionsEqual(object.position, field.position),
+        objects: zone.objects.filter(
+          (object) =>
+            object.type !== ObjectType.CHARACTER &&
+            arePositionsEqual(object.position, field.position),
         ),
       };
     }
@@ -409,6 +503,86 @@ export function ZoneEditorPage() {
     });
   }
 
+  function openPlaceNpcTab(): void {
+    if (!selectedField) {
+      return;
+    }
+    setPlaceNpcData({
+      npcObject: undefined,
+      position: getPositionFromFieldKey(selectedField),
+    });
+    setActiveTab("placeNpc");
+  }
+
+  function addNpcObject(npcObject: NpcObject): void {
+    if (!placeNpcData) {
+      return;
+    }
+
+    form.setFieldValue(
+      `fields.${getFieldKey(npcObject.position)}.objects`,
+      (objects) => {
+        const objectsCopy = [...objects];
+        const index = placeNpcData.npcObject
+          ? objectsCopy.findIndex((object) => object === placeNpcData.npcObject)
+          : -1;
+        if (index === -1) {
+          objectsCopy.push(npcObject);
+        } else {
+          objectsCopy[index] = npcObject;
+        }
+        return objectsCopy;
+      },
+    );
+
+    changeTab("map");
+  }
+
+  function changeTab(tab: string | null): void {
+    setPlaceNpcData(undefined);
+    setActiveTab(tab);
+  }
+
+  function getObjectActions(
+    object: ZoneVisionObject,
+  ): { label: ReactNode; onClick: () => void }[] {
+    if (object.type === ObjectType.NPC) {
+      return [
+        {
+          label: <Translation>{(t) => t("common.edit")}</Translation>,
+          onClick: () => {
+            setPlaceNpcData({
+              npcObject: form
+                .getValues()
+                .fields[getFieldKey(object.position)].objects.filter(
+                  (fieldObject) => fieldObject.type === ObjectType.NPC,
+                )
+                .find((fieldObject) => fieldObject.npcId === object.npcId),
+              position: object.position,
+            });
+            setActiveTab("placeNpc");
+          },
+        },
+        {
+          label: <Translation>{(t) => t("common.remove")}</Translation>,
+          onClick: () => {
+            form.setFieldValue(
+              `fields.${getFieldKey(object.position)}.objects`,
+              (objects) =>
+                objects.filter(
+                  (fieldObject) =>
+                    fieldObject.type !== ObjectType.NPC ||
+                    fieldObject.npcId !== object.npcId,
+                ),
+            );
+          },
+        },
+      ];
+    }
+
+    return [];
+  }
+
   if (zoneId && !zone.data) {
     return <></>;
   }
@@ -417,13 +591,19 @@ export function ZoneEditorPage() {
     <Tabs
       variant="pills"
       radius="xs"
-      defaultValue="basic"
       className="flex flex-col h-full"
+      value={activeTab}
+      onChange={changeTab}
     >
       <Tabs.List className="border-b border-app-shell">
         <Tabs.Tab value="basic">{t("zoneCreation.tabs.basic")}</Tabs.Tab>
         <Tabs.Tab value="map">{t("zoneCreation.tabs.map")}</Tabs.Tab>
         <Tabs.Tab value="npc">{t("zoneCreation.tabs.npc")}</Tabs.Tab>
+        {placeNpcData && (
+          <Tabs.Tab value="placeNpc">
+            {t("zoneCreation.tabs.placeNpc")}
+          </Tabs.Tab>
+        )}
       </Tabs.List>
 
       <Tabs.Panel value="basic" className="p-md w-1/2">
@@ -479,61 +659,75 @@ export function ZoneEditorPage() {
             />
           </div>
         </div>
-        <div className="w-1/2 p-md">
+        <div className="w-1/2">
           {selectedField && (
-            <>
-              <div>
-                <TextInput
-                  {...form.getInputProps(`fields.${selectedField}.name`)}
-                  key={form.key(`fields.${selectedField}.name`)}
-                  label={t("common.name")}
-                  className="max-w-xs"
-                />
-                <Textarea
-                  {...form.getInputProps(`fields.${selectedField}.description`)}
-                  key={form.key(`fields.${selectedField}.description`)}
-                  label={t("common.description")}
-                  autosize
-                  minRows={2}
-                  maxRows={10}
-                  maxLength={ZONE_FIELD_DESCRIPTION_MAX_LENGTH}
-                  className="mt-2"
-                />
-                <Checkbox
-                  {...form.getInputProps(`fields.${selectedField}.canLeave`, {
-                    type: "checkbox",
-                  })}
-                  key={form.key(`fields.${selectedField}.canLeave`)}
-                  onChange={(event) =>
-                    form.setFieldValue(
-                      `fields.${selectedField}.canLeave`,
-                      event.currentTarget.checked,
-                    )
-                  }
-                  label={t("zoneCreation.allowToLeaveZoneOnThisField")}
-                  className="mt-4"
-                />
+            <div className="flex flex-col">
+              <div className="p-md">
+                <div>
+                  <TextInput
+                    {...form.getInputProps(`fields.${selectedField}.name`)}
+                    key={form.key(`fields.${selectedField}.name`)}
+                    label={t("common.name")}
+                    className="max-w-xs"
+                  />
+                  <Textarea
+                    {...form.getInputProps(
+                      `fields.${selectedField}.description`,
+                    )}
+                    key={form.key(`fields.${selectedField}.description`)}
+                    label={t("common.description")}
+                    autosize
+                    minRows={2}
+                    maxRows={10}
+                    maxLength={ZONE_FIELD_DESCRIPTION_MAX_LENGTH}
+                    className="mt-2"
+                  />
+                  <Checkbox
+                    {...form.getInputProps(`fields.${selectedField}.canLeave`, {
+                      type: "checkbox",
+                    })}
+                    key={form.key(`fields.${selectedField}.canLeave`)}
+                    onChange={(event) =>
+                      form.setFieldValue(
+                        `fields.${selectedField}.canLeave`,
+                        event.currentTarget.checked,
+                      )
+                    }
+                    label={t("zoneCreation.allowToLeaveZoneOnThisField")}
+                    className="mt-4"
+                  />
+                </div>
+                <div className="mt-4">
+                  <Button onClick={setSelectedFieldAsEntrance}>
+                    {t("zoneCreation.setAsEntrance")}
+                  </Button>
+                  <Button
+                    variant="danger"
+                    className="ml-4"
+                    onClick={removeSelectedField}
+                  >
+                    {t("zoneCreation.removeField")}
+                  </Button>
+                </div>
               </div>
-              <div className="mt-4">
-                <ZoneObjectList
-                  objects={mapObjectsToZoneVisionObjects(
-                    form.getValues().fields[selectedField].objects,
-                  )}
-                />
+              <div className="p-md border-t border-app-shell">
+                {form.getValues().fields[selectedField].objects.length > 0 && (
+                  <div className="mb-4">
+                    <ZoneObjectList
+                      objects={mapObjectsToZoneVisionObjects(
+                        form.getValues().fields[selectedField].objects,
+                      )}
+                      actions={getObjectActions}
+                    />
+                  </div>
+                )}
+                <div>
+                  <Button onClick={openPlaceNpcTab}>
+                    {t("zoneCreation.placeNpc")}
+                  </Button>
+                </div>
               </div>
-              <div className="mt-4">
-                <Button onClick={setSelectedFieldAsEntrance}>
-                  {t("zoneCreation.setAsEntrance")}
-                </Button>
-                <Button
-                  variant="danger"
-                  className="ml-4"
-                  onClick={removeSelectedField}
-                >
-                  {t("zoneCreation.removeField")}
-                </Button>
-              </div>
-            </>
+            </div>
           )}
           {selectedConnection && (
             <div>
@@ -546,7 +740,7 @@ export function ZoneEditorPage() {
       </Tabs.Panel>
       <Tabs.Panel value="npc" className="p-md">
         {form.getValues().npcList.map((npc, index) => (
-          <NpcForm
+          <NpcEditForm
             key={npc.id}
             form={form}
             index={index}
@@ -557,6 +751,17 @@ export function ZoneEditorPage() {
           <Button onClick={addNpc}>{t("zoneCreation.addNpc")}</Button>
         </div>
       </Tabs.Panel>
+      {placeNpcData && (
+        <Tabs.Panel value="placeNpc" className="p-md">
+          <NpcPlaceForm
+            initialNpcObject={placeNpcData.npcObject}
+            position={placeNpcData.position}
+            zoneForm={form.getValues()}
+            onConfirm={addNpcObject}
+            onCancel={() => changeTab("map")}
+          />
+        </Tabs.Panel>
+      )}
     </Tabs>
   );
 }

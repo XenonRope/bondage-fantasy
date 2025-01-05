@@ -14,12 +14,19 @@ import { ZoneListPage } from "./pages/zone-list-page";
 import { characterService } from "./services/character-service";
 import { errorService } from "./services/error-service";
 import { useAppStore } from "./store";
+import actionIconClasses from "./theme/ActionIcon.module.css";
 import alertClasses from "./theme/Alert.module.css";
 import buttonClasses from "./theme/Button.module.css";
 import { AuthRequired } from "./utils/auth-required";
 import { CharacterRequired } from "./utils/character-required";
 import { ZoneRequired } from "./utils/zone-required";
-import { Alert, Button, createTheme, MantineProvider } from "@mantine/core";
+import {
+  ActionIcon,
+  Alert,
+  Button,
+  createTheme,
+  MantineProvider,
+} from "@mantine/core";
 import "@mantine/core/styles.css";
 import { Notifications } from "@mantine/notifications";
 import "@mantine/notifications/styles.css";
@@ -54,11 +61,14 @@ const queryClient = new QueryClient({
 
 const theme = createTheme({
   components: {
-    Button: Button.extend({
-      classNames: buttonClasses,
+    ActionIcon: ActionIcon.extend({
+      classNames: actionIconClasses,
     }),
     Alert: Alert.extend({
       classNames: alertClasses,
+    }),
+    Button: Button.extend({
+      classNames: buttonClasses,
     }),
   },
 });

@@ -1,12 +1,14 @@
 import { useAppStore } from "../store";
-import { faUser } from "@fortawesome/free-solid-svg-icons";
+import { faEllipsis, faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { ActionIcon, Menu } from "@mantine/core";
 import {
   CharacterZoneVisionObject,
+  NpcZoneVisionObject,
   ObjectType,
   ZoneVisionObject,
 } from "bondage-fantasy-common";
-import { useMemo } from "react";
+import { ReactNode, useMemo } from "react";
 
 function CharacterItem(props: { object: CharacterZoneVisionObject }) {
   const characterId = useAppStore((state) => state.character?.id);
@@ -26,7 +28,47 @@ function CharacterItem(props: { object: CharacterZoneVisionObject }) {
   );
 }
 
-export function ZoneObjectList(props: { objects: ZoneVisionObject[] }) {
+function NpcItem(props: { object: NpcZoneVisionObject }) {
+  return (
+    <div>
+      <FontAwesomeIcon icon={faUser} className={"text-green-700"} />
+      <span className="ml-2">{props.object.name}</span>
+    </div>
+  );
+}
+
+function ItemActions(props: {
+  actions: { label: ReactNode; onClick: () => void }[];
+}) {
+  if (props.actions.length === 0) {
+    return <></>;
+  }
+
+  return (
+    <Menu shadow="md" width={200}>
+      <Menu.Target>
+        <ActionIcon variant="transparent">
+          <FontAwesomeIcon icon={faEllipsis} />
+        </ActionIcon>
+      </Menu.Target>
+
+      <Menu.Dropdown>
+        {props.actions.map((action, index) => (
+          <Menu.Item key={index} onClick={action.onClick}>
+            {action.label}
+          </Menu.Item>
+        ))}
+      </Menu.Dropdown>
+    </Menu>
+  );
+}
+
+export function ZoneObjectList(props: {
+  objects: ZoneVisionObject[];
+  actions?: (
+    object: ZoneVisionObject,
+  ) => { label: ReactNode; onClick: () => void }[];
+}) {
   const characterId = useAppStore((state) => state.character?.id);
   const sortedObjects = useMemo(() => {
     function getPriority(object: ZoneVisionObject): number {
@@ -46,10 +88,12 @@ export function ZoneObjectList(props: { objects: ZoneVisionObject[] }) {
   return (
     <div>
       {sortedObjects.map((object, index) => (
-        <div key={index}>
+        <div key={index} className="flex justify-between">
           {object.type === ObjectType.CHARACTER && (
             <CharacterItem object={object} />
           )}
+          {object.type === ObjectType.NPC && <NpcItem object={object} />}
+          <ItemActions actions={props.actions?.(object) ?? []}></ItemActions>
         </div>
       ))}
     </div>
