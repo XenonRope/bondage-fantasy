@@ -3,6 +3,7 @@ import { TextTemplateEditor } from "../components/text-template-editor";
 import { ZoneMap } from "../components/zone-map";
 import { ZoneObjectList } from "../components/zone-object-list";
 import { errorService } from "../services/error-service";
+import { notificationService } from "../services/notification-service";
 import { useAppStore } from "../store";
 import { Validators } from "../utils/validators";
 import {
@@ -32,6 +33,7 @@ import {
   Zone,
   ZONE_DESCRIPTION_MAX_LENGTH,
   ZONE_DESCRIPTION_MIN_LENGTH,
+  ZONE_EVENT_MAX_COUNT,
   ZONE_EVENT_NAME_MAX_LENGTH,
   ZONE_EVENT_NAME_MIN_LENGTH,
   ZONE_FIELD_DESCRIPTION_MAX_LENGTH,
@@ -105,11 +107,7 @@ function EventForm(props: {
       />
       <div className="mt-4">
         <Button onClick={() => form.onSubmit(onConfirm)()}>
-          {t(
-            props.initialEvent
-              ? "zoneCreation.editEvent"
-              : "zoneCreation.addEvent",
-          )}
+          {t("zoneCreation.saveEvent")}
         </Button>
         <Button onClick={() => props.onCancel?.()} className="ml-4">
           {t("common.cancel")}
@@ -393,6 +391,20 @@ export function ZoneEditorPage() {
     if (!selectedField) {
       return;
     }
+
+    const eventCount = Object.values(form.getValues().fields)
+      .flatMap((field) => field.objects)
+      .filter((object) => object.type === ObjectType.EVENT).length;
+    if (eventCount >= ZONE_EVENT_MAX_COUNT) {
+      notificationService.error(
+        t("zoneCreation.eventCountLimitReached.title"),
+        t("zoneCreation.eventCountLimitReached.message", {
+          eventMaxCount: ZONE_EVENT_MAX_COUNT,
+        }),
+      );
+      return;
+    }
+
     setEventToEdit({
       type: ObjectType.EVENT,
       position: getPositionFromFieldKey(selectedField),

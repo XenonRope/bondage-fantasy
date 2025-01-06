@@ -66,7 +66,10 @@ export const pl: ResourceLanguage = {
     "zoneCreation.tabs.map": "Mapa",
     "zoneCreation.tabs.event": "Zdarzenie",
     "zoneCreation.addEvent": "Dodaj zdarzenie",
-    "zoneCreation.editEvent": "Edytuj zdarzenie",
+    "zoneCreation.saveEvent": "Zapisz event",
+    "zoneCreation.eventCountLimitReached.title": "Limit zdarzeń osiągnięty",
+    "zoneCreation.eventCountLimitReached.message":
+      "Nie możesz dodać więcej niż {{eventMaxCount}} zdarzeń",
     "zoneList.join": "Dołącz",
     "zoneList.edit": "Edytuj",
     "explore.leave": "Wyjdź",
