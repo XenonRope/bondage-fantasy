@@ -128,3 +128,78 @@ export interface Npc {
   id: number;
   name: string;
 }
+
+export type Expression = string | Operation;
+
+export enum Operator {
+  EQUAL = "EQUAL",
+  NOT_EQUAL = "NOT_EQUAL",
+  GREATER_THAN = "GREATER_THAN",
+  GREATER_THAN_OR_EQUAL = "GREATER_THAN_OR_EQUAL",
+  LESS_THAN = "LESS_THAN",
+  LESS_THAN_OR_EQUAL = "LESS_THAN_OR_EQUAL",
+  NOT = "NOT",
+  AND = "AND",
+  OR = "OR",
+  XOR = "XOR",
+  ADD = "ADD",
+  SUBTRACT = "SUBTRACT",
+  MULTIPLY = "MULTIPLY",
+  DIVIDE = "DIVIDE",
+  MODULO = "MODULO",
+  CONCATENATE = "CONCATENATE",
+  GET = "GET",
+  SET = "SET",
+  INTERPOLATE = "INTERPOLATE",
+  IF_ELSE = "IF_ELSE",
+}
+
+export interface Operation {
+  operator: Operator;
+  arguments: Expression[];
+}
+
+export enum SceneStepType {
+  FRAME = "FRAME",
+  LABEL = "LABEL",
+  JUMP = "JUMP",
+  CHOICE = "CHOICE",
+  ABORT = "ABORT",
+}
+
+export type SceneStep = SceneStepFrame | SceneStepLabel;
+
+export interface SceneStepFrame {
+  type: SceneStepType.FRAME;
+  text: string;
+}
+
+export interface SceneStepLabel {
+  type: SceneStepType.LABEL;
+  label: string;
+}
+
+export interface SceneStepJump {
+  type: SceneStepType.JUMP;
+  condition: Expression;
+  label: string;
+}
+
+export interface SceneStepChoiceOption {
+  name: Expression;
+  condition: Expression;
+  label: string;
+}
+
+export interface SceneStepChoice {
+  type: SceneStepType.CHOICE;
+  options: SceneStepChoiceOption[];
+}
+
+export interface SceneStepAbort {
+  type: SceneStepType.ABORT;
+}
+
+export interface SceneDefinition {
+  steps: SceneStep[];
+}
