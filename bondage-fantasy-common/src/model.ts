@@ -78,6 +78,7 @@ export interface EventObject extends ZoneObjectBase {
   type: ObjectType.EVENT;
   eventId: number;
   name: string;
+  condition?: Expression;
 }
 
 export interface ZoneVisionField {
@@ -145,8 +146,7 @@ export enum Operator {
   DIVIDE = "DIVIDE",
   MODULO = "MODULO",
   CONCATENATE = "CONCATENATE",
-  GET = "GET",
-  SET = "SET",
+  VARIABLE = "VARIABLE",
   INTERPOLATE = "INTERPOLATE",
   IF_ELSE = "IF_ELSE",
 }
@@ -162,6 +162,7 @@ export enum SceneStepType {
   JUMP = "JUMP",
   CHOICE = "CHOICE",
   ABORT = "ABORT",
+  VARIABLE = "VARIABLE",
 }
 
 export type SceneStep = SceneStepFrame | SceneStepLabel;
@@ -178,13 +179,13 @@ export interface SceneStepLabel {
 
 export interface SceneStepJump {
   type: SceneStepType.JUMP;
-  condition: Expression;
+  condition?: Expression;
   label: string;
 }
 
 export interface SceneStepChoiceOption {
   name: Expression;
-  condition: Expression;
+  condition?: Expression;
   label: string;
 }
 
@@ -195,6 +196,12 @@ export interface SceneStepChoice {
 
 export interface SceneStepAbort {
   type: SceneStepType.ABORT;
+}
+
+export interface SceneStepVariable {
+  type: SceneStepType.VARIABLE;
+  name: string;
+  value: Expression;
 }
 
 export interface SceneDefinition {
