@@ -2,10 +2,9 @@ import { ZoneDao } from "#dao/zone-dao";
 import { SessionService } from "#services/session-service";
 import { ZoneService } from "#services/zone-service";
 import {
-  zoneCreateRequestValidator,
-  zoneEditRequestValidator,
   zoneJoinRequestValidator,
   zoneMoveRequestValidator,
+  zoneSaveRequestValidator,
   zoneSearchRequestValidator,
 } from "#validators/zone-validator";
 import { inject } from "@adonisjs/core";
@@ -13,9 +12,8 @@ import { HttpContext } from "@adonisjs/core/http";
 import {
   SessionData,
   Zone,
-  ZoneCreateRequest,
-  ZoneEditRequest,
   ZoneJoinRequest,
+  ZoneSaveRequest,
   ZoneSearchResponse,
 } from "bondage-fantasy-common";
 import { getCharacterId } from "./utils.js";
@@ -51,36 +49,6 @@ export default class ZoneController {
     };
   }
 
-  async create(ctx: HttpContext) {
-    const characterId = await getCharacterId(ctx);
-    const {
-      name,
-      description,
-      draft,
-      entrance,
-      fields,
-      connections,
-      npcList,
-      objects,
-    } = (await ctx.request.validateUsing(
-      zoneCreateRequestValidator,
-    )) as ZoneCreateRequest;
-
-    const zone = await this.zoneService.create({
-      characterId,
-      name,
-      description,
-      draft,
-      entrance,
-      fields,
-      connections,
-      npcList,
-      objects,
-    });
-
-    ctx.response.status(201).send(zone);
-  }
-
   async getById(ctx: HttpContext): Promise<Zone> {
     const zoneId: number = ctx.params.id;
     const characterId = await getCharacterId(ctx);
@@ -92,7 +60,7 @@ export default class ZoneController {
     return zone;
   }
 
-  async edit(ctx: HttpContext): Promise<SessionData> {
+  async save(ctx: HttpContext): Promise<SessionData> {
     const characterId = await getCharacterId(ctx);
     const {
       zoneId,
@@ -105,10 +73,10 @@ export default class ZoneController {
       npcList,
       objects,
     } = (await ctx.request.validateUsing(
-      zoneEditRequestValidator,
-    )) as ZoneEditRequest;
+      zoneSaveRequestValidator,
+    )) as ZoneSaveRequest;
 
-    await this.zoneService.edit({
+    await this.zoneService.save({
       zoneId,
       characterId,
       name,

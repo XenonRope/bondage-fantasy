@@ -46,9 +46,8 @@ import {
   ZONE_FIELD_NAME_MIN_LENGTH,
   ZONE_NAME_MAX_LENGTH,
   ZONE_NAME_MIN_LENGTH,
-  ZoneCreateRequest,
-  ZoneEditRequest,
   ZoneObject,
+  ZoneSaveRequest,
   ZoneVisionObject,
 } from "bondage-fantasy-common";
 import { ReactNode, useEffect, useId, useReducer, useState } from "react";
@@ -204,14 +203,9 @@ export function ZoneEditorPage() {
   const [selectedField, setSelectedField] = useState<FieldKey>();
   const [selectedConnection, setSelectedConnection] =
     useState<FieldConnectionKey>();
-  const createZone = useMutation({
-    mutationFn: (request: ZoneCreateRequest) => zoneApi.create(request),
-    onSuccess: () => navigate("/zones"),
-    onError: (error) => errorService.handleUnexpectedError(error),
-  });
-  const editZone = useMutation({
-    mutationFn: async (request: ZoneEditRequest) => {
-      const sessionData = await zoneApi.edit(request);
+  const saveZone = useMutation({
+    mutationFn: async (request: ZoneSaveRequest) => {
+      const sessionData = await zoneApi.save(request);
       useAppStore.getState().updateSessionData(sessionData);
     },
     onSuccess: () => navigate("/zones"),
@@ -383,22 +377,9 @@ export function ZoneEditorPage() {
     );
   }
 
-  function prepareZoneCreateRequest(): ZoneCreateRequest {
+  function prepareZoneSaveRequest(): ZoneSaveRequest {
     return {
-      name: form.getValues().name,
-      description: form.getValues().description,
-      draft: form.getValues().draft,
-      entrance: getPositionFromFieldKey(form.getValues().entrance!),
-      fields: getFieldsAsArray(),
-      connections: getConnectionsAsArray(),
-      npcList: form.getValues().npcList,
-      objects: prepareObjects(),
-    };
-  }
-
-  function prepareZoneEditRequest(): ZoneEditRequest {
-    return {
-      zoneId: parseInt(zoneId!),
+      zoneId: zoneId == null ? undefined : parseInt(zoneId),
       name: form.getValues().name,
       description: form.getValues().description,
       draft: form.getValues().draft,
@@ -473,14 +454,8 @@ export function ZoneEditorPage() {
 
   function submitForm(): void {
     form.onSubmit(() => {
-      if (zoneId) {
-        if (!editZone.isPending) {
-          editZone.mutate(prepareZoneEditRequest());
-        }
-      } else {
-        if (!createZone.isPending) {
-          createZone.mutate(prepareZoneCreateRequest());
-        }
+      if (!saveZone.isPending) {
+        saveZone.mutate(prepareZoneSaveRequest());
       }
     })();
   }

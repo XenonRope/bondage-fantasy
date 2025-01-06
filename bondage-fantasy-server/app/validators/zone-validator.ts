@@ -77,28 +77,9 @@ const npcObject = vine.object({
 
 const zoneObject = vine.unionOfTypes([npcObject]);
 
-export const zoneCreateRequestValidator = vine.compile(
+export const zoneSaveRequestValidator = vine.compile(
   vine.object({
-    name: vine
-      .string()
-      .minLength(ZONE_NAME_MIN_LENGTH)
-      .maxLength(ZONE_NAME_MAX_LENGTH),
-    description: vine
-      .string()
-      .minLength(ZONE_DESCRIPTION_MIN_LENGTH)
-      .maxLength(ZONE_DESCRIPTION_MAX_LENGTH),
-    draft: vine.boolean(),
-    entrance: position,
-    fields: vine.array(zoneField),
-    connections: vine.array(zoneFieldConnection),
-    npcList: vine.array(npc).maxLength(NPC_MAX_COUNT),
-    objects: vine.array(zoneObject),
-  }),
-);
-
-export const zoneEditRequestValidator = vine.compile(
-  vine.object({
-    zoneId: vine.number().withoutDecimals(),
+    zoneId: vine.number().withoutDecimals().optional(),
     name: vine
       .string()
       .minLength(ZONE_NAME_MIN_LENGTH)

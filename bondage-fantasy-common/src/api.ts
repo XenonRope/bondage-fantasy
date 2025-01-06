@@ -5,7 +5,7 @@ import {
   Npc,
   Position,
   Pronouns,
-  ZoneObject
+  ZoneObject,
 } from "./model.js";
 
 export interface AccountRegisterRequest {
@@ -24,19 +24,8 @@ export interface CharacterCreateRequest {
   genitals: Genitals;
 }
 
-export interface ZoneCreateRequest {
-  name: string;
-  description: string;
-  draft: boolean;
-  entrance: Position;
-  fields: Field[];
-  connections: FieldConnection[];
-  npcList: Npc[];
-  objects: ZoneObject[];
-}
-
-export interface ZoneEditRequest {
-  zoneId: number;
+export interface ZoneSaveRequest {
+  zoneId?: number;
   name: string;
   description: string;
   draft: boolean;

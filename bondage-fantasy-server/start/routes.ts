@@ -28,11 +28,10 @@ router
           .get("/characters/:id", [CharacterController, "getById"])
           .where("id", router.matchers.number());
         router.post("/characters", [CharacterController, "create"]);
-        router.post("/zones", [ZoneController, "create"]);
+        router.post("/zones", [ZoneController, "save"]);
         router
           .get("/zones/:id", [ZoneController, "getById"])
           .where("id", router.matchers.number());
-        router.post("/zones/edit", [ZoneController, "edit"]);
         router.post("/zones/search", [ZoneController, "search"]);
         router.post("/zones/join", [ZoneController, "join"]);
         router.post("/zones/leave", [ZoneController, "leave"]);

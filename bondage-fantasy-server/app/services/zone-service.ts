@@ -64,42 +64,8 @@ export class ZoneService {
     return zone;
   }
 
-  async create(params: {
-    characterId: number;
-    name: string;
-    description: string;
-    draft: boolean;
-    entrance: Position;
-    fields: Field[];
-    connections: FieldConnection[];
-    npcList: Npc[];
-    objects: ZoneObject[];
-  }): Promise<Zone> {
-    this.validateFields(params.fields);
-    this.validateConnections(params.connections, params.fields);
-    this.validateEntrance(params.entrance, params.fields);
-    this.validateNpcList(params.npcList);
-    this.validateObjects(params.objects, params.fields, params.npcList);
-
-    const zone: Zone = {
-      id: await this.sequenceService.nextSequence(SequenceCode.ZONE),
-      ownerCharacterId: params.characterId,
-      name: params.name,
-      description: params.description,
-      draft: params.draft,
-      entrance: params.entrance,
-      fields: params.fields,
-      connections: params.connections,
-      npcList: params.npcList,
-      objects: params.objects,
-    };
-    await this.zoneDao.insert(zone);
-
-    return zone;
-  }
-
-  async edit(params: {
-    zoneId: number;
+  async save(params: {
+    zoneId?: number;
     characterId: number;
     name: string;
     description: string;
@@ -116,19 +82,30 @@ export class ZoneService {
     this.validateNpcList(params.npcList);
     this.validateObjects(params.objects, params.fields, params.npcList);
 
-    await lockService.run(LOCKS.zone(params.zoneId), "1s", async () => {
-      const zone = await this.get(params.zoneId, {
-        checkAccessForCharacterId: params.characterId,
-      });
-      const characterObjects = params.draft
-        ? []
-        : zone.objects.filter(
-            (object) =>
-              object.type === ObjectType.CHARACTER &&
-              findFieldByPosition(params.fields, object.position) != null,
-          );
+    const locks =
+      params.zoneId == null
+        ? [LOCKS.character(params.characterId)]
+        : [LOCKS.character(params.characterId), LOCKS.zone(params.zoneId)];
+    await lockService.run(locks, "1s", async () => {
+      const zone =
+        params.zoneId == null
+          ? undefined
+          : await this.get(params.zoneId, {
+              checkAccessForCharacterId: params.characterId,
+            });
+      const characterObjects =
+        !zone || params.draft
+          ? []
+          : zone.objects.filter(
+              (object) =>
+                object.type === ObjectType.CHARACTER &&
+                findFieldByPosition(params.fields, object.position) != null,
+            );
+
       const newZone: Zone = {
-        ...zone,
+        id:
+          params.zoneId ??
+          (await this.sequenceService.nextSequence(SequenceCode.ZONE)),
         ownerCharacterId: params.characterId,
         name: params.name,
         description: params.description,
@@ -139,7 +116,12 @@ export class ZoneService {
         npcList: params.npcList,
         objects: [...params.objects, ...characterObjects],
       };
-      await this.zoneDao.replace(newZone);
+
+      if (params.zoneId == null) {
+        await this.zoneDao.insert(newZone);
+      } else {
+        await this.zoneDao.replace(newZone);
+      }
     });
   }
 

@@ -2,10 +2,9 @@ import { httpClient } from "./http-client";
 import {
   SessionData,
   Zone,
-  ZoneCreateRequest,
-  ZoneEditRequest,
   ZoneJoinRequest,
   ZoneMoveRequest,
+  ZoneSaveRequest,
   ZoneSearchRequest,
   ZoneSearchResponse,
 } from "bondage-fantasy-common";
@@ -19,12 +18,8 @@ class ZoneApi {
     return await httpClient.post("zones/search", request);
   }
 
-  async create(request: ZoneCreateRequest): Promise<Zone> {
+  async save(request: ZoneSaveRequest): Promise<SessionData> {
     return await httpClient.post("zones", request);
-  }
-
-  async edit(request: ZoneEditRequest): Promise<SessionData> {
-    return await httpClient.post("zones/edit", request);
   }
 
   async join(request: ZoneJoinRequest): Promise<SessionData> {
