@@ -31,6 +31,12 @@ importers:
       '@grumptech/lezer-mustache':
         specifier: 1.0.2
         version: 1.0.2
+      '@lezer/highlight':
+        specifier: 1.2.1
+        version: 1.2.1
+      '@lezer/lr':
+        specifier: 1.4.2
+        version: 1.4.2
       '@mantine/core':
         specifier: 7.15.2
         version: 7.15.2(@mantine/hooks@7.15.2(react@19.0.0))(@types/react@19.0.3)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -77,6 +83,9 @@ importers:
       '@eslint/js':
         specifier: 9.17.0
         version: 9.17.0
+      '@lezer/generator':
+        specifier: 1.7.2
+        version: 1.7.2
       '@trivago/prettier-plugin-sort-imports':
         specifier: 5.2.1
         version: 5.2.1(prettier@3.4.2)
@@ -864,6 +873,10 @@ packages:
 
   '@lezer/common@1.2.3':
     resolution: {integrity: sha512-w7ojc8ejBqr2REPsWxJjrMFsA/ysDCFICn8zEOR9mrqzOu2amhITYuLD8ag6XZf0CFXDrhKqw7+tW8cX66NaDA==}
+
+  '@lezer/generator@1.7.2':
+    resolution: {integrity: sha512-CwgULPOPPmH54tv4gki18bElLCdJ1+FBC+nGVSVD08vFWDsMjS7KEjNTph9JOypDnet90ujN3LzQiW3CyVODNQ==}
+    hasBin: true
 
   '@lezer/highlight@1.2.1':
     resolution: {integrity: sha512-Z5duk4RN/3zuVO7Jq0pGLJ3qynpxUVsh7IbUbGj88+uV2ApSAn6kWg2au3iJb+0Zi7kKtqffIESgNcRXWZWmSA==}
@@ -4371,6 +4384,11 @@ snapshots:
       '@jridgewell/sourcemap-codec': 1.5.0
 
   '@lezer/common@1.2.3': {}
+
+  '@lezer/generator@1.7.2':
+    dependencies:
+      '@lezer/common': 1.2.3
+      '@lezer/lr': 1.4.2
 
   '@lezer/highlight@1.2.1':
     dependencies:

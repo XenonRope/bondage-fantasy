@@ -1,0 +1,17 @@
+@top Expression { expression }
+
+expression { Operation | String }
+
+Operation { Operator LeftParenthesis expression ("," expression)* RightParenthesis }
+
+@skip { space }
+
+@tokens {
+  space { @whitespace+ }
+  Operator { $[A-Z_]+ }
+  String { '"' !["]* '"' }
+  LeftParenthesis { "(" }
+  RightParenthesis { ")" }
+}
+
+@external propSource highlighting from "./expression-highlight.js"
