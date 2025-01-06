@@ -2,7 +2,6 @@ import {
   Field,
   FieldConnection,
   Genitals,
-  Npc,
   Position,
   Pronouns,
   ZoneObject,
@@ -32,7 +31,6 @@ export interface ZoneSaveRequest {
   entrance: Position;
   fields: Field[];
   connections: FieldConnection[];
-  npcList: Npc[];
   objects: ZoneObject[];
 }
 

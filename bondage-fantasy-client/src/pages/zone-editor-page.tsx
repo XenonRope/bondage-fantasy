@@ -5,24 +5,20 @@ import { ZoneObjectList } from "../components/zone-object-list";
 import { errorService } from "../services/error-service";
 import { useAppStore } from "../store";
 import { Validators } from "../utils/validators";
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  ActionIcon,
   Alert,
   Button,
   Checkbox,
-  Paper,
-  Select,
   Tabs,
   Textarea,
   TextInput,
 } from "@mantine/core";
-import { FormErrors, useForm, UseFormReturnType } from "@mantine/form";
+import { FormErrors, useForm } from "@mantine/form";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   arePositionsEqual,
   doesConnectionKeyContainFieldKey,
+  EventObject,
   Field,
   FieldConnection,
   FieldConnectionKey,
@@ -31,15 +27,13 @@ import {
   getFieldKey,
   getPositionFromFieldKey,
   getPositionsFromConnectionKey,
-  Npc,
-  NPC_NAME_MAX_LENGTH,
-  NPC_NAME_MIN_LENGTH,
-  NpcObject,
   ObjectType,
   Position,
   Zone,
   ZONE_DESCRIPTION_MAX_LENGTH,
   ZONE_DESCRIPTION_MIN_LENGTH,
+  ZONE_EVENT_NAME_MAX_LENGTH,
+  ZONE_EVENT_NAME_MIN_LENGTH,
   ZONE_FIELD_DESCRIPTION_MAX_LENGTH,
   ZONE_FIELD_DESCRIPTION_MIN_LENGTH,
   ZONE_FIELD_NAME_MAX_LENGTH,
@@ -50,7 +44,7 @@ import {
   ZoneSaveRequest,
   ZoneVisionObject,
 } from "bondage-fantasy-common";
-import { ReactNode, useEffect, useId, useReducer, useState } from "react";
+import { ReactNode, useEffect, useId, useState } from "react";
 import { Translation, useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router";
 
@@ -68,112 +62,54 @@ interface ZoneForm {
   entrance?: FieldKey;
   fields: Record<FieldKey, ZoneFormField>;
   connections: Record<FieldConnectionKey, true>;
-  npcList: Npc[];
 }
 
-function NpcEditForm(props: {
-  form: UseFormReturnType<ZoneForm, (values: ZoneForm) => ZoneForm>;
-  index: number;
-  onRemove?: () => void;
-}) {
-  const [, forceUpdate] = useReducer((x) => x + 1, 0);
-  const { t } = useTranslation();
-  const npcName = props.form.getValues().npcList[props.index].name;
-  props.form.watch(`npcList.${props.index}.name`, forceUpdate);
-
-  return (
-    <Paper withBorder radius="md" className="mb-4 p-md">
-      <div className="flex justify-between items-center">
-        <div className="font-medium">{npcName}</div>
-        <ActionIcon
-          variant="transparent"
-          data-variant-color="danger"
-          onClick={() => props.onRemove?.()}
-        >
-          <FontAwesomeIcon icon={faTrash} />
-        </ActionIcon>
-      </div>
-      <div className="mt-4">
-        <TextInput
-          {...props.form.getInputProps(`npcList.${props.index}.name`)}
-          key={props.form.key(`npcList.${props.index}.name`)}
-          label={t("common.characterNameShort")}
-          className="max-w-xs"
-          maxLength={NPC_NAME_MAX_LENGTH}
-        />
-      </div>
-    </Paper>
-  );
-}
-
-function NpcPlaceForm(props: {
-  initialNpcObject?: NpcObject;
-  position: Position;
-  zoneForm: ZoneForm;
-  onConfirm?: (npcObject: NpcObject) => void;
+function EventForm(props: {
+  initialEvent: EventObject;
+  onConfirm?: (event: EventObject) => void;
   onCancel?: () => void;
 }) {
   const { t } = useTranslation();
-  const alreadyUsedNpcIds = prepareAlreadyUsedNpcIds();
   const form = useForm({
     mode: "uncontrolled",
     initialValues: {
-      npcId: props.initialNpcObject?.npcId?.toString(),
+      name: props.initialEvent.name,
     },
     validate: {
-      npcId: (value) =>
-        Validators.notEmpty()(value) ||
-        Validators.notInList(
-          alreadyUsedNpcIds,
-          <Translation>
-            {(t) => t("zoneCreation.npcCannotBePlacedTwiceOnTheSameField")}
-          </Translation>,
-        )(value),
+      name: Validators.inRange(
+        ZONE_EVENT_NAME_MIN_LENGTH,
+        ZONE_EVENT_NAME_MAX_LENGTH,
+      ),
     },
   });
 
-  function prepareAlreadyUsedNpcIds(): string[] {
-    return props.zoneForm.fields[getFieldKey(props.position)].objects
-      .filter((object) => object.type === ObjectType.NPC)
-      .map((object) => object.npcId)
-      .filter((npcId) => npcId !== props.initialNpcObject?.npcId)
-      .map((npcId) => npcId.toString());
-  }
-
   function onConfirm(): void {
-    const npcId = form.getValues().npcId;
-    if (npcId == null) {
-      return;
-    }
-
-    const npcObject: NpcObject = {
-      type: ObjectType.NPC,
-      position: props.position,
-      npcId: parseInt(npcId),
+    const event: EventObject = {
+      type: ObjectType.EVENT,
+      position: props.initialEvent.position,
+      eventId: props.initialEvent.eventId,
+      name: form.getValues().name,
     };
 
-    props.onConfirm?.(npcObject);
+    props.onConfirm?.(event);
   }
 
   return (
     <div>
-      <Select
-        {...form.getInputProps("npcId")}
-        key={form.key("npcId")}
-        label={t("zoneCreation.selectNpc")}
-        data={props.zoneForm.npcList.map((npc) => ({
-          value: npc.id.toString(),
-          label: npc.name,
-        }))}
-        allowDeselect={false}
-        withCheckIcon={false}
-        searchable
-        comboboxProps={{ offset: 0, shadow: "xs" }}
+      <TextInput
+        {...form.getInputProps("name")}
+        key={form.key("name")}
+        label={t("common.name")}
+        maxLength={ZONE_EVENT_NAME_MAX_LENGTH}
         className="max-w-xs"
       />
       <div className="mt-4">
         <Button onClick={() => form.onSubmit(onConfirm)()}>
-          {t("zoneCreation.placeNpc")}
+          {t(
+            props.initialEvent
+              ? "zoneCreation.editEvent"
+              : "zoneCreation.addEvent",
+          )}
         </Button>
         <Button onClick={() => props.onCancel?.()} className="ml-4">
           {t("common.cancel")}
@@ -196,7 +132,6 @@ export function ZoneEditorPage() {
       entrance: undefined,
       fields: {},
       connections: {},
-      npcList: [],
     },
     validate: validateForm,
   });
@@ -220,11 +155,8 @@ export function ZoneEditorPage() {
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
   });
-  const [nextNpcId, setNextNpcId] = useState(1);
-  const [placeNpcData, setPlaceNpcData] = useState<{
-    npcObject?: NpcObject;
-    position: Position;
-  }>();
+  const [nextEventId, setNextEventId] = useState(1);
+  const [eventToEdit, setEventToEdit] = useState<EventObject>();
   const [activeTab, setActiveTab] = useState<string | null>("basic");
   useEffect(() => {
     if (zone.data) {
@@ -235,9 +167,15 @@ export function ZoneEditorPage() {
         entrance: getFieldKey(zone.data.entrance),
         fields: mapFieldsToFormFields(zone.data.fields, zone.data),
         connections: mapConnectionsToFormConnections(zone.data.connections),
-        npcList: zone.data.npcList,
       });
-      setNextNpcId(Math.max(...zone.data.npcList.map((npc) => npc.id), 0) + 1);
+      setNextEventId(
+        Math.max(
+          ...zone.data.objects
+            .filter((object) => object.type === ObjectType.EVENT)
+            .map((event) => event.eventId),
+          0,
+        ) + 1,
+      );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [zone.data]);
@@ -267,12 +205,6 @@ export function ZoneEditorPage() {
         ZONE_FIELD_DESCRIPTION_MIN_LENGTH,
         ZONE_FIELD_DESCRIPTION_MAX_LENGTH,
       )(field.description);
-    }
-    for (const [npcIndex, npc] of values.npcList.entries()) {
-      errors[`npcList.${npcIndex}.name`] = Validators.inRange(
-        NPC_NAME_MIN_LENGTH,
-        NPC_NAME_MAX_LENGTH,
-      )(npc.name);
     }
 
     return errors;
@@ -386,7 +318,6 @@ export function ZoneEditorPage() {
       entrance: getPositionFromFieldKey(form.getValues().entrance!),
       fields: getFieldsAsArray(),
       connections: getConnectionsAsArray(),
-      npcList: form.getValues().npcList,
       objects: prepareObjects(),
     };
   }
@@ -430,14 +361,12 @@ export function ZoneEditorPage() {
   function mapObjectToZoneVisionObject(
     object: ZoneObject,
   ): ZoneVisionObject | undefined {
-    if (object.type === ObjectType.NPC) {
+    if (object.type === ObjectType.EVENT) {
       return {
-        type: ObjectType.NPC,
+        type: ObjectType.EVENT,
         position: object.position,
-        npcId: object.npcId,
-        name:
-          form.getValues().npcList.find((npc) => npc.id === object.npcId)
-            ?.name ?? "",
+        eventId: object.eventId,
+        name: object.name,
       };
     }
   }
@@ -460,61 +389,35 @@ export function ZoneEditorPage() {
     })();
   }
 
-  function addNpc(): void {
-    form.setFieldValue("npcList", (npcList) => [
-      ...npcList,
-      { id: nextNpcId, name: "" },
-    ]);
-    setNextNpcId((id) => id + 1);
-  }
-
-  function removeNpc(npcId: number): void {
-    form.setValues((values) => {
-      return {
-        fields: Object.fromEntries(
-          Object.entries(values.fields ?? {}).map(([positionKey, field]) => [
-            positionKey,
-            {
-              ...field,
-              objects: field.objects.filter(
-                (object) =>
-                  object.type !== ObjectType.NPC || object.npcId !== npcId,
-              ),
-            },
-          ]),
-        ),
-        npcList: (values.npcList ?? []).filter((npc) => npc.id !== npcId),
-      };
-    });
-  }
-
-  function openPlaceNpcTab(): void {
+  function openEventAddForm(): void {
     if (!selectedField) {
       return;
     }
-    setPlaceNpcData({
-      npcObject: undefined,
+    setEventToEdit({
+      type: ObjectType.EVENT,
       position: getPositionFromFieldKey(selectedField),
+      eventId: nextEventId,
+      name: "",
     });
-    setActiveTab("placeNpc");
+    setNextEventId((value) => value + 1);
+    setActiveTab("event");
   }
 
-  function addNpcObject(npcObject: NpcObject): void {
-    if (!placeNpcData) {
-      return;
-    }
-
+  function saveEvent(event: EventObject): void {
     form.setFieldValue(
-      `fields.${getFieldKey(npcObject.position)}.objects`,
+      `fields.${getFieldKey(event.position)}.objects`,
       (objects) => {
         const objectsCopy = [...objects];
-        const index = placeNpcData.npcObject
-          ? objectsCopy.findIndex((object) => object === placeNpcData.npcObject)
-          : -1;
+        const index = objectsCopy.findIndex(
+          (object) =>
+            object.type === ObjectType.EVENT &&
+            object.eventId === event.eventId,
+        );
+
         if (index === -1) {
-          objectsCopy.push(npcObject);
+          objectsCopy.push(event);
         } else {
-          objectsCopy[index] = npcObject;
+          objectsCopy[index] = event;
         }
         return objectsCopy;
       },
@@ -524,40 +427,39 @@ export function ZoneEditorPage() {
   }
 
   function changeTab(tab: string | null): void {
-    setPlaceNpcData(undefined);
+    setEventToEdit(undefined);
     setActiveTab(tab);
   }
 
   function getObjectActions(
-    object: ZoneVisionObject,
+    visionObject: ZoneVisionObject,
   ): { label: ReactNode; onClick: () => void }[] {
-    if (object.type === ObjectType.NPC) {
+    if (visionObject.type === ObjectType.EVENT) {
       return [
         {
           label: <Translation>{(t) => t("common.edit")}</Translation>,
           onClick: () => {
-            setPlaceNpcData({
-              npcObject: form
+            setEventToEdit(
+              form
                 .getValues()
-                .fields[getFieldKey(object.position)].objects.filter(
-                  (fieldObject) => fieldObject.type === ObjectType.NPC,
+                .fields[getFieldKey(visionObject.position)].objects.filter(
+                  (object) => object.type === ObjectType.EVENT,
                 )
-                .find((fieldObject) => fieldObject.npcId === object.npcId),
-              position: object.position,
-            });
-            setActiveTab("placeNpc");
+                .find((object) => object.eventId === visionObject.eventId),
+            );
+            setActiveTab("event");
           },
         },
         {
           label: <Translation>{(t) => t("common.remove")}</Translation>,
           onClick: () => {
             form.setFieldValue(
-              `fields.${getFieldKey(object.position)}.objects`,
+              `fields.${getFieldKey(visionObject.position)}.objects`,
               (objects) =>
                 objects.filter(
-                  (fieldObject) =>
-                    fieldObject.type !== ObjectType.NPC ||
-                    fieldObject.npcId !== object.npcId,
+                  (object) =>
+                    object.type !== ObjectType.EVENT ||
+                    object.eventId !== visionObject.eventId,
                 ),
             );
           },
@@ -583,11 +485,8 @@ export function ZoneEditorPage() {
       <Tabs.List className="border-b border-app-shell">
         <Tabs.Tab value="basic">{t("zoneCreation.tabs.basic")}</Tabs.Tab>
         <Tabs.Tab value="map">{t("zoneCreation.tabs.map")}</Tabs.Tab>
-        <Tabs.Tab value="npc">{t("zoneCreation.tabs.npc")}</Tabs.Tab>
-        {placeNpcData && (
-          <Tabs.Tab value="placeNpc">
-            {t("zoneCreation.tabs.placeNpc")}
-          </Tabs.Tab>
+        {eventToEdit && (
+          <Tabs.Tab value="event">{t("zoneCreation.tabs.event")}</Tabs.Tab>
         )}
       </Tabs.List>
 
@@ -705,8 +604,8 @@ export function ZoneEditorPage() {
                   </div>
                 )}
                 <div>
-                  <Button onClick={openPlaceNpcTab}>
-                    {t("zoneCreation.placeNpc")}
+                  <Button onClick={openEventAddForm}>
+                    {t("zoneCreation.addEvent")}
                   </Button>
                 </div>
               </div>
@@ -721,26 +620,11 @@ export function ZoneEditorPage() {
           )}
         </div>
       </Tabs.Panel>
-      <Tabs.Panel value="npc" className="p-md">
-        {form.getValues().npcList.map((npc, index) => (
-          <NpcEditForm
-            key={npc.id}
-            form={form}
-            index={index}
-            onRemove={() => removeNpc(npc.id)}
-          />
-        ))}
-        <div>
-          <Button onClick={addNpc}>{t("zoneCreation.addNpc")}</Button>
-        </div>
-      </Tabs.Panel>
-      {placeNpcData && (
-        <Tabs.Panel value="placeNpc" className="p-md">
-          <NpcPlaceForm
-            initialNpcObject={placeNpcData.npcObject}
-            position={placeNpcData.position}
-            zoneForm={form.getValues()}
-            onConfirm={addNpcObject}
+      {eventToEdit && (
+        <Tabs.Panel value="event" className="p-md">
+          <EventForm
+            initialEvent={eventToEdit}
+            onConfirm={saveEvent}
             onCancel={() => changeTab("map")}
           />
         </Tabs.Panel>

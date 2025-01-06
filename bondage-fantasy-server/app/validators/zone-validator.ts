@@ -1,11 +1,11 @@
 import vine from "@vinejs/vine";
 import {
-  NPC_MAX_COUNT,
-  NPC_NAME_MAX_LENGTH,
-  NPC_NAME_MIN_LENGTH,
   ObjectType,
   ZONE_DESCRIPTION_MAX_LENGTH,
   ZONE_DESCRIPTION_MIN_LENGTH,
+  ZONE_EVENT_MAX_COUNT,
+  ZONE_EVENT_NAME_MAX_LENGTH,
+  ZONE_EVENT_NAME_MIN_LENGTH,
   ZONE_FIELD_DESCRIPTION_MAX_LENGTH,
   ZONE_FIELD_DESCRIPTION_MIN_LENGTH,
   ZONE_FIELD_NAME_MAX_LENGTH,
@@ -59,23 +59,17 @@ export const zoneSearchRequestValidator = vine.compile(
   }),
 );
 
-const npcId = vine.number().withoutDecimals().positive();
-
-const npc = vine.object({
-  id: npcId,
+const eventObject = vine.object({
+  type: vine.literal(ObjectType.EVENT),
+  position: position,
+  eventId: vine.number().withoutDecimals().min(1),
   name: vine
     .string()
-    .minLength(NPC_NAME_MIN_LENGTH)
-    .maxLength(NPC_NAME_MAX_LENGTH),
+    .minLength(ZONE_EVENT_NAME_MIN_LENGTH)
+    .maxLength(ZONE_EVENT_NAME_MAX_LENGTH),
 });
 
-const npcObject = vine.object({
-  type: vine.literal(ObjectType.NPC),
-  position: position,
-  npcId: npcId,
-});
-
-const zoneObject = vine.unionOfTypes([npcObject]);
+const zoneObject = vine.unionOfTypes([eventObject]);
 
 export const zoneSaveRequestValidator = vine.compile(
   vine.object({
@@ -92,8 +86,7 @@ export const zoneSaveRequestValidator = vine.compile(
     entrance: position,
     fields: vine.array(zoneField),
     connections: vine.array(zoneFieldConnection),
-    npcList: vine.array(npc).maxLength(NPC_MAX_COUNT),
-    objects: vine.array(zoneObject),
+    objects: vine.array(zoneObject).maxLength(ZONE_EVENT_MAX_COUNT),
   }),
 );
 

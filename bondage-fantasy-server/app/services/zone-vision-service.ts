@@ -8,7 +8,6 @@ import {
   Genitals,
   ObjectType,
   Pronouns,
-  Zone,
   ZoneObject,
   ZoneVision,
   ZoneVisionObject,
@@ -36,10 +35,7 @@ export class ZoneVisionService {
     const objects = zone.objects.filter((object) =>
       arePositionsEqual(object.position, characterObject.position),
     );
-    const zoneVisionObjects = await this.mapObjectsToZoneVisionObjects(
-      objects,
-      zone,
-    );
+    const zoneVisionObjects = await this.mapObjectsToZoneVisionObjects(objects);
     const currentField = zone.fields.find((field) =>
       arePositionsEqual(field.position, characterObject.position),
     )!;
@@ -68,7 +64,6 @@ export class ZoneVisionService {
 
   async mapObjectsToZoneVisionObjects(
     objects: ZoneObject[],
-    zone: Zone,
   ): Promise<ZoneVisionObject[]> {
     const charactersIds = objects
       .filter((object) => object.type === ObjectType.CHARACTER)
@@ -87,13 +82,12 @@ export class ZoneVisionService {
                 (character) => character.id === object.characterId,
               )?.name ?? "",
           };
-        case ObjectType.NPC:
+        case ObjectType.EVENT:
           return {
-            type: ObjectType.NPC,
+            type: ObjectType.EVENT,
             position: object.position,
-            npcId: object.npcId,
-            name:
-              zone.npcList.find((npc) => npc.id === object.npcId)?.name ?? "",
+            eventId: object.eventId,
+            name: object.name,
           };
       }
     });

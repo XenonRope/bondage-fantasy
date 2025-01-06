@@ -70,7 +70,6 @@ export default class ZoneController {
       entrance,
       fields,
       connections,
-      npcList,
       objects,
     } = (await ctx.request.validateUsing(
       zoneSaveRequestValidator,
@@ -85,7 +84,6 @@ export default class ZoneController {
       entrance,
       fields,
       connections,
-      npcList,
       objects,
     });
 

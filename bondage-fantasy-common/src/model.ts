@@ -54,16 +54,15 @@ export interface Zone {
   entrance: Position;
   fields: Field[];
   connections: FieldConnection[];
-  npcList: Npc[];
   objects: ZoneObject[];
 }
 
 export enum ObjectType {
   CHARACTER = "CHARACTER",
-  NPC = "NPC",
+  EVENT = "EVENT",
 }
 
-export type ZoneObject = CharacterObject | NpcObject;
+export type ZoneObject = CharacterObject | EventObject;
 
 export interface ZoneObjectBase {
   type: ObjectType;
@@ -75,9 +74,10 @@ export interface CharacterObject extends ZoneObjectBase {
   characterId: number;
 }
 
-export interface NpcObject extends ZoneObjectBase {
-  type: ObjectType.NPC;
-  npcId: number;
+export interface EventObject extends ZoneObjectBase {
+  type: ObjectType.EVENT;
+  eventId: number;
+  name: string;
 }
 
 export interface ZoneVisionField {
@@ -91,7 +91,9 @@ export interface ZoneVisionConnection {
   positions: [Position, Position];
 }
 
-export type ZoneVisionObject = CharacterZoneVisionObject | NpcZoneVisionObject;
+export type ZoneVisionObject =
+  | CharacterZoneVisionObject
+  | EventZoneVisionObject;
 
 export interface ZoneVisionObjectBase {
   type: ObjectType;
@@ -104,9 +106,9 @@ export interface CharacterZoneVisionObject extends ZoneVisionObjectBase {
   name: string;
 }
 
-export interface NpcZoneVisionObject extends ZoneVisionObjectBase {
-  type: ObjectType.NPC;
-  npcId: number;
+export interface EventZoneVisionObject extends ZoneVisionObjectBase {
+  type: ObjectType.EVENT;
+  eventId: number;
   name: string;
 }
 
@@ -122,11 +124,6 @@ export interface SessionData {
   account?: Account;
   character?: Character;
   zone?: ZoneVision;
-}
-
-export interface Npc {
-  id: number;
-  name: string;
 }
 
 export type Expression = string | Operation;

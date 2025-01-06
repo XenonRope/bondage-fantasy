@@ -20,8 +20,6 @@ import {
   getFieldConnectionKey,
   getFieldKey,
   hasDuplicates,
-  Npc,
-  NpcObject,
   ObjectType,
   Position,
   Zone,
@@ -73,14 +71,12 @@ export class ZoneService {
     entrance: Position;
     fields: Field[];
     connections: FieldConnection[];
-    npcList: Npc[];
     objects: ZoneObject[];
   }): Promise<void> {
     this.validateFields(params.fields);
     this.validateConnections(params.connections, params.fields);
     this.validateEntrance(params.entrance, params.fields);
-    this.validateNpcList(params.npcList);
-    this.validateObjects(params.objects, params.fields, params.npcList);
+    this.validateObjects(params.objects, params.fields);
 
     const locks =
       params.zoneId == null
@@ -113,7 +109,6 @@ export class ZoneService {
         entrance: params.entrance,
         fields: params.fields,
         connections: params.connections,
-        npcList: params.npcList,
         objects: [...params.objects, ...characterObjects],
       };
 
@@ -322,18 +317,7 @@ export class ZoneService {
     }
   }
 
-  private validateNpcList(npcList: Npc[]) {
-    const ids = npcList.map((npc) => npc.id);
-    if (hasDuplicates(ids)) {
-      throw new InvalidZoneException(`At least two NPCs have the same id`);
-    }
-  }
-
-  private validateObjects(
-    objects: ZoneObject[],
-    fields: Field[],
-    npcList: Npc[],
-  ) {
+  private validateObjects(objects: ZoneObject[], fields: Field[]) {
     for (const object of objects) {
       const field = findFieldByPosition(fields, object.position);
       if (!field) {
@@ -341,33 +325,17 @@ export class ZoneService {
           `Object with position [${object.position.x}, ${object.position.y}] is not on any field`,
         );
       }
-      this.validateNpcObjects(objects, npcList);
+      this.validateEventObjects(objects);
     }
   }
 
-  private validateNpcObjects(objects: ZoneObject[], npcList: Npc[]) {
-    const npcObjects = objects.filter(
-      (object) => object.type === ObjectType.NPC,
-    );
-    const keys = new Set<string>();
-    for (const npcObject of npcObjects) {
-      const key = `${npcObject.position.x}-${npcObject.position.y}-${npcObject.npcId}`;
-      if (keys.has(key)) {
-        throw new InvalidZoneException(
-          `Two NPCs with id ${npcObject.npcId} on field [${npcObject.position.x}, ${npcObject.position.y}]`,
-        );
-      }
-      keys.add(key);
-      this.validateNpcObject(npcObject, npcList);
-    }
-  }
+  private validateEventObjects(objects: ZoneObject[]) {
+    const eventsIds = objects
+      .filter((object) => object.type === ObjectType.EVENT)
+      .map((event) => event.eventId);
 
-  private validateNpcObject(object: NpcObject, npcList: Npc[]) {
-    const npc = npcList.find((npc) => npc.id === object.npcId);
-    if (!npc) {
-      throw new InvalidZoneException(
-        `NPC with id ${object.npcId} doesn't exist`,
-      );
+    if (hasDuplicates(eventsIds)) {
+      throw new InvalidZoneException(`Two events have the same id`);
     }
   }
 

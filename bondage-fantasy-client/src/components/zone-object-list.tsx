@@ -1,10 +1,10 @@
 import { useAppStore } from "../store";
-import { faEllipsis, faUser } from "@fortawesome/free-solid-svg-icons";
+import { faEllipsis, faStar, faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ActionIcon, Menu } from "@mantine/core";
 import {
   CharacterZoneVisionObject,
-  NpcZoneVisionObject,
+  EventZoneVisionObject,
   ObjectType,
   ZoneVisionObject,
 } from "bondage-fantasy-common";
@@ -28,10 +28,10 @@ function CharacterItem(props: { object: CharacterZoneVisionObject }) {
   );
 }
 
-function NpcItem(props: { object: NpcZoneVisionObject }) {
+function EventItem(props: { object: EventZoneVisionObject }) {
   return (
     <div>
-      <FontAwesomeIcon icon={faUser} className={"text-green-700"} />
+      <FontAwesomeIcon icon={faStar} className={"text-green-700"} />
       <span className="ml-2">{props.object.name}</span>
     </div>
   );
@@ -75,7 +75,7 @@ export function ZoneObjectList(props: {
       switch (object.type) {
         case ObjectType.CHARACTER:
           return object.characterId === characterId ? 100 : 50;
-        case ObjectType.NPC:
+        case ObjectType.EVENT:
           return 0;
       }
     }
@@ -92,7 +92,7 @@ export function ZoneObjectList(props: {
           {object.type === ObjectType.CHARACTER && (
             <CharacterItem object={object} />
           )}
-          {object.type === ObjectType.NPC && <NpcItem object={object} />}
+          {object.type === ObjectType.EVENT && <EventItem object={object} />}
           <ItemActions actions={props.actions?.(object) ?? []}></ItemActions>
         </div>
       ))}
