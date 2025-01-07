@@ -14,6 +14,7 @@ export const en: ResourceLanguage = {
     "common.fieldTooShort": "Field must have at least {{minLength}} characters",
     "common.fieldTooLong":
       "Field cannot have more than {{maxLength}} characters",
+    "common.invalidExpression": "Invalid expression",
     "common.logIn": "Log in",
     "common.logOut": "Log out",
     "common.createNewAccount": "Create new account",
@@ -25,6 +26,7 @@ export const en: ResourceLanguage = {
     "common.cancel": "Cancel",
     "common.edit": "Edit",
     "common.remove": "Remove",
+    "common.condition": "Condition",
     "navbar.characters": "Characters",
     "navbar.zones": "Zones",
     "navbar.explore": "Explore",
@@ -73,6 +75,7 @@ export const en: ResourceLanguage = {
     "zoneCreation.eventCountLimitReached.title": "Limit of events reached",
     "zoneCreation.eventCountLimitReached.message":
       "You cannot add more than {{eventMaxCount}} events",
+    "zoneCreation.showConditionally": "Show conditionally",
     "zoneList.join": "Join",
     "zoneList.edit": "Edit",
     "explore.leave": "Leave",

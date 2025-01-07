@@ -109,3 +109,7 @@ export function doesConnectionKeyContainFieldKey(
 export function hasDuplicates(array: unknown[]): boolean {
   return new Set(array).size !== array.length;
 }
+
+export function isEnum<T>(enumType: T, value: any): value is T[keyof T] {
+  return Object.values(enumType).includes(value);
+}

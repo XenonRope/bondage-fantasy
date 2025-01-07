@@ -13,6 +13,7 @@ export const pl: ResourceLanguage = {
     "common.fieldCannotBeEmpty": "Pole nie może być puste",
     "common.fieldTooShort": "Pole musi mieć co najmniej {{minLength}} znaków",
     "common.fieldTooLong": "Pole nie może mieć więcej niż {{maxLength}} znaków",
+    "common.invalidExpression": "Niepoprawne wyrażenie",
     "common.logIn": "Zaloguj się",
     "common.logOut": "Wyloguj się",
     "common.createNewAccount": "Stwórz nowe konto",
@@ -24,6 +25,7 @@ export const pl: ResourceLanguage = {
     "common.cancel": "Anulluj",
     "common.edit": "Edytuj",
     "common.remove": "Usuń",
+    "common.condition": "Warunek",
     "navbar.characters": "Postacie",
     "navbar.zones": "Strefy",
     "navbar.explore": "Eksploruj",
@@ -70,6 +72,7 @@ export const pl: ResourceLanguage = {
     "zoneCreation.eventCountLimitReached.title": "Limit zdarzeń osiągnięty",
     "zoneCreation.eventCountLimitReached.message":
       "Nie możesz dodać więcej niż {{eventMaxCount}} zdarzeń",
+    "zoneCreation.showConditionally": "Pokaż warunkowo",
     "zoneList.join": "Dołącz",
     "zoneList.edit": "Edytuj",
     "explore.leave": "Wyjdź",

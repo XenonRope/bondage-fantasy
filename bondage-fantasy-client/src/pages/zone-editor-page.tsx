@@ -1,10 +1,12 @@
 import { zoneApi } from "../api/zone-api";
+import { ExpressionEditor } from "../components/expression-editor";
 import { TextTemplateEditor } from "../components/text-template-editor";
 import { ZoneMap } from "../components/zone-map";
 import { ZoneObjectList } from "../components/zone-object-list";
 import { errorService } from "../services/error-service";
 import { notificationService } from "../services/notification-service";
 import { useAppStore } from "../store";
+import { parseExpression } from "../utils/expression-utils";
 import { Validators } from "../utils/validators";
 import {
   Alert,
@@ -15,11 +17,13 @@ import {
   TextInput,
 } from "@mantine/core";
 import { FormErrors, useForm } from "@mantine/form";
+import { useForceUpdate } from "@mantine/hooks";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   arePositionsEqual,
   doesConnectionKeyContainFieldKey,
   EventObject,
+  ExpressionWithSource,
   Field,
   FieldConnection,
   FieldConnectionKey,
@@ -33,6 +37,7 @@ import {
   Zone,
   ZONE_DESCRIPTION_MAX_LENGTH,
   ZONE_DESCRIPTION_MIN_LENGTH,
+  ZONE_EVENT_CONDITION_MAX_LENGTH,
   ZONE_EVENT_MAX_COUNT,
   ZONE_EVENT_NAME_MAX_LENGTH,
   ZONE_EVENT_NAME_MIN_LENGTH,
@@ -72,10 +77,13 @@ function EventForm(props: {
   onCancel?: () => void;
 }) {
   const { t } = useTranslation();
+  const forceUpdate = useForceUpdate();
   const form = useForm({
     mode: "uncontrolled",
     initialValues: {
       name: props.initialEvent.name,
+      showConditionally: props.initialEvent.condition != null,
+      condition: props.initialEvent.condition?.source,
     },
     validate: {
       name: Validators.inRange(
@@ -84,13 +92,32 @@ function EventForm(props: {
       ),
     },
   });
+  form.watch("showConditionally", forceUpdate);
 
   function onConfirm(): void {
+    let condition: ExpressionWithSource | undefined = undefined;
+    if (form.getValues().showConditionally) {
+      const source = form.getValues().condition ?? "";
+      const expression = parseExpression(source);
+      if (expression == null) {
+        form.setFieldError(
+          "condition",
+          <Translation>{(t) => t("common.invalidExpression")}</Translation>,
+        );
+        return;
+      }
+      condition = {
+        expression,
+        source,
+      };
+    }
+
     const event: EventObject = {
       type: ObjectType.EVENT,
       position: props.initialEvent.position,
       eventId: props.initialEvent.eventId,
       name: form.getValues().name,
+      condition,
     };
 
     props.onConfirm?.(event);
@@ -105,6 +132,23 @@ function EventForm(props: {
         maxLength={ZONE_EVENT_NAME_MAX_LENGTH}
         className="max-w-xs"
       />
+      <Checkbox
+        {...form.getInputProps("showConditionally", {
+          type: "checkbox",
+        })}
+        key={form.key("showConditionally")}
+        label={t("zoneCreation.showConditionally")}
+        className="mt-4"
+      />
+      {form.getValues().showConditionally && (
+        <ExpressionEditor
+          {...form.getInputProps("condition")}
+          key={form.key("condition")}
+          label={t("common.condition")}
+          maxLength={ZONE_EVENT_CONDITION_MAX_LENGTH}
+          className="mt-2 max-w-lg"
+        />
+      )}
       <div className="mt-4">
         <Button onClick={() => form.onSubmit(onConfirm)()}>
           {t("zoneCreation.saveEvent")}
@@ -502,7 +546,7 @@ export function ZoneEditorPage() {
         )}
       </Tabs.List>
 
-      <Tabs.Panel value="basic" className="p-md w-1/2">
+      <Tabs.Panel value="basic" className="p-md">
         {form.errors.entrance && (
           <Alert variant="error" className="mb-4">
             {form.errors.entrance}
@@ -521,7 +565,7 @@ export function ZoneEditorPage() {
           autosize
           minRows={2}
           maxRows={10}
-          className="mt-2"
+          className="mt-2 max-w-lg"
         />
         <Checkbox
           {...form.getInputProps("draft", {

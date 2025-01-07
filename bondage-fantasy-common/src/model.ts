@@ -78,7 +78,7 @@ export interface EventObject extends ZoneObjectBase {
   type: ObjectType.EVENT;
   eventId: number;
   name: string;
-  condition?: Expression;
+  condition?: ExpressionWithSource;
 }
 
 export interface ZoneVisionField {
@@ -154,6 +154,11 @@ export enum Operator {
 export interface Operation {
   operator: Operator;
   arguments: Expression[];
+}
+
+export interface ExpressionWithSource {
+  expression: Expression;
+  source: string;
 }
 
 export enum SceneStepType {
