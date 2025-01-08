@@ -35,6 +35,11 @@ export const en: ResourceLanguage = {
     "genitals.VAGINA": "Vagina",
     "genitals.PENIS": "Penis",
     "genitals.FUTA": "Futa",
+    "error.expressionParser.INVALID_SYNTAX": "Invalid syntax",
+    "error.expressionParser.INVALID_OPERATOR":
+      "{{operator}} is not valid operator",
+    "error.expressionParser.INVALID_NUMBER_OF_ARGUMENTS":
+      "Invalid number of arguments for operator {{operator}}. Expected {{expected}} but was {{actual}}.",
     "error.unexpecterError": "Unexpected error",
     "error.errorMessage": 'Error code: {{code}}. Message: "{{message}}".',
     "error.somethingWentWrong": "Something went wrong...",

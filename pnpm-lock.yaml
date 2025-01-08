@@ -31,15 +31,9 @@ importers:
       '@grumptech/lezer-mustache':
         specifier: 1.0.2
         version: 1.0.2
-      '@lezer/common':
-        specifier: 1.2.3
-        version: 1.2.3
       '@lezer/highlight':
         specifier: 1.2.1
         version: 1.2.1
-      '@lezer/lr':
-        specifier: 1.4.2
-        version: 1.4.2
       '@mantine/core':
         specifier: 7.15.3
         version: 7.15.3(@mantine/hooks@7.15.3(react@19.0.0))(@types/react@19.0.3)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -86,9 +80,6 @@ importers:
       '@eslint/js':
         specifier: 9.17.0
         version: 9.17.0
-      '@lezer/generator':
-        specifier: 1.7.2
-        version: 1.7.2
       '@trivago/prettier-plugin-sort-imports':
         specifier: 5.2.1
         version: 5.2.1(prettier@3.4.2)
@@ -148,7 +139,17 @@ importers:
         version: 6.0.7(@types/node@22.10.5)(jiti@1.21.7)(sugarss@4.0.1(postcss@8.4.49))(yaml@2.7.0)
 
   bondage-fantasy-common:
+    dependencies:
+      '@lezer/common':
+        specifier: 1.2.3
+        version: 1.2.3
+      '@lezer/lr':
+        specifier: 1.4.2
+        version: 1.4.2
     devDependencies:
+      '@lezer/generator':
+        specifier: 1.7.2
+        version: 1.7.2
       typescript:
         specifier: 5.7.2
         version: 5.7.2

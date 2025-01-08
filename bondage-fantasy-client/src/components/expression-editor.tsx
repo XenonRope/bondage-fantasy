@@ -1,8 +1,8 @@
-import { parser } from "../grammar/expression-parser";
+import { expressionHighlighting } from "../grammar/expression-highlight";
 import { CodeEditor } from "./code-editor";
 import { CompletionContext, CompletionResult } from "@codemirror/autocomplete";
 import { LanguageSupport, LRLanguage } from "@codemirror/language";
-import { Operator } from "bondage-fantasy-common";
+import { expressionParser, Operator } from "bondage-fantasy-common";
 import { ReactNode } from "react";
 
 function prepareLanguage() {
@@ -23,7 +23,7 @@ function prepareLanguage() {
   const languageSupport = new LanguageSupport(
     LRLanguage.define({
       name: "mustache",
-      parser,
+      parser: expressionParser.configure({ props: [expressionHighlighting] }),
       languageData: {
         autocomplete,
       },

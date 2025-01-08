@@ -17,6 +17,7 @@ import {
   ZONE_SEARCH_QUERY_MAX_LENGTH,
   ZONE_SEARCH_QUERY_MIN_LENGTH,
 } from "bondage-fantasy-common";
+import { expressionSource } from "./expression-validator.js";
 
 const position = vine.object({
   x: vine
@@ -67,6 +68,7 @@ const eventObject = vine.object({
     .string()
     .minLength(ZONE_EVENT_NAME_MIN_LENGTH)
     .maxLength(ZONE_EVENT_NAME_MAX_LENGTH),
+  condition: expressionSource.optional(),
 });
 
 const zoneObject = vine.unionOfTypes([eventObject]);

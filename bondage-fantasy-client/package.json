@@ -9,8 +9,7 @@
     "format": "prettier --write .",
     "format-check": "prettier --check .",
     "preview": "vite preview",
-    "docker": "docker build -t bondage-fantasy-client .",
-    "lezer": "lezer-generator --typeScript src/grammar/expression.grammar -o src/grammar/expression-parser.ts"
+    "docker": "docker build -t bondage-fantasy-client ."
   },
   "dependencies": {
     "@codemirror/autocomplete": "6.18.4",
@@ -19,9 +18,7 @@
     "@fortawesome/free-solid-svg-icons": "6.7.2",
     "@fortawesome/react-fontawesome": "0.2.2",
     "@grumptech/lezer-mustache": "1.0.2",
-    "@lezer/common": "1.2.3",
     "@lezer/highlight": "1.2.1",
-    "@lezer/lr": "1.4.2",
     "@mantine/core": "7.15.3",
     "@mantine/form": "7.15.3",
     "@mantine/hooks": "7.15.3",
@@ -39,7 +36,6 @@
   },
   "devDependencies": {
     "@eslint/js": "9.17.0",
-    "@lezer/generator": "1.7.2",
     "@trivago/prettier-plugin-sort-imports": "5.2.1",
     "@types/js-cookie": "3.0.6",
     "@types/react": "19.0.3",

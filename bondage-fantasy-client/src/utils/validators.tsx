@@ -1,3 +1,4 @@
+import { parseExpression } from "bondage-fantasy-common";
 import { ReactNode } from "react";
 import { Translation } from "react-i18next";
 
@@ -48,8 +49,22 @@ function notInList<T>(invalidValues: T[], customMessage: string | ReactNode) {
   };
 }
 
+function expression() {
+  return (value: string | undefined | null) => {
+    const [, error] = parseExpression(value ?? "");
+    if (error) {
+      return (
+        <Translation>
+          {(t) => t(`error.expressionParser.${error.type}`, { ...error })}
+        </Translation>
+      );
+    }
+  };
+}
+
 export const Validators = {
   inRange,
   notEmpty,
   notInList,
+  expression,
 };

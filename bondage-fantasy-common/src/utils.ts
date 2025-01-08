@@ -8,7 +8,7 @@ import {
 
 export function arePositionsEqual(
   firstPosition?: Position,
-  secondPosition?: Position
+  secondPosition?: Position,
 ): boolean {
   if (!firstPosition && !secondPosition) {
     return true;
@@ -24,7 +24,7 @@ export function arePositionsEqual(
 
 function comparePositions(
   { x: x1, y: y1 }: Position,
-  { x: x2, y: y2 }: Position
+  { x: x2, y: y2 }: Position,
 ): number {
   if (y1 < y2) return -1;
   if (y1 > y2) return 1;
@@ -35,7 +35,7 @@ function comparePositions(
 
 export function findFieldByPosition<T extends { position: Position }>(
   fields: T[],
-  position: Position
+  position: Position,
 ): T | undefined {
   return fields.find((field) => arePositionsEqual(field.position, position));
 }
@@ -49,10 +49,10 @@ export function getFieldKey(fieldOrPosition: Field | Position): FieldKey {
 export function getPositionFromFieldKey(fieldKey: undefined): undefined;
 export function getPositionFromFieldKey(fieldKey: FieldKey): Position;
 export function getPositionFromFieldKey(
-  fieldKey: FieldKey | undefined
+  fieldKey: FieldKey | undefined,
 ): Position | undefined;
 export function getPositionFromFieldKey(
-  fieldKey: FieldKey | undefined
+  fieldKey: FieldKey | undefined,
 ): Position | undefined {
   if (!fieldKey) {
     return undefined;
@@ -66,7 +66,7 @@ export function getPositionFromFieldKey(
 }
 
 export function getFieldConnectionKey(
-  connectionOrPositions: FieldConnection | [Position, Position]
+  connectionOrPositions: FieldConnection | [Position, Position],
 ): FieldConnectionKey {
   if ("positions" in connectionOrPositions) {
     return getFieldConnectionKey(connectionOrPositions.positions);
@@ -81,7 +81,7 @@ export function getFieldConnectionKey(
 }
 
 export function getPositionsFromConnectionKey(
-  connectionKey: FieldConnectionKey
+  connectionKey: FieldConnectionKey,
 ): [Position, Position] {
   const [x1, y1, x2, y2] = connectionKey.split("-");
   return [
@@ -92,16 +92,16 @@ export function getPositionsFromConnectionKey(
 
 export function findConnectionByConnectionKey(
   connections: FieldConnection[],
-  connectionKey: FieldConnectionKey
+  connectionKey: FieldConnectionKey,
 ): FieldConnection | undefined {
   return connections.find(
-    (connection) => getFieldConnectionKey(connection) === connectionKey
+    (connection) => getFieldConnectionKey(connection) === connectionKey,
   );
 }
 
 export function doesConnectionKeyContainFieldKey(
   connectionKey: FieldConnectionKey,
-  fieldKey: FieldKey
+  fieldKey: FieldKey,
 ): boolean {
   return connectionKey.startsWith(fieldKey) || connectionKey.endsWith(fieldKey);
 }
@@ -110,6 +110,9 @@ export function hasDuplicates(array: unknown[]): boolean {
   return new Set(array).size !== array.length;
 }
 
-export function isEnum<T>(enumType: T, value: any): value is T[keyof T] {
+export function isEnum<T extends { [key: string]: unknown }>(
+  enumType: T,
+  value: unknown,
+): value is T[keyof T] {
   return Object.values(enumType).includes(value);
 }

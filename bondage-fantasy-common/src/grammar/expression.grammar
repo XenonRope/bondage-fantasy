@@ -13,5 +13,3 @@ Operation { Operator LeftParenthesis expression ("," expression)* RightParenthes
   LeftParenthesis { "(" }
   RightParenthesis { ")" }
 }
-
-@external propSource highlighting from "./expression-highlight.js"

@@ -39,7 +39,7 @@ export type FieldConnectionKey = string;
 export interface Field {
   position: Position;
   name: string;
-  description: string;
+  description: Template;
   canLeave: boolean;
 }
 
@@ -78,7 +78,7 @@ export interface EventObject extends ZoneObjectBase {
   type: ObjectType.EVENT;
   eventId: number;
   name: string;
-  condition?: ExpressionWithSource;
+  condition?: ExpressionSource;
 }
 
 export interface ZoneVisionField {
@@ -127,6 +127,10 @@ export interface SessionData {
   zone?: ZoneVision;
 }
 
+export type Template = string;
+
+export type ExpressionSource = string;
+
 export type Expression = string | Operation;
 
 export enum Operator {
@@ -156,11 +160,6 @@ export interface Operation {
   arguments: Expression[];
 }
 
-export interface ExpressionWithSource {
-  expression: Expression;
-  source: string;
-}
-
 export enum SceneStepType {
   FRAME = "FRAME",
   LABEL = "LABEL",
@@ -174,7 +173,7 @@ export type SceneStep = SceneStepFrame | SceneStepLabel;
 
 export interface SceneStepFrame {
   type: SceneStepType.FRAME;
-  text: string;
+  text: Template;
 }
 
 export interface SceneStepLabel {
@@ -189,8 +188,8 @@ export interface SceneStepJump {
 }
 
 export interface SceneStepChoiceOption {
-  name: Expression;
-  condition?: Expression;
+  name: string;
+  condition?: ExpressionSource;
   label: string;
 }
 
@@ -206,7 +205,7 @@ export interface SceneStepAbort {
 export interface SceneStepVariable {
   type: SceneStepType.VARIABLE;
   name: string;
-  value: Expression;
+  value: ExpressionSource;
 }
 
 export interface SceneDefinition {

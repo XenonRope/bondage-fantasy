@@ -10,10 +10,10 @@ import {
 import { inject } from "@adonisjs/core";
 import { HttpContext } from "@adonisjs/core/http";
 import {
+  FieldConnection,
   SessionData,
   Zone,
   ZoneJoinRequest,
-  ZoneSaveRequest,
   ZoneSearchResponse,
 } from "bondage-fantasy-common";
 import { getCharacterId } from "./utils.js";
@@ -71,9 +71,7 @@ export default class ZoneController {
       fields,
       connections,
       objects,
-    } = (await ctx.request.validateUsing(
-      zoneSaveRequestValidator,
-    )) as ZoneSaveRequest;
+    } = await ctx.request.validateUsing(zoneSaveRequestValidator);
 
     await this.zoneService.save({
       zoneId,
@@ -83,7 +81,7 @@ export default class ZoneController {
       draft,
       entrance,
       fields,
-      connections,
+      connections: connections as FieldConnection[],
       objects,
     });
 

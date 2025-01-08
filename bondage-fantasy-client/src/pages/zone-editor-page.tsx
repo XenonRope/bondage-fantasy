@@ -6,7 +6,6 @@ import { ZoneObjectList } from "../components/zone-object-list";
 import { errorService } from "../services/error-service";
 import { notificationService } from "../services/notification-service";
 import { useAppStore } from "../store";
-import { parseExpression } from "../utils/expression-utils";
 import { Validators } from "../utils/validators";
 import {
   Alert,
@@ -23,7 +22,7 @@ import {
   arePositionsEqual,
   doesConnectionKeyContainFieldKey,
   EventObject,
-  ExpressionWithSource,
+  EXPRESSION_SOURCE_MAX_LENGTH,
   Field,
   FieldConnection,
   FieldConnectionKey,
@@ -37,7 +36,6 @@ import {
   Zone,
   ZONE_DESCRIPTION_MAX_LENGTH,
   ZONE_DESCRIPTION_MIN_LENGTH,
-  ZONE_EVENT_CONDITION_MAX_LENGTH,
   ZONE_EVENT_MAX_COUNT,
   ZONE_EVENT_NAME_MAX_LENGTH,
   ZONE_EVENT_NAME_MIN_LENGTH,
@@ -83,41 +81,28 @@ function EventForm(props: {
     initialValues: {
       name: props.initialEvent.name,
       showConditionally: props.initialEvent.condition != null,
-      condition: props.initialEvent.condition?.source,
+      condition: props.initialEvent.condition,
     },
     validate: {
       name: Validators.inRange(
         ZONE_EVENT_NAME_MIN_LENGTH,
         ZONE_EVENT_NAME_MAX_LENGTH,
       ),
+      condition: (value, values) =>
+        values.showConditionally ? Validators.expression()(value) : null,
     },
   });
   form.watch("showConditionally", forceUpdate);
 
   function onConfirm(): void {
-    let condition: ExpressionWithSource | undefined = undefined;
-    if (form.getValues().showConditionally) {
-      const source = form.getValues().condition ?? "";
-      const expression = parseExpression(source);
-      if (expression == null) {
-        form.setFieldError(
-          "condition",
-          <Translation>{(t) => t("common.invalidExpression")}</Translation>,
-        );
-        return;
-      }
-      condition = {
-        expression,
-        source,
-      };
-    }
-
     const event: EventObject = {
       type: ObjectType.EVENT,
       position: props.initialEvent.position,
       eventId: props.initialEvent.eventId,
       name: form.getValues().name,
-      condition,
+      condition: form.getValues().showConditionally
+        ? form.getValues().condition
+        : undefined,
     };
 
     props.onConfirm?.(event);
@@ -145,7 +130,7 @@ function EventForm(props: {
           {...form.getInputProps("condition")}
           key={form.key("condition")}
           label={t("common.condition")}
-          maxLength={ZONE_EVENT_CONDITION_MAX_LENGTH}
+          maxLength={EXPRESSION_SOURCE_MAX_LENGTH}
           className="mt-2 max-w-lg"
         />
       )}

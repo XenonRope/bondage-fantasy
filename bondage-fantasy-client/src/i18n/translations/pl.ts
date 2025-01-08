@@ -31,6 +31,14 @@ export const pl: ResourceLanguage = {
     "navbar.explore": "Eksploruj",
     "pronouns.SHE_HER": "Ona/Jej",
     "pronouns.HE_HIM": "On/Jego",
+    "genitals.VAGINA": "Wagina",
+    "genitals.PENIS": "Penis",
+    "genitals.FUTA": "Futa",
+    "error.expressionParser.INVALID_SYNTAX": "Niepoprawna składnia",
+    "error.expressionParser.INVALID_OPERATOR":
+      "{{operator}} nie jest poprawnym operatorem",
+    "error.expressionParser.INVALID_NUMBER_OF_ARGUMENTS":
+      "Niepoprawna liczba argumentów dla operatora {{operator}}. Spodziewano się {{expected}}, ale było {{actual}}.",
     "error.unexpecterError": "Niespodziewany błąd",
     "error.errorMessage": 'Kod błędu: {{code}}. Wiadomość: "{{message}}".',
     "error.somethingWentWrong": "Coś poszło nie tak...",
