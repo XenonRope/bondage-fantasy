@@ -9,7 +9,107 @@ overrides:
 
 importers:
 
-  .: {}
+  .:
+    devDependencies:
+      '@adonisjs/assembler':
+        specifier: 7.8.2
+        version: 7.8.2(typescript@5.7.2)
+      '@adonisjs/eslint-config':
+        specifier: 2.0.0-beta.6
+        version: 2.0.0-beta.6(eslint@9.17.0(jiti@1.21.7))(prettier@3.4.2)(typescript@5.7.2)
+      '@adonisjs/tsconfig':
+        specifier: 1.4.0
+        version: 1.4.0
+      '@eslint/js':
+        specifier: 9.17.0
+        version: 9.17.0
+      '@japa/api-client':
+        specifier: 2.0.4
+        version: 2.0.4(@japa/assert@4.0.1(@japa/runner@4.0.0))(@japa/runner@4.0.0)
+      '@japa/assert':
+        specifier: 4.0.1
+        version: 4.0.1(@japa/runner@4.0.0)
+      '@japa/plugin-adonisjs':
+        specifier: 3.0.1
+        version: 3.0.1(@adonisjs/core@6.17.0(@adonisjs/assembler@7.8.2(typescript@5.7.2))(@vinejs/vine@3.0.0))(@japa/api-client@2.0.4(@japa/assert@4.0.1(@japa/runner@4.0.0))(@japa/runner@4.0.0))(@japa/runner@4.0.0)
+      '@japa/runner':
+        specifier: 4.0.0
+        version: 4.0.0
+      '@lezer/generator':
+        specifier: 1.7.2
+        version: 1.7.2
+      '@swc/core':
+        specifier: 1.10.6
+        version: 1.10.6
+      '@types/js-cookie':
+        specifier: 3.0.6
+        version: 3.0.6
+      '@types/mustache':
+        specifier: 4.2.5
+        version: 4.2.5
+      '@types/node':
+        specifier: 22.10.5
+        version: 22.10.5
+      '@types/react':
+        specifier: 19.0.3
+        version: 19.0.3
+      '@types/react-dom':
+        specifier: 19.0.2
+        version: 19.0.2(@types/react@19.0.3)
+      '@vitejs/plugin-react-swc':
+        specifier: 3.7.2
+        version: 3.7.2(vite@6.0.7(@types/node@22.10.5)(jiti@1.21.7)(sugarss@4.0.1(postcss@8.4.49))(yaml@2.7.0))
+      autoprefixer:
+        specifier: 10.4.20
+        version: 10.4.20(postcss@8.4.49)
+      eslint:
+        specifier: 9.17.0
+        version: 9.17.0(jiti@1.21.7)
+      eslint-config-prettier:
+        specifier: 9.1.0
+        version: 9.1.0(eslint@9.17.0(jiti@1.21.7))
+      eslint-plugin-react-hooks:
+        specifier: 5.1.0
+        version: 5.1.0(eslint@9.17.0(jiti@1.21.7))
+      eslint-plugin-react-refresh:
+        specifier: 0.4.16
+        version: 0.4.16(eslint@9.17.0(jiti@1.21.7))
+      globals:
+        specifier: 15.14.0
+        version: 15.14.0
+      hot-hook:
+        specifier: 0.4.0
+        version: 0.4.0
+      pino-pretty:
+        specifier: 13.0.0
+        version: 13.0.0
+      postcss:
+        specifier: 8.4.49
+        version: 8.4.49
+      postcss-preset-mantine:
+        specifier: 1.17.0
+        version: 1.17.0(postcss@8.4.49)
+      postcss-simple-vars:
+        specifier: 7.0.1
+        version: 7.0.1(postcss@8.4.49)
+      prettier:
+        specifier: 3.4.2
+        version: 3.4.2
+      tailwindcss:
+        specifier: 3.4.17
+        version: 3.4.17
+      ts-node-maintained:
+        specifier: 10.9.4
+        version: 10.9.4(@swc/core@1.10.6)(@types/node@22.10.5)(typescript@5.7.2)
+      typescript:
+        specifier: 5.7.2
+        version: 5.7.2
+      typescript-eslint:
+        specifier: 8.19.1
+        version: 8.19.1(eslint@9.17.0(jiti@1.21.7))(typescript@5.7.2)
+      vite:
+        specifier: 6.0.7
+        version: 6.0.7(@types/node@22.10.5)(jiti@1.21.7)(sugarss@4.0.1(postcss@8.4.49))(yaml@2.7.0)
 
   bondage-fantasy-client:
     dependencies:
@@ -76,67 +176,6 @@ importers:
       zustand:
         specifier: 5.0.3
         version: 5.0.3(@types/react@19.0.3)(react@19.0.0)
-    devDependencies:
-      '@eslint/js':
-        specifier: 9.17.0
-        version: 9.17.0
-      '@trivago/prettier-plugin-sort-imports':
-        specifier: 5.2.1
-        version: 5.2.1(prettier@3.4.2)
-      '@types/js-cookie':
-        specifier: 3.0.6
-        version: 3.0.6
-      '@types/react':
-        specifier: 19.0.3
-        version: 19.0.3
-      '@types/react-dom':
-        specifier: 19.0.2
-        version: 19.0.2(@types/react@19.0.3)
-      '@vitejs/plugin-react-swc':
-        specifier: 3.7.2
-        version: 3.7.2(vite@6.0.7(@types/node@22.10.5)(jiti@1.21.7)(sugarss@4.0.1(postcss@8.4.49))(yaml@2.7.0))
-      autoprefixer:
-        specifier: 10.4.20
-        version: 10.4.20(postcss@8.4.49)
-      eslint:
-        specifier: 9.17.0
-        version: 9.17.0(jiti@1.21.7)
-      eslint-config-prettier:
-        specifier: 9.1.0
-        version: 9.1.0(eslint@9.17.0(jiti@1.21.7))
-      eslint-plugin-react-hooks:
-        specifier: 5.1.0
-        version: 5.1.0(eslint@9.17.0(jiti@1.21.7))
-      eslint-plugin-react-refresh:
-        specifier: 0.4.16
-        version: 0.4.16(eslint@9.17.0(jiti@1.21.7))
-      globals:
-        specifier: 15.14.0
-        version: 15.14.0
-      postcss:
-        specifier: 8.4.49
-        version: 8.4.49
-      postcss-preset-mantine:
-        specifier: 1.17.0
-        version: 1.17.0(postcss@8.4.49)
-      postcss-simple-vars:
-        specifier: 7.0.1
-        version: 7.0.1(postcss@8.4.49)
-      prettier:
-        specifier: 3.4.2
-        version: 3.4.2
-      tailwindcss:
-        specifier: 3.4.17
-        version: 3.4.17
-      typescript:
-        specifier: 5.7.2
-        version: 5.7.2
-      typescript-eslint:
-        specifier: 8.19.1
-        version: 8.19.1(eslint@9.17.0(jiti@1.21.7))(typescript@5.7.2)
-      vite:
-        specifier: 6.0.7
-        version: 6.0.7(@types/node@22.10.5)(jiti@1.21.7)(sugarss@4.0.1(postcss@8.4.49))(yaml@2.7.0)
 
   bondage-fantasy-common:
     dependencies:
@@ -146,13 +185,6 @@ importers:
       '@lezer/lr':
         specifier: 1.4.2
         version: 1.4.2
-    devDependencies:
-      '@lezer/generator':
-        specifier: 1.7.2
-        version: 1.7.2
-      typescript:
-        specifier: 5.7.2
-        version: 5.7.2
 
   bondage-fantasy-server:
     dependencies:
@@ -189,55 +221,6 @@ importers:
       reflect-metadata:
         specifier: 0.2.2
         version: 0.2.2
-    devDependencies:
-      '@adonisjs/assembler':
-        specifier: 7.8.2
-        version: 7.8.2(typescript@5.7.2)
-      '@adonisjs/eslint-config':
-        specifier: 2.0.0-beta.6
-        version: 2.0.0-beta.6(eslint@9.17.0(jiti@1.21.7))(prettier@3.4.2)(typescript@5.7.2)
-      '@adonisjs/tsconfig':
-        specifier: 1.4.0
-        version: 1.4.0
-      '@japa/api-client':
-        specifier: 2.0.4
-        version: 2.0.4(@japa/assert@4.0.1(@japa/runner@4.0.0))(@japa/runner@4.0.0)
-      '@japa/assert':
-        specifier: 4.0.1
-        version: 4.0.1(@japa/runner@4.0.0)
-      '@japa/plugin-adonisjs':
-        specifier: 3.0.1
-        version: 3.0.1(@adonisjs/core@6.17.0(@adonisjs/assembler@7.8.2(typescript@5.7.2))(@vinejs/vine@3.0.0))(@japa/api-client@2.0.4(@japa/assert@4.0.1(@japa/runner@4.0.0))(@japa/runner@4.0.0))(@japa/runner@4.0.0)
-      '@japa/runner':
-        specifier: 4.0.0
-        version: 4.0.0
-      '@swc/core':
-        specifier: 1.10.6
-        version: 1.10.6
-      '@types/mustache':
-        specifier: 4.2.5
-        version: 4.2.5
-      '@types/node':
-        specifier: 22.10.5
-        version: 22.10.5
-      eslint:
-        specifier: 9.17.0
-        version: 9.17.0(jiti@1.21.7)
-      hot-hook:
-        specifier: 0.4.0
-        version: 0.4.0
-      pino-pretty:
-        specifier: 13.0.0
-        version: 13.0.0
-      prettier:
-        specifier: 3.4.2
-        version: 3.4.2
-      ts-node-maintained:
-        specifier: 10.9.4
-        version: 10.9.4(@swc/core@1.10.6)(@types/node@22.10.5)(typescript@5.7.2)
-      typescript:
-        specifier: 5.7.2
-        version: 5.7.2
 
 packages:
 
@@ -483,37 +466,12 @@ packages:
     resolution: {integrity: sha512-RJlIHRueQgwWitWgF8OdFYGZX328Ax5BCemNGlqHfplnRT9ESi8JkFlvaVYbS+UubVY6dpv87Fs2u5M29iNFVQ==}
     engines: {node: '>=6.9.0'}
 
-  '@babel/generator@7.26.3':
-    resolution: {integrity: sha512-6FF/urZvD0sTeO7k6/B15pMLC4CHUv1426lzr3N01aHJTl046uCAh9LXW/fzeXXjPNCJ6iABW5XaWOsIZB93aQ==}
-    engines: {node: '>=6.9.0'}
-
-  '@babel/helper-string-parser@7.25.9':
-    resolution: {integrity: sha512-4A/SCr/2KLd5jrtOMFzaKjVtAei3+2r/NChoBNoZ3EyP/+GlhoaEGoWOZUmFmoITP7zOJyHIMm+DYRd8o3PvHA==}
-    engines: {node: '>=6.9.0'}
-
   '@babel/helper-validator-identifier@7.25.9':
     resolution: {integrity: sha512-Ed61U6XJc3CVRfkERJWDz4dJwKe7iLmmJsbOGu9wSloNSFttHV0I8g6UAgb7qnK5ly5bGLPd4oXZlxCdANBOWQ==}
     engines: {node: '>=6.9.0'}
 
-  '@babel/parser@7.26.3':
-    resolution: {integrity: sha512-WJ/CvmY8Mea8iDXo6a7RK2wbmJITT5fN3BEkRuFlxVyNx8jOKIIhmC4fSkTcPcf8JyavbBwIe6OpiCOBXt/IcA==}
-    engines: {node: '>=6.0.0'}
-    hasBin: true
-
   '@babel/runtime@7.26.0':
     resolution: {integrity: sha512-FDSOghenHTiToteC/QRlv2q3DhPZ/oOXTBoirfWNx1Cx3TMVcGWQtMMmQcSvb/JjpNeGzx8Pq/b4fKEJuWm1sw==}
-    engines: {node: '>=6.9.0'}
-
-  '@babel/template@7.25.9':
-    resolution: {integrity: sha512-9DGttpmPvIxBb/2uwpVo3dqJ+O6RooAFOS+lB+xDqoE2PVCE8nfoHMdZLpfCQRLwvohzXISPZcgxt80xLfsuwg==}
-    engines: {node: '>=6.9.0'}
-
-  '@babel/traverse@7.26.4':
-    resolution: {integrity: sha512-fH+b7Y4p3yqvApJALCPJcwb0/XaOSgtK4pzV6WVjPR5GLFQBRI7pfoX2V2iM48NXvX07NUxxm1Vw98YjqTcU5w==}
-    engines: {node: '>=6.9.0'}
-
-  '@babel/types@7.26.3':
-    resolution: {integrity: sha512-vN5p+1kl59GVKMvTHt55NzzmYVxprfJD+ql7U9NFIfKCBkYE55LYtS+WtPlaYOyzydrKI8Nezd+aZextrd+FMA==}
     engines: {node: '>=6.9.0'}
 
   '@codemirror/autocomplete@6.18.4':
@@ -1228,22 +1186,6 @@ packages:
 
   '@tokenizer/token@0.3.0':
     resolution: {integrity: sha512-OvjF+z51L3ov0OyAU0duzsYuvO01PH7x4t6DJx+guahgTnBHkhJdG7soQeTSFLWN3efnHyibZ4Z8l2EuWwJN3A==}
-
-  '@trivago/prettier-plugin-sort-imports@5.2.1':
-    resolution: {integrity: sha512-NDZndt0fmVThIx/8cExuJHLZagUVzfGCoVrwH9x6aZvwfBdkrDFTYujecek6X2WpG4uUFsVaPg5+aNQPSyjcmw==}
-    engines: {node: '>18.12'}
-    peerDependencies:
-      '@vue/compiler-sfc': 3.x
-      prettier: 2.x - 3.x
-      prettier-plugin-svelte: 3.x
-      svelte: 4.x || 5.x
-    peerDependenciesMeta:
-      '@vue/compiler-sfc':
-        optional: true
-      prettier-plugin-svelte:
-        optional: true
-      svelte:
-        optional: true
 
   '@ts-morph/common@0.24.0':
     resolution: {integrity: sha512-c1xMmNHWpNselmpIqursHeOHHBTIsJLbB+NuovbTTRCNiTLEr/U9dbJ8qy0jd/O2x5pc3seWuOUN5R2IoOTp8A==}
@@ -2140,10 +2082,6 @@ packages:
     resolution: {integrity: sha512-7Bv8RF0k6xjo7d4A/PxYLbUCfb6c+Vpd2/mB2yRDlew7Jb5hEXiCD9ibfO7wpk8i4sevK6DFny9h7EYbM3/sHg==}
     hasBin: true
 
-  globals@11.12.0:
-    resolution: {integrity: sha512-WOBp/EEGUiIsJSp7wcv/y6MO+lV9UoncWqxuFfm8eBwzWNgyfBd6Gz+IeKQ9jCmyhoH99g15M3T+QaVHFjizVA==}
-    engines: {node: '>=4'}
-
   globals@14.0.0:
     resolution: {integrity: sha512-oahGvuMGQlPw/ivIYBjVSrWAfWLBeku5tpPE2fOPLi+WHffIWbuh2tCjhyQhTBPMf5E9jDEH4FOmTYgYwbKwtQ==}
     engines: {node: '>=18'}
@@ -2328,9 +2266,6 @@ packages:
 
   jackspeak@3.4.3:
     resolution: {integrity: sha512-OGlZQpz2yfahA/Rd1Y8Cd9SIEsqvXkLVoSw/cgwhnhFMDbsQFeZYoJJ7bIZBS9BcamUW96asq/npPWugM+RQBw==}
-
-  javascript-natural-sort@0.7.1:
-    resolution: {integrity: sha512-nO6jcEfZWQXDhOiBtG2KvKyEptz7RVbpGP4vTD2hLBdmNQSsCiicO2Ioinv6UI4y9ukqnBpy+XZ9H6uLNgJTlw==}
 
   jest-diff@29.7.0:
     resolution: {integrity: sha512-LMIgiIrhigmPrs03JHpxUh2yISK3vLFPkAodPeo0+BuF7wA2FoQbkEg1u8gBYBThncu7e1oEDUfIXVuTqLRUjw==}
@@ -4009,48 +3944,11 @@ snapshots:
       js-tokens: 4.0.0
       picocolors: 1.1.1
 
-  '@babel/generator@7.26.3':
-    dependencies:
-      '@babel/parser': 7.26.3
-      '@babel/types': 7.26.3
-      '@jridgewell/gen-mapping': 0.3.8
-      '@jridgewell/trace-mapping': 0.3.25
-      jsesc: 3.1.0
-
-  '@babel/helper-string-parser@7.25.9': {}
-
   '@babel/helper-validator-identifier@7.25.9': {}
-
-  '@babel/parser@7.26.3':
-    dependencies:
-      '@babel/types': 7.26.3
 
   '@babel/runtime@7.26.0':
     dependencies:
       regenerator-runtime: 0.14.1
-
-  '@babel/template@7.25.9':
-    dependencies:
-      '@babel/code-frame': 7.26.2
-      '@babel/parser': 7.26.3
-      '@babel/types': 7.26.3
-
-  '@babel/traverse@7.26.4':
-    dependencies:
-      '@babel/code-frame': 7.26.2
-      '@babel/generator': 7.26.3
-      '@babel/parser': 7.26.3
-      '@babel/template': 7.25.9
-      '@babel/types': 7.26.3
-      debug: 4.4.0
-      globals: 11.12.0
-    transitivePeerDependencies:
-      - supports-color
-
-  '@babel/types@7.26.3':
-    dependencies:
-      '@babel/helper-string-parser': 7.25.9
-      '@babel/helper-validator-identifier': 7.25.9
 
   '@codemirror/autocomplete@6.18.4':
     dependencies:
@@ -4696,18 +4594,6 @@ snapshots:
       react: 19.0.0
 
   '@tokenizer/token@0.3.0': {}
-
-  '@trivago/prettier-plugin-sort-imports@5.2.1(prettier@3.4.2)':
-    dependencies:
-      '@babel/generator': 7.26.3
-      '@babel/parser': 7.26.3
-      '@babel/traverse': 7.26.4
-      '@babel/types': 7.26.3
-      javascript-natural-sort: 0.7.1
-      lodash: 4.17.21
-      prettier: 3.4.2
-    transitivePeerDependencies:
-      - supports-color
 
   '@ts-morph/common@0.24.0':
     dependencies:
@@ -5629,8 +5515,6 @@ snapshots:
       package-json-from-dist: 1.0.1
       path-scurry: 1.11.1
 
-  globals@11.12.0: {}
-
   globals@14.0.0: {}
 
   globals@15.14.0: {}
@@ -5789,8 +5673,6 @@ snapshots:
     optionalDependencies:
       '@pkgjs/parseargs': 0.11.0
 
-  javascript-natural-sort@0.7.1: {}
-
   jest-diff@29.7.0:
     dependencies:
       chalk: 4.1.2
@@ -5898,7 +5780,8 @@ snapshots:
 
   lodash.merge@4.6.2: {}
 
-  lodash@4.17.21: {}
+  lodash@4.17.21:
+    optional: true
 
   log-update@6.1.0:
     dependencies:
