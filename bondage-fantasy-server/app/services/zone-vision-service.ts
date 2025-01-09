@@ -4,21 +4,26 @@ import { CharacterNotFoundException } from "#exceptions/exceptions";
 import { inject } from "@adonisjs/core";
 import {
   arePositionsEqual,
+  CharacterZoneVisionObject,
+  EventZoneVisionObject,
   Field,
   Genitals,
   ObjectType,
+  parseExpression,
   Pronouns,
   ZoneObject,
   ZoneVision,
   ZoneVisionObject,
 } from "bondage-fantasy-common";
 import mustache from "mustache";
+import { ExpressionEvaluator } from "./expression-evaluator.js";
 
 @inject()
 export class ZoneVisionService {
   constructor(
     private zoneDao: ZoneDao,
     private characterDao: CharacterDao,
+    private expressionEvaluator: ExpressionEvaluator,
   ) {}
 
   async tryGetZoneVision(characterId: number): Promise<ZoneVision | undefined> {
@@ -70,10 +75,10 @@ export class ZoneVisionService {
       .map((object) => object.characterId);
     const characters = await this.characterDao.getNamesByIds(charactersIds);
 
-    return objects.map((object) => {
-      switch (object.type) {
-        case ObjectType.CHARACTER:
-          return {
+    return objects
+      .map((object) => {
+        if (object.type === ObjectType.CHARACTER) {
+          const character: CharacterZoneVisionObject = {
             type: ObjectType.CHARACTER,
             position: object.position,
             characterId: object.characterId,
@@ -82,15 +87,27 @@ export class ZoneVisionService {
                 (character) => character.id === object.characterId,
               )?.name ?? "",
           };
-        case ObjectType.EVENT:
-          return {
+          return character;
+        } else if (object.type === ObjectType.EVENT) {
+          if (object.condition != null) {
+            const [expression, error] = parseExpression(object.condition);
+            if (error) {
+              return null;
+            }
+            if (!this.expressionEvaluator.evaluateAsBoolean(expression)) {
+              return null;
+            }
+          }
+          const event: EventZoneVisionObject = {
             type: ObjectType.EVENT,
             position: object.position,
             eventId: object.eventId,
             name: object.name,
           };
-      }
-    });
+          return event;
+        }
+      })
+      .filter((object) => object != null);
   }
 
   private async renderFieldDescription(params: {
