@@ -1,13 +1,3 @@
-import { zoneApi } from "../api/zone-api";
-import { ExpressionEditor } from "../components/expression-editor";
-import { SceneDefinitionEditor } from "../components/scene-definition-editor";
-import { TextTemplateEditor } from "../components/text-template-editor";
-import { ZoneMap } from "../components/zone-map";
-import { ZoneObjectList } from "../components/zone-object-list";
-import { errorService } from "../services/error-service";
-import { notificationService } from "../services/notification-service";
-import { useAppStore } from "../store";
-import { Validators } from "../utils/validators";
 import {
   Alert,
   Button,
@@ -54,6 +44,16 @@ import {
 import { ReactNode, useEffect, useId, useState } from "react";
 import { Translation, useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router";
+import { zoneApi } from "../api/zone-api";
+import { ExpressionEditor } from "../components/expression-editor";
+import { SceneDefinitionEditor } from "../components/scene-definition-editor";
+import { TextTemplateEditor } from "../components/text-template-editor";
+import { ZoneMap } from "../components/zone-map";
+import { ZoneObjectList } from "../components/zone-object-list";
+import { errorService } from "../services/error-service";
+import { notificationService } from "../services/notification-service";
+import { useAppStore } from "../store";
+import { Validators } from "../utils/validators";
 
 interface ZoneFormField {
   name: string;
@@ -94,9 +94,11 @@ function EventForm(props: {
         values.showConditionally ? Validators.expression()(value) : null,
     },
   });
-  const [scene, setScene] = useState<SceneDefinition>({
-    steps: [],
-  });
+  const [scene, setScene] = useState<SceneDefinition>(
+    props.initialEvent.scene ?? {
+      steps: [],
+    },
+  );
   form.watch("showConditionally", forceUpdate);
 
   function onConfirm(): void {
@@ -108,6 +110,7 @@ function EventForm(props: {
       condition: form.getValues().showConditionally
         ? form.getValues().condition
         : undefined,
+      scene: scene.steps.length > 0 ? scene : undefined,
     };
 
     props.onConfirm?.(event);
