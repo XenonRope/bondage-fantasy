@@ -2,6 +2,7 @@ import {
   faArrowDown,
   faArrowUp,
   faEllipsis,
+  faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -16,6 +17,8 @@ import {
 import { useForm } from "@mantine/form";
 import {
   EXPRESSION_SOURCE_MAX_LENGTH,
+  SCENE_CHOICE_OPTION_NAME_MAX_LENGTH,
+  SCENE_CHOICE_OPTIONS_MAX_COUNT,
   SCENE_FRAME_TEXT_MAX_LENGTH,
   SCENE_LABEL_MAX_LENGTH,
   SCENE_VARIABLE_NAME_MAX_LENGTH,
@@ -188,6 +191,122 @@ function VariableStep({ onConfirm }: { onConfirm: (step: SceneStep) => void }) {
   );
 }
 
+function ChoiceStep({ onConfirm }: { onConfirm: (step: SceneStep) => void }) {
+  const form = useForm({
+    initialValues: {
+      options: [
+        {
+          name: "",
+          label: "",
+          showConditionally: false,
+          condition: "",
+        },
+      ],
+    },
+    validate: {
+      options: {
+        name: Validators.notEmpty(),
+        label: Validators.notEmpty(),
+        condition: (value, values, path) => {
+          const option = values.options[parseInt(path.split(".")[1])];
+          return option.showConditionally
+            ? Validators.expression()(value)
+            : null;
+        },
+      },
+    },
+  });
+
+  function handleAddOption() {
+    form.setFieldValue("options", [
+      ...form.getValues().options,
+      { name: "", label: "", showConditionally: false, condition: "" },
+    ]);
+  }
+
+  function handleRemoveOption(index: number) {
+    const options = form.getValues().options;
+    options.splice(index, 1);
+    form.setFieldValue("options", options);
+  }
+
+  function handleConfirm() {
+    form.onSubmit((values) => {
+      onConfirm({
+        type: SceneStepType.CHOICE,
+        options: values.options.map((option) => ({
+          name: option.name,
+          label: option.label,
+          condition: option.showConditionally ? option.condition : undefined,
+        })),
+      });
+    })();
+  }
+
+  return (
+    <>
+      {form.getValues().options.map((_option, index) => (
+        <div key={index} className="mb-4 p-4 border border-gray-200 rounded">
+          <div className="flex items-center">
+            <TextInput
+              {...form.getInputProps(`options.${index}.name`)}
+              label="Name"
+              maxLength={SCENE_CHOICE_OPTION_NAME_MAX_LENGTH}
+            />
+            <TextInput
+              {...form.getInputProps(`options.${index}.label`)}
+              label="Label to jump"
+              maxLength={SCENE_LABEL_MAX_LENGTH}
+              className="ml-2"
+            />
+            {form.getValues().options.length > 1 && (
+              <ActionIcon
+                variant="transparent"
+                data-variant-color="danger"
+                onClick={() => handleRemoveOption(index)}
+                className="ml-2 self-end mb-1"
+              >
+                <FontAwesomeIcon icon={faTrash} />
+              </ActionIcon>
+            )}
+          </div>
+
+          <Checkbox
+            {...form.getInputProps(`options.${index}.showConditionally`, {
+              type: "checkbox",
+            })}
+            label="Show conditionally"
+            className="mt-4"
+          />
+
+          {form.getValues().options[index].showConditionally && (
+            <ExpressionEditor
+              {...form.getInputProps(`options.${index}.condition`)}
+              label="Condition"
+              maxLength={EXPRESSION_SOURCE_MAX_LENGTH}
+              className="mt-2"
+            />
+          )}
+        </div>
+      ))}
+
+      <div>
+        <Button
+          onClick={handleAddOption}
+          disabled={
+            form.getValues().options.length >= SCENE_CHOICE_OPTIONS_MAX_COUNT
+          }
+        >
+          Add option
+        </Button>
+      </div>
+      <div className="mt-4">
+        <Button onClick={handleConfirm}>Confirm</Button>
+      </div>
+    </>
+  );
+}
+
 export function SceneDefinitionEditor(props: {
   scene: SceneDefinition;
   onChange: (scene: SceneDefinition) => void;
@@ -303,6 +422,7 @@ export function SceneDefinitionEditor(props: {
         opened={dialogOpen}
         onClose={handleAddStepDialogClose}
         title={stepType ? stepType : "Add step"}
+        size="lg"
       >
         {stepType === null ? (
           <SimpleGrid cols={3}>
@@ -323,6 +443,8 @@ export function SceneDefinitionEditor(props: {
           <JumpStep onConfirm={handleStepConfirm} />
         ) : stepType === SceneStepType.VARIABLE ? (
           <VariableStep onConfirm={handleStepConfirm} />
+        ) : stepType === SceneStepType.CHOICE ? (
+          <ChoiceStep onConfirm={handleStepConfirm} />
         ) : null}
       </Modal>
     </div>
