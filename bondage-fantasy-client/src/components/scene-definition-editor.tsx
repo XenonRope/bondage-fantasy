@@ -149,6 +149,30 @@ export function SceneDefinitionEditor(props: {
     props.onChange({ ...props.scene, steps: newSteps });
   }
 
+  function handleMoveStepUp(index: number): void {
+    if (index <= 0) {
+      return;
+    }
+    const newSteps = [...props.scene.steps];
+    [newSteps[index - 1], newSteps[index]] = [
+      newSteps[index],
+      newSteps[index - 1],
+    ];
+    props.onChange({ ...props.scene, steps: newSteps });
+  }
+
+  function handleMoveStepDown(index: number): void {
+    if (index >= props.scene.steps.length - 1) {
+      return;
+    }
+    const newSteps = [...props.scene.steps];
+    [newSteps[index], newSteps[index + 1]] = [
+      newSteps[index + 1],
+      newSteps[index],
+    ];
+    props.onChange({ ...props.scene, steps: newSteps });
+  }
+
   return (
     <div>
       <div className="text-sm font-medium mb-2">Scene</div>
@@ -168,6 +192,12 @@ export function SceneDefinitionEditor(props: {
                 </Menu.Target>
                 <Menu.Dropdown>
                   <Menu.Item onClick={() => {}}>Edit</Menu.Item>
+                  <Menu.Item onClick={() => handleMoveStepUp(index)}>
+                    Move up
+                  </Menu.Item>
+                  <Menu.Item onClick={() => handleMoveStepDown(index)}>
+                    Move down
+                  </Menu.Item>
                   <Menu.Item onClick={() => handleRemoveStep(index)}>
                     Remove
                   </Menu.Item>
@@ -178,8 +208,6 @@ export function SceneDefinitionEditor(props: {
         </div>
         <div className="flex gap-4 mt-4">
           <Button onClick={handleAddStepClick}>Add step</Button>
-          <Button>Move up</Button>
-          <Button>Move down</Button>
         </div>
       </div>
 
