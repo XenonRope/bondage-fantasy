@@ -27,7 +27,12 @@ import {
   SCENE_VARIABLE_NAME_MIN_LENGTH,
   SceneDefinition,
   SceneStep,
+  SceneStepChoice,
+  SceneStepJump,
+  SceneStepLabel,
+  SceneStepText,
   SceneStepType,
+  SceneStepVariable,
 } from "bondage-fantasy-common";
 import { useState } from "react";
 import { Validators } from "../utils/validators";
@@ -35,10 +40,16 @@ import { ExpressionEditor } from "./expression-editor";
 import { TextTemplateEditor } from "./text-template-editor";
 import { Translation } from "react-i18next";
 
-function TextStep({ onConfirm }: { onConfirm: (step: SceneStep) => void }) {
+function TextStep({
+  initialStep,
+  onConfirm,
+}: {
+  initialStep?: SceneStepText;
+  onConfirm: (step: SceneStep) => void;
+}) {
   const form = useForm({
     initialValues: {
-      text: "",
+      text: initialStep?.text ?? "",
     },
     validate: {
       text: Validators.inRange(SCENE_TEXT_MIN_LENGTH, SCENE_TEXT_MAX_LENGTH),
@@ -67,10 +78,16 @@ function TextStep({ onConfirm }: { onConfirm: (step: SceneStep) => void }) {
   );
 }
 
-function LabelStep({ onConfirm }: { onConfirm: (step: SceneStep) => void }) {
+function LabelStep({
+  initialStep,
+  onConfirm,
+}: {
+  initialStep?: SceneStepLabel;
+  onConfirm: (step: SceneStep) => void;
+}) {
   const form = useForm({
     initialValues: {
-      label: "",
+      label: initialStep?.label ?? "",
     },
     validate: {
       label: Validators.inRange(SCENE_LABEL_MIN_LENGTH, SCENE_LABEL_MAX_LENGTH),
@@ -101,12 +118,18 @@ function LabelStep({ onConfirm }: { onConfirm: (step: SceneStep) => void }) {
   );
 }
 
-function JumpStep({ onConfirm }: { onConfirm: (step: SceneStep) => void }) {
+function JumpStep({
+  initialStep,
+  onConfirm,
+}: {
+  initialStep?: SceneStepJump;
+  onConfirm: (step: SceneStep) => void;
+}) {
   const form = useForm({
     initialValues: {
-      label: "",
-      jumpConditionally: false,
-      condition: "",
+      label: initialStep?.label ?? "",
+      jumpConditionally: initialStep?.condition != null,
+      condition: initialStep?.condition ?? "",
     },
     validate: {
       label: Validators.inRange(SCENE_LABEL_MIN_LENGTH, SCENE_LABEL_MAX_LENGTH),
@@ -155,11 +178,17 @@ function JumpStep({ onConfirm }: { onConfirm: (step: SceneStep) => void }) {
   );
 }
 
-function VariableStep({ onConfirm }: { onConfirm: (step: SceneStep) => void }) {
+function VariableStep({
+  initialStep,
+  onConfirm,
+}: {
+  initialStep?: SceneStepVariable;
+  onConfirm: (step: SceneStep) => void;
+}) {
   const form = useForm({
     initialValues: {
-      name: "",
-      value: "",
+      name: initialStep?.name ?? "",
+      value: initialStep?.value ?? "",
     },
     validate: {
       name: Validators.inRange(
@@ -200,17 +229,22 @@ function VariableStep({ onConfirm }: { onConfirm: (step: SceneStep) => void }) {
   );
 }
 
-function ChoiceStep({ onConfirm }: { onConfirm: (step: SceneStep) => void }) {
+function ChoiceStep({
+  initialStep,
+  onConfirm,
+}: {
+  initialStep?: SceneStepChoice;
+  onConfirm: (step: SceneStep) => void;
+}) {
   const form = useForm({
     initialValues: {
-      options: [
-        {
-          name: "",
-          label: "",
-          showConditionally: false,
-          condition: "",
-        },
-      ],
+      options:
+        initialStep?.options.map((option) => ({
+          name: option.name ?? "",
+          label: option.label ?? "",
+          showConditionally: option.condition != null,
+          condition: option.condition ?? "",
+        })) ?? [],
     },
     validate: {
       options: {
@@ -338,9 +372,11 @@ export function SceneDefinitionEditor(props: {
 }) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [stepType, setStepType] = useState<SceneStepType | null>(null);
+  const [stepToEdit, setStepToEdit] = useState<SceneStep | null>(null);
 
   function handleAddStepClick(): void {
     setStepType(null);
+    setStepToEdit(null);
     setDialogOpen(true);
   }
 
@@ -357,7 +393,13 @@ export function SceneDefinitionEditor(props: {
   }
 
   function handleStepConfirm(step: SceneStep): void {
-    props.onChange({ ...props.scene, steps: [...props.scene.steps, step] });
+    if (stepToEdit != null) {
+      const newSteps = [...props.scene.steps];
+      newSteps[newSteps.indexOf(stepToEdit)] = step;
+      props.onChange({ ...props.scene, steps: newSteps });
+    } else {
+      props.onChange({ ...props.scene, steps: [...props.scene.steps, step] });
+    }
     setDialogOpen(false);
   }
 
@@ -391,6 +433,12 @@ export function SceneDefinitionEditor(props: {
     props.onChange({ ...props.scene, steps: newSteps });
   }
 
+  function handleEditStep(step: SceneStep): void {
+    setStepType(step.type);
+    setStepToEdit(step);
+    setDialogOpen(true);
+  }
+
   return (
     <div>
       <div className="text-sm font-medium mb-2">Scene</div>
@@ -419,7 +467,7 @@ export function SceneDefinitionEditor(props: {
                 </ActionIcon>
                 <ActionIcon
                   variant="transparent"
-                  onClick={() => {}}
+                  onClick={() => handleEditStep(step)}
                   disabled={step.type === SceneStepType.ABORT}
                 >
                   <FontAwesomeIcon icon={faGear} />
@@ -472,15 +520,30 @@ export function SceneDefinitionEditor(props: {
             ))}
           </SimpleGrid>
         ) : stepType === SceneStepType.TEXT ? (
-          <TextStep onConfirm={handleStepConfirm} />
+          <TextStep
+            initialStep={stepToEdit as SceneStepText}
+            onConfirm={handleStepConfirm}
+          />
         ) : stepType === SceneStepType.LABEL ? (
-          <LabelStep onConfirm={handleStepConfirm} />
+          <LabelStep
+            initialStep={stepToEdit as SceneStepLabel}
+            onConfirm={handleStepConfirm}
+          />
         ) : stepType === SceneStepType.JUMP ? (
-          <JumpStep onConfirm={handleStepConfirm} />
+          <JumpStep
+            initialStep={stepToEdit as SceneStepJump}
+            onConfirm={handleStepConfirm}
+          />
         ) : stepType === SceneStepType.VARIABLE ? (
-          <VariableStep onConfirm={handleStepConfirm} />
+          <VariableStep
+            initialStep={stepToEdit as SceneStepVariable}
+            onConfirm={handleStepConfirm}
+          />
         ) : stepType === SceneStepType.CHOICE ? (
-          <ChoiceStep onConfirm={handleStepConfirm} />
+          <ChoiceStep
+            initialStep={stepToEdit as SceneStepChoice}
+            onConfirm={handleStepConfirm}
+          />
         ) : null}
       </Modal>
     </div>
