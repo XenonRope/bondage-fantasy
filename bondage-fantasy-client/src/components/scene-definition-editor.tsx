@@ -205,7 +205,11 @@ export function SceneDefinitionEditor(props: {
   }
 
   function handleStepTypeSelect(type: SceneStepType): void {
-    setStepType(type);
+    if (type === SceneStepType.ABORT) {
+      handleStepConfirm({ type: SceneStepType.ABORT });
+    } else {
+      setStepType(type);
+    }
   }
 
   function handleStepConfirm(step: SceneStep): void {
@@ -276,7 +280,9 @@ export function SceneDefinitionEditor(props: {
                     </ActionIcon>
                   </Menu.Target>
                   <Menu.Dropdown>
-                    <Menu.Item onClick={() => {}}>Edit</Menu.Item>
+                    {step.type !== SceneStepType.ABORT && (
+                      <Menu.Item onClick={() => {}}>Edit</Menu.Item>
+                    )}
                     <Menu.Item onClick={() => handleRemoveStep(index)}>
                       Remove
                     </Menu.Item>
