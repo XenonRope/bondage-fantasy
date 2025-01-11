@@ -1,7 +1,7 @@
 import {
   faArrowDown,
   faArrowUp,
-  faEllipsis,
+  faGear,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -9,7 +9,6 @@ import {
   ActionIcon,
   Button,
   Checkbox,
-  Menu,
   Modal,
   SimpleGrid,
   TextInput,
@@ -51,7 +50,6 @@ function TextStep({ onConfirm }: { onConfirm: (step: SceneStep) => void }) {
         key={form.key("text")}
         label="Text"
         maxLength={SCENE_FRAME_TEXT_MAX_LENGTH}
-        className="mt-2"
         classNames={{ input: "min-h-14 max-h-52 overflow-auto" }}
       />
       <Button onClick={handleConfirm} className="mt-4">
@@ -392,21 +390,20 @@ export function SceneDefinitionEditor(props: {
                 >
                   <FontAwesomeIcon icon={faArrowDown} />
                 </ActionIcon>
-                <Menu shadow="md">
-                  <Menu.Target>
-                    <ActionIcon variant="transparent">
-                      <FontAwesomeIcon icon={faEllipsis} />
-                    </ActionIcon>
-                  </Menu.Target>
-                  <Menu.Dropdown>
-                    {step.type !== SceneStepType.ABORT && (
-                      <Menu.Item onClick={() => {}}>Edit</Menu.Item>
-                    )}
-                    <Menu.Item onClick={() => handleRemoveStep(index)}>
-                      Remove
-                    </Menu.Item>
-                  </Menu.Dropdown>
-                </Menu>
+                <ActionIcon
+                  variant="transparent"
+                  onClick={() => {}}
+                  disabled={step.type === SceneStepType.ABORT}
+                >
+                  <FontAwesomeIcon icon={faGear} />
+                </ActionIcon>
+                <ActionIcon
+                  variant="transparent"
+                  data-variant-color="danger"
+                  onClick={() => handleRemoveStep(index)}
+                >
+                  <FontAwesomeIcon icon={faTrash} />
+                </ActionIcon>
               </div>
             </div>
           ))}
