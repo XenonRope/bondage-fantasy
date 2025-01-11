@@ -10,7 +10,6 @@ import {
 import { inject } from "@adonisjs/core";
 import { HttpContext } from "@adonisjs/core/http";
 import {
-  FieldConnection,
   SessionData,
   Zone,
   ZoneJoinRequest,
@@ -81,7 +80,7 @@ export default class ZoneController {
       draft,
       entrance,
       fields,
-      connections: connections as FieldConnection[],
+      connections,
       objects,
     });
 

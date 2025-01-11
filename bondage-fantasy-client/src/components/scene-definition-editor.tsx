@@ -17,10 +17,14 @@ import { useForm } from "@mantine/form";
 import {
   EXPRESSION_SOURCE_MAX_LENGTH,
   SCENE_CHOICE_OPTION_NAME_MAX_LENGTH,
+  SCENE_CHOICE_OPTION_NAME_MIN_LENGTH,
   SCENE_CHOICE_OPTIONS_MAX_COUNT,
-  SCENE_FRAME_TEXT_MAX_LENGTH,
   SCENE_LABEL_MAX_LENGTH,
+  SCENE_LABEL_MIN_LENGTH,
+  SCENE_TEXT_MAX_LENGTH,
+  SCENE_TEXT_MIN_LENGTH,
   SCENE_VARIABLE_NAME_MAX_LENGTH,
+  SCENE_VARIABLE_NAME_MIN_LENGTH,
   SceneDefinition,
   SceneStep,
   SceneStepType,
@@ -34,6 +38,9 @@ function TextStep({ onConfirm }: { onConfirm: (step: SceneStep) => void }) {
   const form = useForm({
     initialValues: {
       text: "",
+    },
+    validate: {
+      text: Validators.inRange(SCENE_TEXT_MIN_LENGTH, SCENE_TEXT_MAX_LENGTH),
     },
   });
 
@@ -49,7 +56,7 @@ function TextStep({ onConfirm }: { onConfirm: (step: SceneStep) => void }) {
         {...form.getInputProps("text")}
         key={form.key("text")}
         label="Text"
-        maxLength={SCENE_FRAME_TEXT_MAX_LENGTH}
+        maxLength={SCENE_TEXT_MAX_LENGTH}
         classNames={{ input: "min-h-14 max-h-52 overflow-auto" }}
       />
       <Button onClick={handleConfirm} className="mt-4">
@@ -65,7 +72,7 @@ function LabelStep({ onConfirm }: { onConfirm: (step: SceneStep) => void }) {
       label: "",
     },
     validate: {
-      label: Validators.notEmpty(),
+      label: Validators.inRange(SCENE_LABEL_MIN_LENGTH, SCENE_LABEL_MAX_LENGTH),
     },
   });
 
@@ -101,7 +108,7 @@ function JumpStep({ onConfirm }: { onConfirm: (step: SceneStep) => void }) {
       condition: "",
     },
     validate: {
-      label: Validators.notEmpty(),
+      label: Validators.inRange(SCENE_LABEL_MIN_LENGTH, SCENE_LABEL_MAX_LENGTH),
       condition: (value, values) =>
         values.jumpConditionally ? Validators.expression()(value) : null,
     },
@@ -154,7 +161,10 @@ function VariableStep({ onConfirm }: { onConfirm: (step: SceneStep) => void }) {
       value: "",
     },
     validate: {
-      name: Validators.notEmpty(),
+      name: Validators.inRange(
+        SCENE_VARIABLE_NAME_MIN_LENGTH,
+        SCENE_VARIABLE_NAME_MAX_LENGTH,
+      ),
       value: Validators.expression(),
     },
   });
@@ -203,8 +213,14 @@ function ChoiceStep({ onConfirm }: { onConfirm: (step: SceneStep) => void }) {
     },
     validate: {
       options: {
-        name: Validators.notEmpty(),
-        label: Validators.notEmpty(),
+        name: Validators.inRange(
+          SCENE_CHOICE_OPTION_NAME_MIN_LENGTH,
+          SCENE_CHOICE_OPTION_NAME_MAX_LENGTH,
+        ),
+        label: Validators.inRange(
+          SCENE_LABEL_MIN_LENGTH,
+          SCENE_LABEL_MAX_LENGTH,
+        ),
         condition: (value, values, path) => {
           const option = values.options[parseInt(path.split(".")[1])];
           return option.showConditionally
