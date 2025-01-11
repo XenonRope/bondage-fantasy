@@ -1,4 +1,8 @@
-import { faEllipsis } from "@fortawesome/free-solid-svg-icons";
+import {
+  faArrowDown,
+  faArrowUp,
+  faEllipsis,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   ActionIcon,
@@ -184,25 +188,35 @@ export function SceneDefinitionEditor(props: {
               className="flex justify-between items-center p-2 border border-black"
             >
               <div>{step.type}</div>
-              <Menu shadow="md" width={200}>
-                <Menu.Target>
-                  <ActionIcon variant="transparent">
-                    <FontAwesomeIcon icon={faEllipsis} />
-                  </ActionIcon>
-                </Menu.Target>
-                <Menu.Dropdown>
-                  <Menu.Item onClick={() => {}}>Edit</Menu.Item>
-                  <Menu.Item onClick={() => handleMoveStepUp(index)}>
-                    Move up
-                  </Menu.Item>
-                  <Menu.Item onClick={() => handleMoveStepDown(index)}>
-                    Move down
-                  </Menu.Item>
-                  <Menu.Item onClick={() => handleRemoveStep(index)}>
-                    Remove
-                  </Menu.Item>
-                </Menu.Dropdown>
-              </Menu>
+              <div className="flex items-center ml-auto">
+                <ActionIcon
+                  variant="transparent"
+                  onClick={() => handleMoveStepUp(index)}
+                  disabled={index === 0}
+                >
+                  <FontAwesomeIcon icon={faArrowUp} />
+                </ActionIcon>
+                <ActionIcon
+                  variant="transparent"
+                  onClick={() => handleMoveStepDown(index)}
+                  disabled={index === props.scene.steps.length - 1}
+                >
+                  <FontAwesomeIcon icon={faArrowDown} />
+                </ActionIcon>
+                <Menu shadow="md">
+                  <Menu.Target>
+                    <ActionIcon variant="transparent">
+                      <FontAwesomeIcon icon={faEllipsis} />
+                    </ActionIcon>
+                  </Menu.Target>
+                  <Menu.Dropdown>
+                    <Menu.Item onClick={() => {}}>Edit</Menu.Item>
+                    <Menu.Item onClick={() => handleRemoveStep(index)}>
+                      Remove
+                    </Menu.Item>
+                  </Menu.Dropdown>
+                </Menu>
+              </div>
             </div>
           ))}
         </div>
