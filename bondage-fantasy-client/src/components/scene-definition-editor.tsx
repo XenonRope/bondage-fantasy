@@ -33,6 +33,7 @@ import { useState } from "react";
 import { Validators } from "../utils/validators";
 import { ExpressionEditor } from "./expression-editor";
 import { TextTemplateEditor } from "./text-template-editor";
+import { Translation } from "react-i18next";
 
 function TextStep({ onConfirm }: { onConfirm: (step: SceneStep) => void }) {
   const form = useForm({
@@ -55,12 +56,12 @@ function TextStep({ onConfirm }: { onConfirm: (step: SceneStep) => void }) {
       <TextTemplateEditor
         {...form.getInputProps("text")}
         key={form.key("text")}
-        label="Text"
+        label={<Translation>{(t) => t("scene.text")}</Translation>}
         maxLength={SCENE_TEXT_MAX_LENGTH}
         classNames={{ input: "min-h-14 max-h-52 overflow-auto" }}
       />
       <Button onClick={handleConfirm} className="mt-4">
-        Confirm
+        <Translation>{(t) => t("common.confirm")}</Translation>
       </Button>
     </>
   );
@@ -90,11 +91,11 @@ function LabelStep({ onConfirm }: { onConfirm: (step: SceneStep) => void }) {
       <TextInput
         {...form.getInputProps("label")}
         key={form.key("label")}
-        label="Label"
+        label={<Translation>{(t) => t("scene.label")}</Translation>}
         maxLength={SCENE_LABEL_MAX_LENGTH}
       />
       <Button onClick={handleConfirm} className="mt-4">
-        Confirm
+        <Translation>{(t) => t("common.confirm")}</Translation>
       </Button>
     </>
   );
@@ -129,26 +130,26 @@ function JumpStep({ onConfirm }: { onConfirm: (step: SceneStep) => void }) {
       <TextInput
         {...form.getInputProps("label")}
         key={form.key("label")}
-        label="Label"
+        label={<Translation>{(t) => t("scene.label")}</Translation>}
         maxLength={SCENE_LABEL_MAX_LENGTH}
       />
       <Checkbox
         {...form.getInputProps("jumpConditionally", { type: "checkbox" })}
         key={form.key("jumpConditionally")}
-        label="Jump conditionally"
+        label={<Translation>{(t) => t("scene.jumpConditionally")}</Translation>}
         className="mt-4"
       />
       {form.getValues().jumpConditionally && (
         <ExpressionEditor
           {...form.getInputProps("condition")}
           key={form.key("condition")}
-          label="Condition"
+          label={<Translation>{(t) => t("scene.condition")}</Translation>}
           maxLength={EXPRESSION_SOURCE_MAX_LENGTH}
           className="mt-2"
         />
       )}
       <Button onClick={handleConfirm} className="mt-4">
-        Confirm
+        <Translation>{(t) => t("common.confirm")}</Translation>
       </Button>
     </>
   );
@@ -183,17 +184,17 @@ function VariableStep({ onConfirm }: { onConfirm: (step: SceneStep) => void }) {
     <>
       <TextInput
         {...form.getInputProps("name")}
-        label="Variable name"
+        label={<Translation>{(t) => t("scene.variableName")}</Translation>}
         maxLength={SCENE_VARIABLE_NAME_MAX_LENGTH}
       />
       <ExpressionEditor
         {...form.getInputProps("value")}
-        label="Variable value"
+        label={<Translation>{(t) => t("scene.variableValue")}</Translation>}
         maxLength={EXPRESSION_SOURCE_MAX_LENGTH}
         className="mt-2"
       />
       <Button onClick={handleConfirm} className="mt-4">
-        Confirm
+        <Translation>{(t) => t("common.confirm")}</Translation>
       </Button>
     </>
   );
@@ -264,12 +265,16 @@ function ChoiceStep({ onConfirm }: { onConfirm: (step: SceneStep) => void }) {
           <div className="flex items-center">
             <TextInput
               {...form.getInputProps(`options.${index}.name`)}
-              label="Name"
+              label={
+                <Translation>{(t) => t("scene.choiceOptionName")}</Translation>
+              }
               maxLength={SCENE_CHOICE_OPTION_NAME_MAX_LENGTH}
             />
             <TextInput
               {...form.getInputProps(`options.${index}.label`)}
-              label="Label to jump"
+              label={
+                <Translation>{(t) => t("scene.choiceOptionLabel")}</Translation>
+              }
               maxLength={SCENE_LABEL_MAX_LENGTH}
               className="ml-2"
             />
@@ -289,14 +294,18 @@ function ChoiceStep({ onConfirm }: { onConfirm: (step: SceneStep) => void }) {
             {...form.getInputProps(`options.${index}.showConditionally`, {
               type: "checkbox",
             })}
-            label="Show conditionally"
+            label={
+              <Translation>
+                {(t) => t("scene.choiceOptionShowConditionally")}
+              </Translation>
+            }
             className="mt-4"
           />
 
           {form.getValues().options[index].showConditionally && (
             <ExpressionEditor
               {...form.getInputProps(`options.${index}.condition`)}
-              label="Condition"
+              label={<Translation>{(t) => t("scene.condition")}</Translation>}
               maxLength={EXPRESSION_SOURCE_MAX_LENGTH}
               className="mt-2"
             />
@@ -311,11 +320,13 @@ function ChoiceStep({ onConfirm }: { onConfirm: (step: SceneStep) => void }) {
             form.getValues().options.length >= SCENE_CHOICE_OPTIONS_MAX_COUNT
           }
         >
-          Add option
+          <Translation>{(t) => t("scene.addChoiceOption")}</Translation>
         </Button>
       </div>
       <div className="mt-4">
-        <Button onClick={handleConfirm}>Confirm</Button>
+        <Button onClick={handleConfirm}>
+          <Translation>{(t) => t("common.confirm")}</Translation>
+        </Button>
       </div>
     </>
   );
@@ -427,14 +438,26 @@ export function SceneDefinitionEditor(props: {
         <div
           className={`flex gap-4 ${props.scene.steps.length > 0 ? "mt-4" : ""}`}
         >
-          <Button onClick={handleAddStepClick}>Add step</Button>
+          <Button onClick={handleAddStepClick}>
+            <Translation>{(t) => t("scene.addStep")}</Translation>
+          </Button>
         </div>
       </div>
 
       <Modal
         opened={dialogOpen}
         onClose={handleAddStepDialogClose}
-        title={stepType ? stepType : "Add step"}
+        title={
+          stepType ? (
+            <Translation>
+              {(t) =>
+                t("scene.stepTitle", { stepType: t(`scene.type.${stepType}`) })
+              }
+            </Translation>
+          ) : (
+            <Translation>{(t) => t("scene.addStep")}</Translation>
+          )
+        }
         size="lg"
       >
         {stepType === null ? (
@@ -444,7 +467,7 @@ export function SceneDefinitionEditor(props: {
                 key={stepType}
                 onClick={() => handleStepTypeSelect(stepType)}
               >
-                {stepType}
+                <Translation>{(t) => t(`scene.type.${stepType}`)}</Translation>
               </Button>
             ))}
           </SimpleGrid>
