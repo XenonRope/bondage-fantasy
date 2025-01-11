@@ -1,5 +1,6 @@
 import { zoneApi } from "../api/zone-api";
 import { ExpressionEditor } from "../components/expression-editor";
+import { SceneDefinitionEditor } from "../components/scene-definition-editor";
 import { TextTemplateEditor } from "../components/text-template-editor";
 import { ZoneMap } from "../components/zone-map";
 import { ZoneObjectList } from "../components/zone-object-list";
@@ -33,6 +34,7 @@ import {
   getPositionsFromConnectionKey,
   ObjectType,
   Position,
+  SceneDefinition,
   Zone,
   ZONE_DESCRIPTION_MAX_LENGTH,
   ZONE_DESCRIPTION_MIN_LENGTH,
@@ -92,6 +94,9 @@ function EventForm(props: {
         values.showConditionally ? Validators.expression()(value) : null,
     },
   });
+  const [scene, setScene] = useState<SceneDefinition>({
+    steps: [],
+  });
   form.watch("showConditionally", forceUpdate);
 
   function onConfirm(): void {
@@ -134,6 +139,9 @@ function EventForm(props: {
           className="mt-2 max-w-lg"
         />
       )}
+      <div className="mt-4">
+        <SceneDefinitionEditor scene={scene} onChange={setScene} />
+      </div>
       <div className="mt-4">
         <Button onClick={() => form.onSubmit(onConfirm)()}>
           {t("zoneCreation.saveEvent")}
