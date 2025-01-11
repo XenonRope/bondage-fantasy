@@ -1,4 +1,14 @@
-import { Button, Modal, SimpleGrid, TextInput } from "@mantine/core";
+import { faEllipsis } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  ActionIcon,
+  Button,
+  Menu,
+  Modal,
+  SimpleGrid,
+  TextInput,
+} from "@mantine/core";
+import { useForm } from "@mantine/form";
 import {
   SCENE_FRAME_TEXT_MAX_LENGTH,
   SCENE_LABEL_MAX_LENGTH,
@@ -7,9 +17,8 @@ import {
   SceneStepType,
 } from "bondage-fantasy-common";
 import { useState } from "react";
-import { TextTemplateEditor } from "./text-template-editor";
-import { useForm } from "@mantine/form";
 import { Validators } from "../utils/validators";
+import { TextTemplateEditor } from "./text-template-editor";
 
 function TextStep({ onConfirm }: { onConfirm: (step: SceneStep) => void }) {
   const form = useForm({
@@ -123,7 +132,6 @@ export function SceneDefinitionEditor(props: {
 
   function handleAddStepDialogClose(): void {
     setDialogOpen(false);
-    setStepType(null);
   }
 
   function handleStepTypeSelect(type: SceneStepType): void {
@@ -135,13 +143,44 @@ export function SceneDefinitionEditor(props: {
     setDialogOpen(false);
   }
 
+  function handleRemoveStep(index: number): void {
+    const newSteps = [...props.scene.steps];
+    newSteps.splice(index, 1);
+    props.onChange({ ...props.scene, steps: newSteps });
+  }
+
   return (
     <div>
       <div className="text-sm font-medium mb-2">Scene</div>
-      <div className="flex gap-4">
-        <Button onClick={handleAddStepClick}>Add step</Button>
-        <Button>Move up</Button>
-        <Button>Move down</Button>
+      <div>
+        <div className="flex flex-col gap-2 max-w-lg">
+          {props.scene.steps.map((step, index) => (
+            <div
+              key={index}
+              className="flex justify-between items-center p-2 border border-black"
+            >
+              <div>{step.type}</div>
+              <Menu shadow="md" width={200}>
+                <Menu.Target>
+                  <ActionIcon variant="transparent">
+                    <FontAwesomeIcon icon={faEllipsis} />
+                  </ActionIcon>
+                </Menu.Target>
+                <Menu.Dropdown>
+                  <Menu.Item onClick={() => {}}>Edit</Menu.Item>
+                  <Menu.Item onClick={() => handleRemoveStep(index)}>
+                    Remove
+                  </Menu.Item>
+                </Menu.Dropdown>
+              </Menu>
+            </div>
+          ))}
+        </div>
+        <div className="flex gap-4 mt-4">
+          <Button onClick={handleAddStepClick}>Add step</Button>
+          <Button>Move up</Button>
+          <Button>Move down</Button>
+        </div>
       </div>
 
       <Modal
