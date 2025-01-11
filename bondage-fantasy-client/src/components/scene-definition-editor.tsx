@@ -14,14 +14,17 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import {
+  EXPRESSION_SOURCE_MAX_LENGTH,
   SCENE_FRAME_TEXT_MAX_LENGTH,
   SCENE_LABEL_MAX_LENGTH,
+  SCENE_VARIABLE_NAME_MAX_LENGTH,
   SceneDefinition,
   SceneStep,
   SceneStepType,
 } from "bondage-fantasy-common";
 import { useState } from "react";
 import { Validators } from "../utils/validators";
+import { ExpressionEditor } from "./expression-editor";
 import { TextTemplateEditor } from "./text-template-editor";
 
 function TextStep({ onConfirm }: { onConfirm: (step: SceneStep) => void }) {
@@ -114,6 +117,48 @@ function JumpStep({ onConfirm }: { onConfirm: (step: SceneStep) => void }) {
         key={form.key("label")}
         label="Label"
         maxLength={SCENE_LABEL_MAX_LENGTH}
+      />
+      <Button onClick={handleConfirm} className="mt-4">
+        Confirm
+      </Button>
+    </>
+  );
+}
+
+function VariableStep({ onConfirm }: { onConfirm: (step: SceneStep) => void }) {
+  const form = useForm({
+    initialValues: {
+      name: "",
+      value: "",
+    },
+    validate: {
+      name: Validators.notEmpty(),
+      value: Validators.expression(),
+    },
+  });
+
+  function handleConfirm() {
+    form.onSubmit((values) => {
+      onConfirm({
+        type: SceneStepType.VARIABLE,
+        name: values.name,
+        value: values.value,
+      });
+    })();
+  }
+
+  return (
+    <>
+      <TextInput
+        {...form.getInputProps("name")}
+        label="Variable name"
+        maxLength={SCENE_VARIABLE_NAME_MAX_LENGTH}
+      />
+      <ExpressionEditor
+        {...form.getInputProps("value")}
+        label="Variable value"
+        maxLength={EXPRESSION_SOURCE_MAX_LENGTH}
+        className="mt-2"
       />
       <Button onClick={handleConfirm} className="mt-4">
         Confirm
@@ -247,6 +292,8 @@ export function SceneDefinitionEditor(props: {
           <LabelStep onConfirm={handleStepConfirm} />
         ) : stepType === SceneStepType.JUMP ? (
           <JumpStep onConfirm={handleStepConfirm} />
+        ) : stepType === SceneStepType.VARIABLE ? (
+          <VariableStep onConfirm={handleStepConfirm} />
         ) : null}
       </Modal>
     </div>
