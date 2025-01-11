@@ -7,6 +7,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   ActionIcon,
   Button,
+  Checkbox,
   Menu,
   Modal,
   SimpleGrid,
@@ -95,9 +96,13 @@ function JumpStep({ onConfirm }: { onConfirm: (step: SceneStep) => void }) {
   const form = useForm({
     initialValues: {
       label: "",
+      jumpConditionally: false,
+      condition: "",
     },
     validate: {
       label: Validators.notEmpty(),
+      condition: (value, values) =>
+        values.jumpConditionally ? Validators.expression()(value) : null,
     },
   });
 
@@ -106,6 +111,7 @@ function JumpStep({ onConfirm }: { onConfirm: (step: SceneStep) => void }) {
       onConfirm({
         type: SceneStepType.JUMP,
         label: values.label,
+        condition: values.jumpConditionally ? values.condition : undefined,
       });
     })();
   }
@@ -118,6 +124,21 @@ function JumpStep({ onConfirm }: { onConfirm: (step: SceneStep) => void }) {
         label="Label"
         maxLength={SCENE_LABEL_MAX_LENGTH}
       />
+      <Checkbox
+        {...form.getInputProps("jumpConditionally", { type: "checkbox" })}
+        key={form.key("jumpConditionally")}
+        label="Jump conditionally"
+        className="mt-4"
+      />
+      {form.getValues().jumpConditionally && (
+        <ExpressionEditor
+          {...form.getInputProps("condition")}
+          key={form.key("condition")}
+          label="Condition"
+          maxLength={EXPRESSION_SOURCE_MAX_LENGTH}
+          className="mt-2"
+        />
+      )}
       <Button onClick={handleConfirm} className="mt-4">
         Confirm
       </Button>
@@ -265,7 +286,9 @@ export function SceneDefinitionEditor(props: {
             </div>
           ))}
         </div>
-        <div className="flex gap-4 mt-4">
+        <div
+          className={`flex gap-4 ${props.scene.steps.length > 0 ? "mt-4" : ""}`}
+        >
           <Button onClick={handleAddStepClick}>Add step</Button>
         </div>
       </div>
