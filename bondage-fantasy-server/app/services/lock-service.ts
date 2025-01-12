@@ -8,6 +8,7 @@ export const LOCKS = {
   account: (id: number) => `account.${id}`,
   character: (id: number) => `character.${id}`,
   zone: (id: number) => `zone.${id}`,
+  item: (id: number) => `item.${id}`,
 };
 
 export class LockService {
