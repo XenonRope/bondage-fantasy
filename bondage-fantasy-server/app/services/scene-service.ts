@@ -1,4 +1,5 @@
 import {
+  CharacterNotInSceneException,
   SceneChoiceRequiredException,
   SceneEndedException,
   SceneInvalidChoiceException,
@@ -23,6 +24,14 @@ export class SceneService {
     private sequenceService: SequenceService,
   ) {}
 
+  async getByCharacterId(characterId: number): Promise<Scene> {
+    const scene = await this.tryGetByCharacterId(characterId);
+    if (scene == null) {
+      throw new CharacterNotInSceneException();
+    }
+    return scene;
+  }
+
   async tryGetByCharacterId(characterId: number): Promise<Scene | undefined> {
     return (await this.sceneDao.getByCharacterId(characterId)) ?? undefined;
   }
@@ -31,7 +40,7 @@ export class SceneService {
     return await this.sceneDao.existsByCharacterId(characterId);
   }
 
-  async createScene(params: {
+  async create(params: {
     characterId: number;
     zoneId: number;
     definition: SceneDefinition;
@@ -48,7 +57,17 @@ export class SceneService {
     };
     await this.continueScene(scene);
 
-    await this.sceneDao.insert(scene);
+    if (!this.isSceneEnded(scene)) {
+      await this.sceneDao.insert(scene);
+    }
+  }
+
+  async update(scene: Scene): Promise<void> {
+    await this.sceneDao.update(scene);
+  }
+
+  async deleteById(sceneId: number): Promise<void> {
+    await this.sceneDao.deleteById(sceneId);
   }
 
   async continueScene(
@@ -56,7 +75,7 @@ export class SceneService {
     params?: { choiceIndex?: number },
   ): Promise<Scene> {
     if (this.isSceneEnded(scene)) {
-      throw new SceneEndedException();
+      return scene;
     }
 
     if (scene.choices != null && scene.choices.length > 0) {
@@ -138,7 +157,7 @@ export class SceneService {
     );
   }
 
-  private isSceneEnded(scene: Scene): boolean {
+  isSceneEnded(scene: Scene): boolean {
     return scene.currentStep >= scene.definition.steps.length;
   }
 }

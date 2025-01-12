@@ -310,7 +310,7 @@ export class ZoneService {
           throw new CannotInteractWithEventException();
         }
 
-        this.sceneService.createScene({
+        await this.sceneService.create({
           characterId: params.characterId,
           zoneId: zoneId,
           definition: event.scene,

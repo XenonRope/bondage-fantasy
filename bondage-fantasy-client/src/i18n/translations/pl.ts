@@ -87,6 +87,8 @@ export const pl: ResourceLanguage = {
     "explore.leave": "Wyjdź",
     "explore.move": "Idź",
     "explore.interact": "Interakcja",
+    "explore.scene.title": "Scena",
+    "explore.scene.next": "Dalej",
     "scene.text": "Tekst",
     "scene.label": "Etykieta",
     "scene.jumpConditionally": "Skok warunkowy",

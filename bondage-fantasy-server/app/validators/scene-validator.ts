@@ -97,3 +97,9 @@ export const sceneStep = vine.union([
 export const sceneDefinition = vine.object({
   steps: vine.array(sceneStep),
 });
+
+export const sceneContinueRequestValidator = vine.compile(
+  vine.object({
+    choiceIndex: vine.number().withoutDecimals().optional(),
+  }),
+);

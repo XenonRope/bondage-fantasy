@@ -20,11 +20,13 @@ import {
 import { ReactNode, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
+import { SceneViewer } from "../components/scene-viewer";
 
 export function ExplorePage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const zone = useAppStore((state) => state.zone);
+  const scene = useAppStore((state) => state.scene);
   const currentField = useMemo(() => {
     if (!zone) {
       return;
@@ -112,6 +114,10 @@ export function ExplorePage() {
 
   if (!zone) {
     return <></>;
+  }
+
+  if (scene) {
+    return <SceneViewer scene={scene} />;
   }
 
   return (

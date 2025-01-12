@@ -62,3 +62,7 @@ export interface ZoneMoveRequest {
 export interface ZoneInteractWithEventRequest {
   eventId: number;
 }
+
+export interface SceneContinueRequest {
+  choiceIndex?: number;
+}

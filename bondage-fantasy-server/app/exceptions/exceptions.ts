@@ -152,16 +152,6 @@ export class NoAccessToZoneException extends ApplicationException {
   }
 }
 
-export class SceneEndedException extends ApplicationException {
-  constructor() {
-    super({
-      code: ErrorCode.E_SCENE_ENDED,
-      message: "Scene has ended",
-      status: 422,
-    });
-  }
-}
-
 export class SceneChoiceRequiredException extends ApplicationException {
   constructor() {
     super({
@@ -207,6 +197,16 @@ export class CharacterInSceneException extends ApplicationException {
     super({
       code: ErrorCode.E_CHARACTER_IN_SCENE,
       message: "Character is already in scene",
+      status: 422,
+    });
+  }
+}
+
+export class CharacterNotInSceneException extends ApplicationException {
+  constructor() {
+    super({
+      code: ErrorCode.E_CHARACTER_NOT_IN_SCENE,
+      message: "Character is not in scene",
       status: 422,
     });
   }

@@ -11,6 +11,7 @@ const AccountController = () => import("#controllers/account-controller");
 const SessionController = () => import("#controllers/session-controller");
 const CharacterController = () => import("#controllers/character-controller");
 const ZoneController = () => import("#controllers/zone-controller");
+const SceneController = () => import("#controllers/scene-controller");
 import router from "@adonisjs/core/services/router";
 import { middleware } from "./kernel.js";
 
@@ -40,6 +41,7 @@ router
           ZoneController,
           "interactWithEvent",
         ]);
+        router.post("/scenes/continue", [SceneController, "continueScene"]);
       })
       .use(middleware.auth());
   })

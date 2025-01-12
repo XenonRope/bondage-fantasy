@@ -238,13 +238,12 @@ function ChoiceStep({
 }) {
   const form = useForm({
     initialValues: {
-      options:
-        initialStep?.options.map((option) => ({
-          name: option.name ?? "",
-          label: option.label ?? "",
-          showConditionally: option.condition != null,
-          condition: option.condition ?? "",
-        })) ?? [],
+      options: initialStep?.options.map((option) => ({
+        name: option.name ?? "",
+        label: option.label ?? "",
+        showConditionally: option.condition != null,
+        condition: option.condition ?? "",
+      })) ?? [{ name: "", label: "", showConditionally: false, condition: "" }],
     },
     validate: {
       options: {
