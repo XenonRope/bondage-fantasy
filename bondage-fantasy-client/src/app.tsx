@@ -38,7 +38,7 @@ import alertClasses from "./theme/Alert.module.css";
 import buttonClasses from "./theme/Button.module.css";
 import { AuthRequired } from "./utils/auth-required";
 import { CharacterRequired } from "./utils/character-required";
-import { ZoneRequired } from "./utils/zone-required";
+import { ZoneOrSceneRequired } from "./utils/zone-required";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -129,7 +129,7 @@ function AppRouter() {
           <Route element={<CharacterRequired />}>
             <Route path="/new-zone" element={<ZoneEditorPage />} />
             <Route path="/zone/:zoneId/edit" element={<ZoneEditorPage />} />
-            <Route element={<ZoneRequired />}>
+            <Route element={<ZoneOrSceneRequired />}>
               <Route path="/explore" element={<ExplorePage />} />
             </Route>
           </Route>

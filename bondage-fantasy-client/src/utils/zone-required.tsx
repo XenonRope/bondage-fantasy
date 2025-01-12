@@ -2,14 +2,15 @@ import { useAppStore } from "../store";
 import { useEffect } from "react";
 import { Outlet, useNavigate } from "react-router";
 
-export function ZoneRequired() {
+export function ZoneOrSceneRequired() {
   const navigate = useNavigate();
   const zone = useAppStore((state) => state.zone);
+  const scene = useAppStore((state) => state.scene);
   useEffect(() => {
-    if (!zone) {
+    if (!zone && !scene) {
       navigate("/zones");
     }
-  }, [zone, navigate]);
+  }, [zone, scene, navigate]);
 
-  return zone ? <Outlet /> : <></>;
+  return zone || scene ? <Outlet /> : <></>;
 }

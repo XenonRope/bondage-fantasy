@@ -112,12 +112,12 @@ export function ExplorePage() {
     return [];
   }
 
-  if (!zone) {
-    return <></>;
-  }
-
   if (scene) {
     return <SceneViewer scene={scene} />;
+  }
+
+  if (!zone) {
+    return <></>;
   }
 
   return (

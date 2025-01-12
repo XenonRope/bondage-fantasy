@@ -31,6 +31,7 @@ export function ZoneListPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const inZone = useAppStore((state) => state.zone != null);
+  const inScene = useAppStore((state) => state.scene != null);
   const characterId = useAppStore((state) => state.character?.id);
   const [filter, setFilter] = useState({
     query: "",
@@ -114,7 +115,7 @@ export function ZoneListPage() {
                   <Button
                     size="compact-sm"
                     radius="xl"
-                    disabled={inZone || zone.draft}
+                    disabled={inZone || inScene || zone.draft}
                     onClick={() =>
                       !join.isPending && join.mutate({ zoneId: zone.id })
                     }
