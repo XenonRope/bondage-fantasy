@@ -31,6 +31,7 @@ export const en: ResourceLanguage = {
     "navbar.characters": "Characters",
     "navbar.zones": "Zones",
     "navbar.explore": "Explore",
+    "navbar.items": "Items",
     "pronouns.SHE_HER": "She/Her",
     "pronouns.HE_HIM": "He/Him",
     "genitals.VAGINA": "Vagina",
@@ -106,5 +107,8 @@ export const en: ResourceLanguage = {
     "scene.type.VARIABLE": "Variable",
     "scene.type.CHOICE": "Choice",
     "scene.type.ABORT": "Abort",
+    "item.createNewItem": "Create new item",
+    "item.modifyItem": "Modify item",
+    "item.createItem": "Create item",
   },
 };

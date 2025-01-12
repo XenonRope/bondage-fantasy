@@ -44,6 +44,10 @@ router
         ]);
         router.post("/scenes/continue", [SceneController, "continueScene"]);
         router.post("/items", [ItemController, "save"]);
+        router
+          .get("/items/:id", [ItemController, "getById"])
+          .where("id", router.matchers.number());
+        router.post("/items/search", [ItemController, "search"]);
       })
       .use(middleware.auth());
   })

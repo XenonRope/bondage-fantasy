@@ -1,25 +1,3 @@
-import { sessionApi } from "./api/session-api";
-import { zoneApi } from "./api/zone-api";
-import "./app.css";
-import "./i18n";
-import { MainLayout } from "./layouts/main-layout";
-import AccountRegistrationPage from "./pages/account-registration-page";
-import { CharacterCreationPage } from "./pages/character-creation-page";
-import CharacterListPage from "./pages/character-list-page";
-import { ExplorePage } from "./pages/explore-page";
-import HomePage from "./pages/home-page";
-import LoginPage from "./pages/login-page";
-import { ZoneEditorPage } from "./pages/zone-editor-page";
-import { ZoneListPage } from "./pages/zone-list-page";
-import { characterService } from "./services/character-service";
-import { errorService } from "./services/error-service";
-import { useAppStore } from "./store";
-import actionIconClasses from "./theme/ActionIcon.module.css";
-import alertClasses from "./theme/Alert.module.css";
-import buttonClasses from "./theme/Button.module.css";
-import { AuthRequired } from "./utils/auth-required";
-import { CharacterRequired } from "./utils/character-required";
-import { ZoneRequired } from "./utils/zone-required";
 import {
   ActionIcon,
   Alert,
@@ -37,13 +15,30 @@ import {
   useQuery,
 } from "@tanstack/react-query";
 import { useEffect } from "react";
-import {
-  BrowserRouter,
-  LoaderFunctionArgs,
-  Route,
-  Routes,
-  useNavigate,
-} from "react-router";
+import { BrowserRouter, Route, Routes, useNavigate } from "react-router";
+import { sessionApi } from "./api/session-api";
+import "./app.css";
+import "./i18n";
+import { MainLayout } from "./layouts/main-layout";
+import AccountRegistrationPage from "./pages/account-registration-page";
+import { CharacterCreationPage } from "./pages/character-creation-page";
+import CharacterListPage from "./pages/character-list-page";
+import { ExplorePage } from "./pages/explore-page";
+import HomePage from "./pages/home-page";
+import { ItemEditorPage } from "./pages/item-editor-page";
+import { ItemListPage } from "./pages/item-list-page";
+import LoginPage from "./pages/login-page";
+import { ZoneEditorPage } from "./pages/zone-editor-page";
+import { ZoneListPage } from "./pages/zone-list-page";
+import { characterService } from "./services/character-service";
+import { errorService } from "./services/error-service";
+import { useAppStore } from "./store";
+import actionIconClasses from "./theme/ActionIcon.module.css";
+import alertClasses from "./theme/Alert.module.css";
+import buttonClasses from "./theme/Button.module.css";
+import { AuthRequired } from "./utils/auth-required";
+import { CharacterRequired } from "./utils/character-required";
+import { ZoneRequired } from "./utils/zone-required";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -86,10 +81,6 @@ function App() {
   );
 }
 
-async function zoneLoader({ params }: LoaderFunctionArgs) {
-  return await zoneApi.getById(parseInt(params.zoneId ?? ""));
-}
-
 function AppRouter() {
   const navigate = useNavigate();
   useEffect(() => {
@@ -122,7 +113,12 @@ function AppRouter() {
         <Route element={<AuthRequired />}>
           <Route path="/characters" element={<CharacterListPage />} />
           <Route path="/new-character" element={<CharacterCreationPage />} />
-          <Route path="/zones" element={<ZoneListPage />} />
+          <Route element={<CharacterRequired />}>
+            <Route path="/zones" element={<ZoneListPage />} />
+            <Route path="/items" element={<ItemListPage />} />
+            <Route path="/new-item" element={<ItemEditorPage />} />
+            <Route path="/items/:itemId/edit" element={<ItemEditorPage />} />
+          </Route>
         </Route>
       </Route>
       <Route
@@ -132,11 +128,7 @@ function AppRouter() {
         <Route element={<AuthRequired />}>
           <Route element={<CharacterRequired />}>
             <Route path="/new-zone" element={<ZoneEditorPage />} />
-            <Route
-              path="/zone/:zoneId/edit"
-              element={<ZoneEditorPage />}
-              loader={zoneLoader}
-            />
+            <Route path="/zone/:zoneId/edit" element={<ZoneEditorPage />} />
             <Route element={<ZoneRequired />}>
               <Route path="/explore" element={<ExplorePage />} />
             </Route>

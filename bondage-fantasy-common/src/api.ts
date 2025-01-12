@@ -74,3 +74,18 @@ export interface ItemSaveRequest {
   name: string;
   description: string;
 }
+
+export interface ItemSearchRequest {
+  query: string;
+  offset: number;
+  limit: number;
+}
+
+export interface ItemSearchResponse {
+  items: Array<{
+    id: number;
+    name: string;
+    description: string;
+  }>;
+  total: number;
+}
