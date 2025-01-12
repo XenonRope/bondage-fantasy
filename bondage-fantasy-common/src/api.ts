@@ -58,3 +58,7 @@ export interface ZoneJoinRequest {
 export interface ZoneMoveRequest {
   destination: Position;
 }
+
+export interface ZoneInteractWithEventRequest {
+  eventId: number;
+}

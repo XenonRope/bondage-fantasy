@@ -1,9 +1,12 @@
 import { ZoneDao } from "#dao/zone-dao";
 import {
+  CannotInteractWithEventException,
   CannotLeaveException,
   CannotMoveException,
+  CharacterInSceneException,
   CharacterInZoneException,
   CharacterNotInZoneException,
+  EventNotFoundException,
   InvalidZoneException,
   NoAccessToZoneException,
   ZoneIsDraftException,
@@ -13,6 +16,7 @@ import { SequenceCode } from "#models/sequence-model";
 import { inject } from "@adonisjs/core";
 import {
   arePositionsEqual,
+  EventObject,
   Field,
   FieldConnection,
   findConnectionByConnectionKey,
@@ -27,12 +31,16 @@ import {
 } from "bondage-fantasy-common";
 import lockService, { LOCKS } from "./lock-service.js";
 import { SequenceService } from "./sequence-service.js";
+import { ExpressionEvaluator } from "./expression-evaluator.js";
+import { SceneService } from "./scene-service.js";
 
 @inject()
 export class ZoneService {
   constructor(
     private zoneDao: ZoneDao,
     private sequenceService: SequenceService,
+    private expressionEvaluator: ExpressionEvaluator,
+    private sceneService: SceneService,
   ) {}
 
   async get(
@@ -125,6 +133,9 @@ export class ZoneService {
       [LOCKS.zone(params.zoneId), LOCKS.character(params.characterId)],
       "1s",
       async () => {
+        if (await this.sceneService.isCharacterInScene(params.characterId)) {
+          throw new CharacterInSceneException();
+        }
         if (
           (await this.zoneDao.getZoneIdByCharacterObject(params.characterId)) !=
           null
@@ -161,9 +172,12 @@ export class ZoneService {
       [LOCKS.zone(zoneId), LOCKS.character(params.characterId)],
       "1s",
       async () => {
+        if (await this.sceneService.isCharacterInScene(params.characterId)) {
+          throw new CharacterInSceneException();
+        }
         const zone = await this.zoneDao.getById(zoneId);
         if (zone == null) {
-          throw new CharacterNotInZoneException();
+          throw new ZoneNotFoundException();
         }
         const characterObject = zone.objects.find(
           (object) =>
@@ -212,9 +226,12 @@ export class ZoneService {
       [LOCKS.zone(zoneId), LOCKS.character(params.characterId)],
       "1s",
       async () => {
+        if (await this.sceneService.isCharacterInScene(params.characterId)) {
+          throw new CharacterInSceneException();
+        }
         const zone = await this.zoneDao.getById(zoneId);
         if (zone == null) {
-          throw new CharacterNotInZoneException();
+          throw new ZoneNotFoundException();
         }
         const characterObject = zone.objects.find(
           (object) =>
@@ -242,6 +259,62 @@ export class ZoneService {
         characterObject.position = params.destination;
 
         await this.zoneDao.replace(zone);
+      },
+    );
+  }
+
+  async interactWithEvent(params: {
+    characterId: number;
+    eventId: number;
+  }): Promise<void> {
+    const zoneId = await this.zoneDao.getZoneIdByCharacterObject(
+      params.characterId,
+    );
+    if (zoneId == null) {
+      throw new CharacterNotInZoneException();
+    }
+
+    await lockService.run(
+      [LOCKS.zone(zoneId), LOCKS.character(params.characterId)],
+      "1s",
+      async () => {
+        if (await this.sceneService.isCharacterInScene(params.characterId)) {
+          throw new CharacterInSceneException();
+        }
+        const zone = await this.zoneDao.getById(zoneId);
+        if (zone == null) {
+          throw new ZoneNotFoundException();
+        }
+        const characterObject = zone.objects.find(
+          (object) =>
+            object.type === ObjectType.CHARACTER &&
+            object.characterId === params.characterId,
+        );
+        if (characterObject == null) {
+          throw new CharacterNotInZoneException();
+        }
+
+        const event = zone.objects.find(
+          (object): object is EventObject =>
+            object.type === ObjectType.EVENT &&
+            object.eventId === params.eventId,
+        );
+        if (
+          event == null ||
+          (event.condition != null &&
+            !this.expressionEvaluator.evaluateAsBoolean(event.condition))
+        ) {
+          throw new EventNotFoundException(params.eventId);
+        }
+        if (event.scene == null) {
+          throw new CannotInteractWithEventException();
+        }
+
+        this.sceneService.createScene({
+          characterId: params.characterId,
+          zoneId: zoneId,
+          definition: event.scene,
+        });
       },
     );
   }

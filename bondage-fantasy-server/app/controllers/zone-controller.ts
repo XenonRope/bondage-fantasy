@@ -2,6 +2,7 @@ import { ZoneDao } from "#dao/zone-dao";
 import { SessionService } from "#services/session-service";
 import { ZoneService } from "#services/zone-service";
 import {
+  zoneInteractRequestValidator,
   zoneJoinRequestValidator,
   zoneMoveRequestValidator,
   zoneSaveRequestValidator,
@@ -122,6 +123,20 @@ export default class ZoneController {
     );
 
     await this.zoneService.move({ characterId, destination });
+
+    return await this.sessionService.getSessionData({
+      account: ctx.auth.user?.id,
+      characterId,
+    });
+  }
+
+  async interactWithEvent(ctx: HttpContext): Promise<SessionData> {
+    const characterId = await getCharacterId(ctx);
+    const { eventId } = await ctx.request.validateUsing(
+      zoneInteractRequestValidator,
+    );
+
+    await this.zoneService.interactWithEvent({ characterId, eventId });
 
     return await this.sessionService.getSessionData({
       account: ctx.auth.user?.id,

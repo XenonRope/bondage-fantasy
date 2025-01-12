@@ -181,3 +181,33 @@ export class SceneInvalidChoiceException extends ApplicationException {
     });
   }
 }
+
+export class EventNotFoundException extends ApplicationException {
+  constructor(eventId: number) {
+    super({
+      code: ErrorCode.E_EVENT_NOT_FOUND,
+      message: `Event ${eventId} doesn't exist or you don't have permission to access it`,
+      status: 404,
+    });
+  }
+}
+
+export class CannotInteractWithEventException extends ApplicationException {
+  constructor() {
+    super({
+      code: ErrorCode.E_CANNOT_INTERACT_WITH_EVENT,
+      message: "Cannot interact with event",
+      status: 422,
+    });
+  }
+}
+
+export class CharacterInSceneException extends ApplicationException {
+  constructor() {
+    super({
+      code: ErrorCode.E_CHARACTER_IN_SCENE,
+      message: "Character is already in scene",
+      status: 422,
+    });
+  }
+}

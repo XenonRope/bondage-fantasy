@@ -36,6 +36,10 @@ router
         router.post("/zones/join", [ZoneController, "join"]);
         router.post("/zones/leave", [ZoneController, "leave"]);
         router.post("/zones/move", [ZoneController, "move"]);
+        router.post("/zones/events/interact", [
+          ZoneController,
+          "interactWithEvent",
+        ]);
       })
       .use(middleware.auth());
   })

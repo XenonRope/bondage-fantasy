@@ -108,3 +108,9 @@ export const zoneMoveRequestValidator = vine.compile(
     destination: position,
   }),
 );
+
+export const zoneInteractRequestValidator = vine.compile(
+  vine.object({
+    eventId: vine.number().withoutDecimals(),
+  }),
+);
