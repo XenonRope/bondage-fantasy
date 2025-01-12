@@ -151,3 +151,33 @@ export class NoAccessToZoneException extends ApplicationException {
     });
   }
 }
+
+export class SceneEndedException extends ApplicationException {
+  constructor() {
+    super({
+      code: ErrorCode.E_SCENE_ENDED,
+      message: "Scene has ended",
+      status: 422,
+    });
+  }
+}
+
+export class SceneChoiceRequiredException extends ApplicationException {
+  constructor() {
+    super({
+      code: ErrorCode.E_SCENE_CHOICE_REQUIRED,
+      message: "Choice is required",
+      status: 422,
+    });
+  }
+}
+
+export class SceneInvalidChoiceException extends ApplicationException {
+  constructor() {
+    super({
+      code: ErrorCode.E_SCENE_INVALID_CHOICE,
+      message: "Invalid choice",
+      status: 422,
+    });
+  }
+}

@@ -218,3 +218,23 @@ export interface SceneStepVariable {
 export interface SceneDefinition {
   steps: SceneStep[];
 }
+
+export interface SceneChoiceOption {
+  name: string;
+  // Index of choice option in scene definition. Not sent to client.
+  index: number;
+}
+
+export interface Scene {
+  id: number;
+  characterId: number;
+  zoneId: number;
+  // Not sent to client
+  definition: SceneDefinition;
+  // Not sent to client
+  currentStep: number;
+  text: string;
+  choices?: SceneChoiceOption[];
+  // Not sent to client
+  variables: Record<string, string>;
+}
