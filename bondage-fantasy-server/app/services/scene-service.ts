@@ -1,7 +1,6 @@
 import {
   CharacterNotInSceneException,
   SceneChoiceRequiredException,
-  SceneEndedException,
   SceneInvalidChoiceException,
 } from "#exceptions/exceptions";
 import { SequenceCode } from "#models/sequence-model";
