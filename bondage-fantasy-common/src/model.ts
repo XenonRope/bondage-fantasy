@@ -240,3 +240,19 @@ export interface Scene {
   // Not sent to client
   variables: Record<string, string>;
 }
+
+export enum ItemSlot {
+  ARMS = "ARMS",
+  LEGS = "LEGS",
+  FEET = "FEET",
+  MOUTH = "MOUTH",
+  EYES = "EYES",
+}
+
+export interface Item {
+  id: number;
+  ownerCharacterId: number;
+  slots: ItemSlot[];
+  name: string;
+  description: string;
+}

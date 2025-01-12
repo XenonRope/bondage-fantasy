@@ -110,6 +110,10 @@ export function hasDuplicates(array: unknown[]): boolean {
   return new Set(array).size !== array.length;
 }
 
+export function areSetsEqual<T>(set1: Set<T>, set2: Set<T>): boolean {
+  return set1.size === set2.size && [...set1].every((value) => set2.has(value));
+}
+
 export function isEnum<T extends { [key: string]: unknown }>(
   enumType: T,
   value: unknown,

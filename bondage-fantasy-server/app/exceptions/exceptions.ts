@@ -211,3 +211,33 @@ export class CharacterNotInSceneException extends ApplicationException {
     });
   }
 }
+
+export class ItemNotFoundException extends ApplicationException {
+  constructor(itemId: number) {
+    super({
+      code: ErrorCode.E_ITEM_NOT_FOUND,
+      message: `Item ${itemId} doesn't exist or you don't have permission to access it`,
+      status: 404,
+    });
+  }
+}
+
+export class NoAccessToItemException extends ApplicationException {
+  constructor() {
+    super({
+      code: ErrorCode.E_NO_ACCESS_TO_ITEM,
+      message: "You have no access to modify or see details of item",
+      status: 403,
+    });
+  }
+}
+
+export class InvalidItemException extends ApplicationException {
+  constructor(message: string) {
+    super({
+      code: ErrorCode.E_INVALID_ITEM,
+      message,
+      status: 422,
+    });
+  }
+}

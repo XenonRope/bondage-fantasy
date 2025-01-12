@@ -2,6 +2,7 @@ import {
   Field,
   FieldConnection,
   Genitals,
+  ItemSlot,
   Position,
   Pronouns,
   ZoneObject,
@@ -65,4 +66,11 @@ export interface ZoneInteractWithEventRequest {
 
 export interface SceneContinueRequest {
   choiceIndex?: number;
+}
+
+export interface ItemSaveRequest {
+  itemId?: number;
+  slots: ItemSlot[];
+  name: string;
+  description: string;
 }
