@@ -1,4 +1,4 @@
-import { Button, Textarea, TextInput } from "@mantine/core";
+import { Button, Textarea, TextInput, MultiSelect } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
@@ -110,7 +110,17 @@ export function ItemEditorPage() {
         className="mt-2 max-w-lg"
         maxLength={ITEM_DESCRIPTION_MAX_LENGTH}
       />
-
+      <MultiSelect
+        {...form.getInputProps("slots")}
+        key={form.key("slots")}
+        label={t("item.occupiedBodyParts")}
+        data={Object.values(ItemSlot).map((slot) => ({
+          value: slot,
+          label: t(`item.slots.${slot}`),
+        }))}
+        className="mt-2 max-w-lg"
+        disabled={itemId != null}
+      />
       <div className="mt-4">
         {itemId && <Button onClick={submitForm}>{t("item.modifyItem")}</Button>}
         {!itemId && (

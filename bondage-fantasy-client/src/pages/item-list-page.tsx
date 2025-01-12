@@ -1,19 +1,19 @@
 import { faGear } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-    ActionIcon,
-    Button,
-    Card,
-    Pagination,
-    SimpleGrid,
-    Text,
-    TextInput,
-    Tooltip
+  ActionIcon,
+  Button,
+  Card,
+  Pagination,
+  SimpleGrid,
+  Text,
+  TextInput,
+  Tooltip,
 } from "@mantine/core";
 import { useQuery } from "@tanstack/react-query";
 import {
-    ITEM_SEARCH_QUERY_MAX_LENGTH,
-    ITEM_SEARCH_QUERY_MIN_LENGTH
+  ITEM_SEARCH_QUERY_MAX_LENGTH,
+  ITEM_SEARCH_QUERY_MIN_LENGTH,
 } from "bondage-fantasy-common";
 import { useId, useState } from "react";
 import { useTranslation } from "react-i18next";

@@ -110,5 +110,11 @@ export const pl: ResourceLanguage = {
     "item.createNewItem": "Stwórz nowy przedmiot",
     "item.modifyItem": "Modyfikuj przedmiot",
     "item.createItem": "Stwórz przedmiot",
+    "item.occupiedBodyParts": "Zajęte części ciała",
+    "item.slots.ARMS": "Ręce",
+    "item.slots.LEGS": "Nogi",
+    "item.slots.FEET": "Stopy",
+    "item.slots.MOUTH": "Usta",
+    "item.slots.EYES": "Oczy",
   },
 };

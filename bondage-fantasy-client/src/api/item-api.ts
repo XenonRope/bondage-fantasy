@@ -1,5 +1,10 @@
 import { httpClient } from "./http-client";
-import { Item, ItemSaveRequest, ItemSearchRequest, ItemSearchResponse } from "bondage-fantasy-common";
+import {
+  Item,
+  ItemSaveRequest,
+  ItemSearchRequest,
+  ItemSearchResponse,
+} from "bondage-fantasy-common";
 
 class ItemApi {
   async save(request: ItemSaveRequest): Promise<Item> {
