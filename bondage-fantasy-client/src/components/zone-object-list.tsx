@@ -37,7 +37,7 @@ function EventItem(props: { object: EventZoneVisionObject }) {
   );
 }
 
-function ItemActions(props: {
+function ObjectActions(props: {
   actions: { label: ReactNode; onClick: () => void }[];
 }) {
   if (props.actions.length === 0) {
@@ -93,7 +93,9 @@ export function ZoneObjectList(props: {
             <CharacterItem object={object} />
           )}
           {object.type === ObjectType.EVENT && <EventItem object={object} />}
-          <ItemActions actions={props.actions?.(object) ?? []}></ItemActions>
+          <ObjectActions
+            actions={props.actions?.(object) ?? []}
+          ></ObjectActions>
         </div>
       ))}
     </div>

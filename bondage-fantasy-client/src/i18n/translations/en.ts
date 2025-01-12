@@ -86,6 +86,7 @@ export const en: ResourceLanguage = {
     "zoneList.edit": "Edit",
     "explore.leave": "Leave",
     "explore.move": "Move",
+    "explore.interact": "Interact",
     "scene.text": "Text",
     "scene.label": "Label",
     "scene.jumpConditionally": "Jump conditionally",

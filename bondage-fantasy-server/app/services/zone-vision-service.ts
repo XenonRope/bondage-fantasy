@@ -103,6 +103,7 @@ export class ZoneVisionService {
             position: object.position,
             eventId: object.eventId,
             name: object.name,
+            canInteract: object.scene != null && object.scene.steps.length > 0,
           };
           return event;
         }

@@ -306,7 +306,7 @@ export class ZoneService {
         ) {
           throw new EventNotFoundException(params.eventId);
         }
-        if (event.scene == null) {
+        if (event.scene == null || event.scene.steps.length === 0) {
           throw new CannotInteractWithEventException();
         }
 

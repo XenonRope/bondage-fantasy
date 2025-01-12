@@ -1,13 +1,14 @@
-import { httpClient } from "./http-client";
 import {
   SessionData,
   Zone,
+  ZoneInteractWithEventRequest,
   ZoneJoinRequest,
   ZoneMoveRequest,
   ZoneSaveRequest,
   ZoneSearchRequest,
   ZoneSearchResponse,
 } from "bondage-fantasy-common";
+import { httpClient } from "./http-client";
 
 class ZoneApi {
   async getById(id: number): Promise<Zone> {
@@ -32,6 +33,12 @@ class ZoneApi {
 
   async move(request: ZoneMoveRequest): Promise<SessionData> {
     return await httpClient.post("zones/move", request);
+  }
+
+  async interactWithEvent(
+    request: ZoneInteractWithEventRequest,
+  ): Promise<SessionData> {
+    return await httpClient.post("zones/events/interact", request);
   }
 }
 

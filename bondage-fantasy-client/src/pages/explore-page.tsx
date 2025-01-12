@@ -13,9 +13,11 @@ import {
   getFieldConnectionKey,
   getFieldKey,
   getPositionFromFieldKey,
+  ObjectType,
   Position,
+  ZoneVisionObject,
 } from "bondage-fantasy-common";
-import { useMemo, useState } from "react";
+import { ReactNode, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 
@@ -65,6 +67,13 @@ export function ExplorePage() {
     },
     onError: (error) => errorService.handleUnexpectedError(error),
   });
+  const interact = useMutation({
+    mutationFn: async (eventId: number) => {
+      const sessionData = await zoneApi.interactWithEvent({ eventId });
+      useAppStore.getState().updateSessionData(sessionData);
+    },
+    onError: (error) => errorService.handleUnexpectedError(error),
+  });
 
   function onFieldClick(position: Position): void {
     const fieldKey = getFieldKey(position);
@@ -84,6 +93,21 @@ export function ExplorePage() {
     }
     setSelectedFieldKey(undefined);
     setSelectedConnectionKey(connectionKey);
+  }
+
+  function getObjectActions(
+    visionObject: ZoneVisionObject,
+  ): { label: ReactNode; onClick: () => void }[] {
+    if (visionObject.type === ObjectType.EVENT && visionObject.canInteract) {
+      return [
+        {
+          label: t("explore.interact"),
+          onClick: () =>
+            !interact.isPending && interact.mutate(visionObject.eventId),
+        },
+      ];
+    }
+    return [];
   }
 
   if (!zone) {
@@ -111,7 +135,10 @@ export function ExplorePage() {
           <div className="font-medium">{currentField?.name}</div>
           <div>{zone.currentFieldDescription}</div>
           <div className="mt-4">
-            <ZoneObjectList objects={currentField?.objects || []} />
+            <ZoneObjectList
+              objects={currentField?.objects || []}
+              actions={getObjectActions}
+            />
           </div>
           <div className="mt-4">
             {currentField?.canLeave && (

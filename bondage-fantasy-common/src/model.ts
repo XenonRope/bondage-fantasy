@@ -112,6 +112,7 @@ export interface EventZoneVisionObject extends ZoneVisionObjectBase {
   type: ObjectType.EVENT;
   eventId: number;
   name: string;
+  canInteract: boolean;
 }
 
 export interface ZoneVision {
