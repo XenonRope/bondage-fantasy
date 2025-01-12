@@ -127,6 +127,7 @@ export interface SessionData {
   account?: Account;
   character?: Character;
   zone?: ZoneVision;
+  scene?: Scene;
 }
 
 export type Template = string;

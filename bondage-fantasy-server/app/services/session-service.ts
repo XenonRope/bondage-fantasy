@@ -3,6 +3,7 @@ import { CharacterDao } from "#dao/character-dao";
 import { inject } from "@adonisjs/core";
 import { Account, SessionData } from "bondage-fantasy-common";
 import { ZoneVisionService } from "./zone-vision-service.js";
+import { SceneService } from "./scene-service.js";
 
 @inject()
 export class SessionService {
@@ -10,6 +11,7 @@ export class SessionService {
     private accountDao: AccountDao,
     private characterDao: CharacterDao,
     private zoneVisionService: ZoneVisionService,
+    private sceneService: SceneService,
   ) {}
 
   async getSessionData(params: {
@@ -45,17 +47,13 @@ export class SessionService {
     const zone = await this.zoneVisionService.tryGetZoneVision(
       params.characterId,
     );
-    if (zone == null) {
-      return {
-        account,
-        character,
-      };
-    }
+    const scene = await this.sceneService.tryGetByCharacterId(character.id);
 
     return {
       account,
       character,
       zone,
+      scene,
     };
   }
 }

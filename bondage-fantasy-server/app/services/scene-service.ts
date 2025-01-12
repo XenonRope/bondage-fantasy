@@ -23,6 +23,10 @@ export class SceneService {
     private sequenceService: SequenceService,
   ) {}
 
+  async tryGetByCharacterId(characterId: number): Promise<Scene | undefined> {
+    return (await this.sceneDao.getByCharacterId(characterId)) ?? undefined;
+  }
+
   async isCharacterInScene(characterId: number): Promise<boolean> {
     return await this.sceneDao.existsByCharacterId(characterId);
   }
