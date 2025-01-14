@@ -665,7 +665,7 @@ export function ZoneEditorPage() {
             </div>
           )}
           {selectedConnection && (
-            <div>
+            <div className="p-md">
               <Button variant="danger" onClick={removeSelectedConnection}>
                 {t("zoneCreation.removeConnection")}
               </Button>
