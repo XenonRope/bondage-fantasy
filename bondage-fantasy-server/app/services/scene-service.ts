@@ -7,6 +7,7 @@ import { SequenceCode } from "#models/sequence-model";
 import { inject } from "@adonisjs/core";
 import {
   Scene,
+  SCENE_EXECUTED_STEPS_MAX_COUNT,
   SceneDefinition,
   SceneStepChoice,
   SceneStepType,
@@ -100,7 +101,14 @@ export class SceneService {
       scene.currentStep++;
     }
 
+    let executedStepsCount = 0;
+
     while (scene.currentStep < scene.definition.steps.length) {
+      if (executedStepsCount >= SCENE_EXECUTED_STEPS_MAX_COUNT) {
+        this.abort(scene);
+        return scene;
+      }
+
       const step = scene.definition.steps[scene.currentStep];
       if (step.type === SceneStepType.TEXT) {
         scene.text = step.text;
@@ -111,6 +119,7 @@ export class SceneService {
           this.expressionEvaluator.evaluateAsBoolean(step.condition)
         ) {
           this.jumpToLabel(scene, step.label);
+          executedStepsCount++;
           continue;
         }
       } else if (step.type === SceneStepType.CHOICE) {
@@ -131,7 +140,7 @@ export class SceneService {
           }));
         return scene;
       } else if (step.type === SceneStepType.ABORT) {
-        scene.currentStep = scene.definition.steps.length;
+        this.abort(scene);
         return scene;
       } else if (step.type === SceneStepType.VARIABLE) {
         scene.variables[step.name] = this.expressionEvaluator.evaluate(
@@ -139,9 +148,14 @@ export class SceneService {
         );
       }
       scene.currentStep++;
+      executedStepsCount++;
     }
 
     return scene;
+  }
+
+  private abort(scene: Scene): void {
+    scene.currentStep = scene.definition.steps.length;
   }
 
   private jumpToLabel(scene: Scene, label: string): void {
