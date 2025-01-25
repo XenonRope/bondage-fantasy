@@ -4,6 +4,7 @@ import {
   SCENE_CHOICE_OPTION_NAME_MIN_LENGTH,
   SCENE_LABEL_MAX_LENGTH,
   SCENE_LABEL_MIN_LENGTH,
+  SCENE_STEPS_MAX_COUNT,
   SCENE_TEXT_MAX_LENGTH,
   SCENE_TEXT_MIN_LENGTH,
   SCENE_VARIABLE_NAME_MAX_LENGTH,
@@ -95,7 +96,7 @@ export const sceneStep = vine.union([
 ]);
 
 export const sceneDefinition = vine.object({
-  steps: vine.array(sceneStep),
+  steps: vine.array(sceneStep).maxLength(SCENE_STEPS_MAX_COUNT),
 });
 
 export const sceneContinueRequestValidator = vine.compile(

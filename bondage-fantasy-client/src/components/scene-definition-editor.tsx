@@ -21,6 +21,7 @@ import {
   SCENE_CHOICE_OPTIONS_MAX_COUNT,
   SCENE_LABEL_MAX_LENGTH,
   SCENE_LABEL_MIN_LENGTH,
+  SCENE_STEPS_MAX_COUNT,
   SCENE_TEXT_MAX_LENGTH,
   SCENE_TEXT_MIN_LENGTH,
   SCENE_VARIABLE_NAME_MAX_LENGTH,
@@ -35,10 +36,10 @@ import {
   SceneStepVariable,
 } from "bondage-fantasy-common";
 import { useState } from "react";
+import { Translation } from "react-i18next";
 import { Validators } from "../utils/validators";
 import { ExpressionEditor } from "./expression-editor";
 import { TextTemplateEditor } from "./text-template-editor";
-import { Translation } from "react-i18next";
 
 function TextStep({
   initialStep,
@@ -374,6 +375,9 @@ export function SceneDefinitionEditor(props: {
   const [stepToEdit, setStepToEdit] = useState<SceneStep | null>(null);
 
   function handleAddStepClick(): void {
+    if (props.scene.steps.length >= SCENE_STEPS_MAX_COUNT) {
+      return;
+    }
     setStepType(null);
     setStepToEdit(null);
     setDialogOpen(true);
@@ -485,7 +489,10 @@ export function SceneDefinitionEditor(props: {
         <div
           className={`flex gap-4 ${props.scene.steps.length > 0 ? "mt-4" : ""}`}
         >
-          <Button onClick={handleAddStepClick}>
+          <Button
+            onClick={handleAddStepClick}
+            disabled={props.scene.steps.length >= SCENE_STEPS_MAX_COUNT}
+          >
             <Translation>{(t) => t("scene.addStep")}</Translation>
           </Button>
         </div>
