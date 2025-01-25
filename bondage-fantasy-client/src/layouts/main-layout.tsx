@@ -81,13 +81,12 @@ export function MainLayout(props: { fixedHeight?: boolean }) {
         </Group>
       </AppShell.Header>
       <AppShell.Navbar p="md">
-        {inZone ||
-          (inScene && (
-            <NavLink
-              onClick={() => navigate("/explore")}
-              label={t("navbar.explore")}
-            />
-          ))}
+        {(inZone || inScene) && (
+          <NavLink
+            onClick={() => navigate("/explore")}
+            label={t("navbar.explore")}
+          />
+        )}
         {character && (
           <>
             <NavLink
