@@ -17,11 +17,10 @@ export class ItemDao {
     offset: number;
     limit: number;
   }): Promise<{ items: Item[]; total: number }> {
-    const filters: Filter<Item>[] = [];
-    filters.push({
+    const filter: Filter<Item> = {
       name: { $regex: escapeRegex(params.query), $options: "i" },
-    });
-    const filter: Filter<Item> = { $and: filters };
+      ownerCharacterId: params.characterId,
+    };
     const items = await this.getCollection()
       .find(filter)
       .skip(params.offset)
