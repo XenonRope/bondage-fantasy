@@ -1,4 +1,10 @@
-import { Button, Textarea, TextInput, MultiSelect } from "@mantine/core";
+import {
+  Button,
+  Textarea,
+  TextInput,
+  MultiSelect,
+  Select,
+} from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
@@ -8,6 +14,7 @@ import {
   ITEM_NAME_MIN_LENGTH,
   ItemSaveRequest,
   ItemSlot,
+  ItemType,
 } from "bondage-fantasy-common";
 import { useEffect, useId } from "react";
 import { useTranslation } from "react-i18next";
@@ -20,16 +27,18 @@ import { Validators } from "../utils/validators";
 interface ItemForm {
   name: string;
   description: string;
+  type: ItemType;
   slots: ItemSlot[];
 }
 
 export function ItemEditorPage() {
   const uniqueId = useId();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const form = useForm<ItemForm>({
     mode: "uncontrolled",
     initialValues: {
+      type: ItemType.STORABLE,
       name: "",
       description: "",
       slots: [],
@@ -64,19 +73,35 @@ export function ItemEditorPage() {
       form.setValues({
         name: item.data.name,
         description: item.data.description,
-        slots: item.data.slots,
+        type: item.data.type,
+        ...(item.data.type === ItemType.WEARABLE
+          ? { slots: item.data.slots }
+          : {}),
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [item.data]);
 
   function prepareItemSaveRequest(): ItemSaveRequest {
-    return {
-      itemId: itemId == null ? undefined : parseInt(itemId),
-      name: form.getValues().name,
-      description: form.getValues().description,
-      slots: form.getValues().slots,
-    };
+    const itemIdAsNumber = itemId == null ? undefined : parseInt(itemId);
+    const name = form.getValues().name;
+    const description = form.getValues().description;
+    const type = form.getValues().type;
+
+    return type === ItemType.WEARABLE
+      ? {
+          itemId: itemIdAsNumber,
+          name,
+          description,
+          type,
+          slots: form.getValues().slots,
+        }
+      : {
+          itemId: itemIdAsNumber,
+          name,
+          description,
+          type,
+        };
   }
 
   function submitForm(): void {
@@ -93,11 +118,23 @@ export function ItemEditorPage() {
 
   return (
     <div>
+      <Select
+        {...form.getInputProps("type")}
+        key={`${form.key("type")}-${i18n.language}`}
+        label={t("item.type")}
+        data={Object.values(ItemType).map((type) => ({
+          value: type,
+          label: t(`item.types.${type}`),
+        }))}
+        className="max-w-xs"
+        allowDeselect={false}
+        disabled={itemId != null}
+      />
       <TextInput
         {...form.getInputProps("name")}
         key={form.key("name")}
         label={t("common.name")}
-        className="max-w-xs"
+        className="mt-2 max-w-xs"
         maxLength={ITEM_NAME_MAX_LENGTH}
       />
       <Textarea
@@ -110,17 +147,18 @@ export function ItemEditorPage() {
         className="mt-2 max-w-lg"
         maxLength={ITEM_DESCRIPTION_MAX_LENGTH}
       />
-      <MultiSelect
-        {...form.getInputProps("slots")}
-        key={form.key("slots")}
-        label={t("item.occupiedBodyParts")}
-        data={Object.values(ItemSlot).map((slot) => ({
-          value: slot,
-          label: t(`item.slots.${slot}`),
-        }))}
-        className="mt-2 max-w-lg"
-        disabled={itemId != null}
-      />
+      {form.getValues().type === ItemType.WEARABLE && (
+        <MultiSelect
+          {...form.getInputProps("slots")}
+          key={form.key("slots")}
+          label={t("item.occupiedBodyParts")}
+          data={Object.values(ItemSlot).map((slot) => ({
+            value: slot,
+            label: t(`item.slots.${slot}`),
+          }))}
+          className="mt-2 max-w-lg"
+        />
+      )}
       <div className="mt-4">
         {itemId && <Button onClick={submitForm}>{t("item.modifyItem")}</Button>}
         {!itemId && (

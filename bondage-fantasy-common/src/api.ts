@@ -3,6 +3,7 @@ import {
   FieldConnection,
   Genitals,
   ItemSlot,
+  ItemType,
   Position,
   Pronouns,
   ZoneObject,
@@ -68,12 +69,19 @@ export interface SceneContinueRequest {
   choiceIndex?: number;
 }
 
-export interface ItemSaveRequest {
+export type ItemSaveRequest = {
   itemId?: number;
-  slots: ItemSlot[];
   name: string;
   description: string;
-}
+} & (
+  | {
+      type: ItemType.STORABLE;
+    }
+  | {
+      type: ItemType.WEARABLE;
+      slots: ItemSlot[];
+    }
+);
 
 export interface ItemSearchRequest {
   query: string;

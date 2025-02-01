@@ -4,11 +4,11 @@ import {
   ItemNotFoundException,
   NoAccessToItemException,
 } from "#exceptions/exceptions";
-import { inject } from "@adonisjs/core";
-import { areSetsEqual, Item, ItemSlot } from "bondage-fantasy-common";
-import { SequenceService } from "./sequence-service.js";
 import { SequenceCode } from "#models/sequence-model";
+import { inject } from "@adonisjs/core";
+import { Item, ItemSlot, ItemType } from "bondage-fantasy-common";
 import lockService, { LOCKS } from "./lock-service.js";
+import { SequenceService } from "./sequence-service.js";
 
 @inject()
 export class ItemService {
@@ -34,13 +34,22 @@ export class ItemService {
     return item;
   }
 
-  async save(params: {
-    itemId?: number;
-    characterId: number;
-    slots: ItemSlot[];
-    name: string;
-    description: string;
-  }): Promise<void> {
+  async save(
+    params: {
+      itemId?: number;
+      characterId: number;
+      name: string;
+      description: string;
+    } & (
+      | {
+          type: ItemType.STORABLE;
+        }
+      | {
+          type: ItemType.WEARABLE;
+          slots: ItemSlot[];
+        }
+    ),
+  ): Promise<void> {
     const locks =
       params.itemId == null
         ? [LOCKS.character(params.characterId)]
@@ -48,23 +57,36 @@ export class ItemService {
 
     return await lockService.run(locks, "1s", async () => {
       if (params.itemId != null) {
-        const item = await this.getById(params.itemId, {
+        const existingItem = await this.getById(params.itemId, {
           checkAccessForCharacterId: params.characterId,
         });
-        if (!areSetsEqual(new Set(item.slots), new Set(params.slots))) {
-          throw new InvalidItemException("You cannot modify item slots.");
+        if (existingItem.type !== params.type) {
+          throw new InvalidItemException(
+            "You cannot change the type of an item",
+          );
         }
       }
 
-      const newItem: Item = {
-        id:
-          params.itemId ??
-          (await this.sequenceService.nextSequence(SequenceCode.ITEM)),
-        ownerCharacterId: params.characterId,
-        slots: params.slots,
-        name: params.name,
-        description: params.description,
-      };
+      const itemId =
+        params.itemId ??
+        (await this.sequenceService.nextSequence(SequenceCode.ITEM));
+      const newItem: Item =
+        params.type === ItemType.WEARABLE
+          ? {
+              id: itemId,
+              type: params.type,
+              ownerCharacterId: params.characterId,
+              name: params.name,
+              description: params.description,
+              slots: params.slots,
+            }
+          : {
+              id: itemId,
+              type: params.type,
+              ownerCharacterId: params.characterId,
+              name: params.name,
+              description: params.description,
+            };
 
       if (params.itemId == null) {
         await this.itemDao.insert(newItem);

@@ -249,10 +249,26 @@ export enum ItemSlot {
   EYES = "EYES",
 }
 
-export interface Item {
+export type Item = StorableItem | WearableItem;
+
+export enum ItemType {
+  STORABLE = "STORABLE",
+  WEARABLE = "WEARABLE",
+}
+
+export interface BaseItem {
   id: number;
+  type: ItemType;
   ownerCharacterId: number;
-  slots: ItemSlot[];
   name: string;
   description: string;
+}
+
+export interface StorableItem extends BaseItem {
+  type: ItemType.STORABLE;
+}
+
+export interface WearableItem extends BaseItem {
+  type: ItemType.WEARABLE;
+  slots: ItemSlot[];
 }

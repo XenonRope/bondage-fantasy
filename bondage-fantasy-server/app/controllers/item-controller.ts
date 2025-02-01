@@ -9,6 +9,7 @@ import { getCharacterId } from "./utils.js";
 import { Item, ItemSearchResponse, SessionData } from "bondage-fantasy-common";
 import { SessionService } from "#services/session-service";
 import { ItemDao } from "#dao/item-dao";
+import { ItemType } from "bondage-fantasy-common";
 
 @inject()
 export default class ItemController {
@@ -19,17 +20,27 @@ export default class ItemController {
   ) {}
 
   async save(ctx: HttpContext): Promise<SessionData> {
-    const { itemId, slots, name, description } =
-      await ctx.request.validateUsing(itemSaveRequestValidator);
+    const request = await ctx.request.validateUsing(itemSaveRequestValidator);
     const characterId = await getCharacterId(ctx);
 
-    await this.itemService.save({
-      itemId,
-      characterId,
-      slots,
-      name,
-      description,
-    });
+    await this.itemService.save(
+      request.type === ItemType.STORABLE
+        ? {
+            itemId: request.itemId,
+            characterId,
+            name: request.name,
+            description: request.description,
+            type: request.type,
+          }
+        : {
+            itemId: request.itemId,
+            characterId,
+            name: request.name,
+            description: request.description,
+            type: request.type,
+            slots: request.slots,
+          },
+    );
 
     return await this.sessionService.getSessionData({
       account: ctx.auth.user?.id,
