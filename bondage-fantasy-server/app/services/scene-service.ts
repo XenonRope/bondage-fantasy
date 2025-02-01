@@ -178,7 +178,10 @@ export class SceneService {
             slots: wearable.slots,
           }));
         const slots = wearablesToAdd.flatMap((wearable) => wearable.slots);
-        if (hasDuplicates(slots)) {
+        if (
+          hasDuplicates(slots) ||
+          wearablesToAdd.length !== step.itemsIds.length
+        ) {
           if (step.fallbackLabel == null) {
             scene.currentStep++;
           } else {

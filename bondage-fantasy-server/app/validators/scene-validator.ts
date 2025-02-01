@@ -74,12 +74,23 @@ export const sceneStepUseWearable = vine.object({
   itemsIds: vine
     .array(vine.number().withoutDecimals())
     .minLength(1)
-    .maxLength(Object.keys(ItemSlot).length),
+    .maxLength(Object.keys(ItemSlot).length)
+    .distinct(),
+  fallbackLabel: vine
+    .string()
+    .minLength(SCENE_LABEL_MIN_LENGTH)
+    .maxLength(SCENE_LABEL_MAX_LENGTH)
+    .optional(),
 });
 
 export const sceneStepRemoveWearable = vine.object({
   type: vine.literal(SceneStepType.REMOVE_WEARABLE),
   slots: vine.array(vine.enum(ItemSlot)).minLength(1).distinct(),
+  fallbackLabel: vine
+    .string()
+    .minLength(SCENE_LABEL_MIN_LENGTH)
+    .maxLength(SCENE_LABEL_MAX_LENGTH)
+    .optional(),
 });
 
 export const sceneStep = vine.union([

@@ -44,8 +44,6 @@ export const pl: ResourceLanguage = {
     "error.unexpecterError": "Niespodziewany błąd",
     "error.errorMessage": 'Kod błędu: {{code}}. Wiadomość: "{{message}}".',
     "error.somethingWentWrong": "Coś poszło nie tak...",
-    "error.item.atLeastOneSlotRequired":
-      "Co najmniej jedna część ciała jest wymagana",
     "accountRegistration.createAccount": "Stwórz konto",
     "accountRegistration.usernameTooShort":
       "Nazwa użytkownika musi mieć co najmniej {{minLength}} znaków",
@@ -103,6 +101,9 @@ export const pl: ResourceLanguage = {
     "scene.choiceOptionName": "Nazwa",
     "scene.choiceOptionLabel": "Skok do etykiety",
     "scene.choiceOptionShowConditionally": "Pokaż warunkowo",
+    "scene.bodyParts": "Części ciała",
+    "scene.fallbackLabel": "Plan awaryjny",
+    "scene.wearables": "Ubrania",
     "scene.type.TEXT": "Tekst",
     "scene.type.LABEL": "Etykieta",
     "scene.type.JUMP": "Skok",

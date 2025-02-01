@@ -52,9 +52,7 @@ export function ItemEditorPage() {
       slots: (value, values) => {
         if (values.type === ItemType.WEARABLE && value.length === 0) {
           return (
-            <Translation>
-              {(t) => t("error.item.atLeastOneSlotRequired")}
-            </Translation>
+            <Translation>{(t) => t("common.fieldCannotBeEmpty")}</Translation>
           );
         }
         return null;

@@ -10,36 +10,22 @@ import {
   TextInput,
   Tooltip,
 } from "@mantine/core";
-import { useQuery } from "@tanstack/react-query";
-import {
-  ITEM_SEARCH_QUERY_MAX_LENGTH,
-  ITEM_SEARCH_QUERY_MIN_LENGTH,
-} from "bondage-fantasy-common";
-import { useId, useState } from "react";
+import { ITEM_SEARCH_QUERY_MAX_LENGTH } from "bondage-fantasy-common";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
-import { itemApi } from "../api/item-api";
+import { useItemsQuery } from "../utils/item-utils";
 
 const PAGE_SIZE = 24;
 
 export function ItemListPage() {
-  const uniqueId = useId();
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [filter, setFilter] = useState({
     query: "",
     page: 1,
   });
-  const searchResult = useQuery({
-    queryKey: ["items", filter, uniqueId],
-    queryFn: () =>
-      itemApi.search({
-        query: filter.query,
-        offset: (filter.page - 1) * PAGE_SIZE,
-        limit: PAGE_SIZE,
-      }),
-    enabled: () => filter.query.length >= ITEM_SEARCH_QUERY_MIN_LENGTH,
-  });
+  const searchResult = useItemsQuery({ ...filter, pageSize: PAGE_SIZE });
 
   return (
     <div>

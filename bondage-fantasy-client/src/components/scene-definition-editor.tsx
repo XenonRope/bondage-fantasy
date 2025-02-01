@@ -10,12 +10,14 @@ import {
   Button,
   Checkbox,
   Modal,
+  MultiSelect,
   SimpleGrid,
   TextInput,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import {
   EXPRESSION_SOURCE_MAX_LENGTH,
+  ItemSlot,
   SCENE_CHOICE_OPTION_NAME_MAX_LENGTH,
   SCENE_CHOICE_OPTION_NAME_MIN_LENGTH,
   SCENE_CHOICE_OPTIONS_MAX_COUNT,
@@ -31,12 +33,15 @@ import {
   SceneStepChoice,
   SceneStepJump,
   SceneStepLabel,
+  SceneStepRemoveWearable,
   SceneStepText,
   SceneStepType,
+  SceneStepUseWearable,
   SceneStepVariable,
 } from "bondage-fantasy-common";
 import { useState } from "react";
-import { Translation } from "react-i18next";
+import { Translation, useTranslation } from "react-i18next";
+import { useItemsQuery } from "../utils/item-utils";
 import { Validators } from "../utils/validators";
 import { ExpressionEditor } from "./expression-editor";
 import { TextTemplateEditor } from "./text-template-editor";
@@ -366,6 +371,155 @@ function ChoiceStep({
   );
 }
 
+function UseWearableStep({
+  initialStep,
+  onConfirm,
+}: {
+  initialStep?: SceneStepUseWearable;
+  onConfirm: (step: SceneStep) => void;
+}) {
+  const [itemSearchValue, setItemSearchValue] = useState("");
+  const items = useItemsQuery({
+    query: itemSearchValue,
+    page: 1,
+    pageSize: 20,
+  });
+  const form = useForm({
+    initialValues: {
+      itemsIds: initialStep?.itemsIds.map((item) => item.toString()) ?? [],
+      fallbackLabel: initialStep?.fallbackLabel ?? "",
+    },
+    validate: {
+      itemsIds: (value) =>
+        value.length === 0 ? (
+          <Translation>{(t) => t("common.fieldCannotBeEmpty")}</Translation>
+        ) : null,
+      fallbackLabel: (value) =>
+        value
+          ? Validators.inRange(
+              SCENE_LABEL_MIN_LENGTH,
+              SCENE_LABEL_MAX_LENGTH,
+            )(value)
+          : null,
+    },
+  });
+
+  function handleConfirm() {
+    form.onSubmit((values) => {
+      onConfirm({
+        type: SceneStepType.USE_WEARABLE,
+        itemsIds: values.itemsIds.map((itemId) => parseInt(itemId)),
+        fallbackLabel: values.fallbackLabel || undefined,
+      });
+    })();
+  }
+
+  function getFilteredItems() {
+    let filteredItems = (items.data?.items ?? []).map((item) => ({
+      value: item.id.toString(),
+      label: item.name,
+    }));
+    filteredItems = filteredItems.filter(
+      (item) => !form.getValues().itemsIds.includes(item.value),
+    );
+    filteredItems.push(
+      ...form.getValues().itemsIds.map((itemId) => ({
+        value: itemId,
+        label: itemId,
+      })),
+    );
+    return filteredItems;
+  }
+
+  return (
+    <>
+      <MultiSelect
+        {...form.getInputProps("itemsIds")}
+        key={form.key("itemsIds")}
+        label={<Translation>{(t) => t("scene.wearables")}</Translation>}
+        searchable
+        searchValue={itemSearchValue}
+        onSearchChange={setItemSearchValue}
+        data={getFilteredItems()}
+        hidePickedOptions
+      />
+      <TextInput
+        {...form.getInputProps("fallbackLabel")}
+        key={form.key("fallbackLabel")}
+        label={<Translation>{(t) => t("scene.fallbackLabel")}</Translation>}
+        maxLength={SCENE_LABEL_MAX_LENGTH}
+        className="mt-2"
+      />
+      <Button onClick={handleConfirm} className="mt-4">
+        <Translation>{(t) => t("common.confirm")}</Translation>
+      </Button>
+    </>
+  );
+}
+
+function RemoveWearableStep({
+  initialStep,
+  onConfirm,
+}: {
+  initialStep?: SceneStepRemoveWearable;
+  onConfirm: (step: SceneStep) => void;
+}) {
+  const { t, i18n } = useTranslation();
+  const form = useForm({
+    initialValues: {
+      slots: initialStep?.slots ?? [],
+      fallbackLabel: initialStep?.fallbackLabel ?? "",
+    },
+    validate: {
+      slots: (value) =>
+        value.length === 0 ? (
+          <Translation>{(t) => t("common.fieldCannotBeEmpty")}</Translation>
+        ) : null,
+      fallbackLabel: (value) =>
+        value
+          ? Validators.inRange(
+              SCENE_LABEL_MIN_LENGTH,
+              SCENE_LABEL_MAX_LENGTH,
+            )(value)
+          : null,
+    },
+  });
+
+  function handleConfirm() {
+    form.onSubmit((values) => {
+      onConfirm({
+        type: SceneStepType.REMOVE_WEARABLE,
+        slots: values.slots,
+        fallbackLabel: values.fallbackLabel || undefined,
+      });
+    })();
+  }
+
+  return (
+    <>
+      <MultiSelect
+        {...form.getInputProps("slots")}
+        key={`${form.key("slots")}-${i18n.language}`}
+        label={<Translation>{(t) => t("scene.bodyParts")}</Translation>}
+        data={Object.values(ItemSlot).map((slot) => ({
+          value: slot,
+          label: t(`item.slots.${slot}`),
+        }))}
+      />
+      <TextInput
+        {...form.getInputProps("fallbackLabel")}
+        key={form.key("fallbackLabel")}
+        label={<Translation>{(t) => t("scene.fallbackLabel")}</Translation>}
+        maxLength={SCENE_LABEL_MAX_LENGTH}
+        className="mt-2"
+      />
+      <Button onClick={handleConfirm} className="mt-4">
+        <Translation>{(t) => t("common.confirm")}</Translation>
+      </Button>
+    </>
+  );
+}
+
 export function SceneDefinitionEditor(props: {
   scene: SceneDefinition;
   onChange: (scene: SceneDefinition) => void;
@@ -513,6 +667,7 @@ export function SceneDefinitionEditor(props: {
           )
         }
         size="lg"
+        closeOnClickOutside={stepType == null}
       >
         {stepType === null ? (
           <SimpleGrid cols={3}>
@@ -548,6 +703,16 @@ export function SceneDefinitionEditor(props: {
         ) : stepType === SceneStepType.CHOICE ? (
           <ChoiceStep
             initialStep={stepToEdit as SceneStepChoice}
+            onConfirm={handleStepConfirm}
+          />
+        ) : stepType === SceneStepType.USE_WEARABLE ? (
+          <UseWearableStep
+            initialStep={stepToEdit as SceneStepUseWearable}
+            onConfirm={handleStepConfirm}
+          />
+        ) : stepType === SceneStepType.REMOVE_WEARABLE ? (
+          <RemoveWearableStep
+            initialStep={stepToEdit as SceneStepRemoveWearable}
             onConfirm={handleStepConfirm}
           />
         ) : null}
