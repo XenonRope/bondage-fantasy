@@ -44,6 +44,8 @@ export const pl: ResourceLanguage = {
     "error.unexpecterError": "Niespodziewany błąd",
     "error.errorMessage": 'Kod błędu: {{code}}. Wiadomość: "{{message}}".',
     "error.somethingWentWrong": "Coś poszło nie tak...",
+    "error.item.atLeastOneSlotRequired":
+      "Co najmniej jedna część ciała jest wymagana",
     "accountRegistration.createAccount": "Stwórz konto",
     "accountRegistration.usernameTooShort":
       "Nazwa użytkownika musi mieć co najmniej {{minLength}} znaków",
@@ -107,6 +109,8 @@ export const pl: ResourceLanguage = {
     "scene.type.VARIABLE": "Zmienna",
     "scene.type.CHOICE": "Wybór",
     "scene.type.ABORT": "Przerwij",
+    "scene.type.USE_WEARABLE": "Załóż ubranie",
+    "scene.type.REMOVE_WEARABLE": "Zdejmij ubranie",
     "item.createNewItem": "Stwórz nowy przedmiot",
     "item.modifyItem": "Modyfikuj przedmiot",
     "item.createItem": "Stwórz przedmiot",

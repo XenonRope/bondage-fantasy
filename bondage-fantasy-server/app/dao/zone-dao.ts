@@ -78,7 +78,7 @@ export class ZoneDao {
     await this.getCollection().insertOne(zone);
   }
 
-  async replace(zone: Zone): Promise<void> {
+  async update(zone: Zone): Promise<void> {
     await this.getCollection().replaceOne({ id: zone.id }, zone);
   }
 

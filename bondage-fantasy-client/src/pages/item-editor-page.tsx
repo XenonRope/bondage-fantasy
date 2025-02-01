@@ -17,7 +17,7 @@ import {
   ItemType,
 } from "bondage-fantasy-common";
 import { useEffect, useId } from "react";
-import { useTranslation } from "react-i18next";
+import { Translation, useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router";
 import { itemApi } from "../api/item-api";
 import { errorService } from "../services/error-service";
@@ -49,6 +49,16 @@ export function ItemEditorPage() {
         ITEM_DESCRIPTION_MIN_LENGTH,
         ITEM_DESCRIPTION_MAX_LENGTH,
       ),
+      slots: (value, values) => {
+        if (values.type === ItemType.WEARABLE && value.length === 0) {
+          return (
+            <Translation>
+              {(t) => t("error.item.atLeastOneSlotRequired")}
+            </Translation>
+          );
+        }
+        return null;
+      },
     },
   });
   const saveItem = useMutation({
@@ -150,7 +160,7 @@ export function ItemEditorPage() {
       {form.getValues().type === ItemType.WEARABLE && (
         <MultiSelect
           {...form.getInputProps("slots")}
-          key={form.key("slots")}
+          key={`${form.key("slots")}-${i18n.language}`}
           label={t("item.occupiedBodyParts")}
           data={Object.values(ItemSlot).map((slot) => ({
             value: slot,

@@ -1,3 +1,4 @@
+import { ItemDao } from "#dao/item-dao";
 import {
   CharacterNotInSceneException,
   SceneChoiceRequiredException,
@@ -6,15 +7,21 @@ import {
 import { SequenceCode } from "#models/sequence-model";
 import { inject } from "@adonisjs/core";
 import {
+  Character,
+  hasDuplicates,
+  ItemType,
   Scene,
   SCENE_EXECUTED_STEPS_MAX_COUNT,
   SceneDefinition,
   SceneStepChoice,
   SceneStepType,
+  WearableItemOnCharacter,
 } from "bondage-fantasy-common";
 import { SceneDao } from "../dao/scene-dao.js";
+import CharacterService from "./character-service.js";
 import { ExpressionEvaluator } from "./expression-evaluator.js";
 import { SequenceService } from "./sequence-service.js";
+import { CharacterDao } from "#dao/character-dao";
 
 @inject()
 export class SceneService {
@@ -22,6 +29,9 @@ export class SceneService {
     private expressionEvaluator: ExpressionEvaluator,
     private sceneDao: SceneDao,
     private sequenceService: SequenceService,
+    private itemDao: ItemDao,
+    private characterService: CharacterService,
+    private characterDao: CharacterDao,
   ) {}
 
   async getByCharacterId(characterId: number): Promise<Scene> {
@@ -55,8 +65,13 @@ export class SceneService {
       text: "",
       variables: {},
     };
-    await this.continueScene(scene);
+    const character = await this.characterService.getById(params.characterId);
 
+    const { characterChanged } = await this.continueScene(scene, character);
+
+    if (characterChanged) {
+      await this.characterDao.update(character);
+    }
     if (!this.isSceneEnded(scene)) {
       await this.sceneDao.insert(scene);
     }
@@ -72,10 +87,15 @@ export class SceneService {
 
   async continueScene(
     scene: Scene,
+    character: Character,
     params?: { choiceIndex?: number },
-  ): Promise<Scene> {
+  ): Promise<{
+    characterChanged: boolean;
+  }> {
+    let characterChanged = false;
+
     if (this.isSceneEnded(scene)) {
-      return scene;
+      return { characterChanged };
     }
 
     if (scene.choices != null && scene.choices.length > 0) {
@@ -106,13 +126,13 @@ export class SceneService {
     while (scene.currentStep < scene.definition.steps.length) {
       if (executedStepsCount >= SCENE_EXECUTED_STEPS_MAX_COUNT) {
         this.abort(scene);
-        return scene;
+        return { characterChanged };
       }
 
       const step = scene.definition.steps[scene.currentStep];
       if (step.type === SceneStepType.TEXT) {
         scene.text = step.text;
-        return scene;
+        return { characterChanged };
       } else if (step.type === SceneStepType.JUMP) {
         if (
           step.condition == null ||
@@ -138,20 +158,51 @@ export class SceneService {
             name: option.name,
             index: index,
           }));
-        return scene;
+        return { characterChanged };
       } else if (step.type === SceneStepType.ABORT) {
         this.abort(scene);
-        return scene;
+        return { characterChanged };
       } else if (step.type === SceneStepType.VARIABLE) {
         scene.variables[step.name] = this.expressionEvaluator.evaluate(
           step.value,
         );
+      } else if (step.type === SceneStepType.USE_WEARABLE) {
+        const wearablesToAdd: WearableItemOnCharacter[] = (
+          await this.itemDao.getManyByIds(step.itemsIds)
+        )
+          .filter((wearable) => wearable.type === ItemType.WEARABLE)
+          .map((wearable) => ({
+            itemId: wearable.id,
+            name: wearable.name,
+            description: wearable.description,
+            slots: wearable.slots,
+          }));
+        const slots = wearablesToAdd.flatMap((wearable) => wearable.slots);
+        if (hasDuplicates(slots)) {
+          if (step.fallbackLabel == null) {
+            scene.currentStep++;
+          } else {
+            this.jumpToLabel(scene, step.fallbackLabel);
+          }
+          executedStepsCount++;
+          continue;
+        }
+        character.wearables = character.wearables.filter(
+          (wearable) => !wearable.slots.some((slot) => slots.includes(slot)),
+        );
+        character.wearables.push(...wearablesToAdd);
+        characterChanged = true;
+      } else if (step.type === SceneStepType.REMOVE_WEARABLE) {
+        character.wearables = character.wearables.filter((wearable) =>
+          wearable.slots.some((slot) => step.slots.includes(slot)),
+        );
+        characterChanged = true;
       }
       scene.currentStep++;
       executedStepsCount++;
     }
 
-    return scene;
+    return { characterChanged };
   }
 
   private abort(scene: Scene): void {

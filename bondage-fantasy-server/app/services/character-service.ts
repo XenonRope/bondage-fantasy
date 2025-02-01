@@ -1,5 +1,8 @@
 import { CharacterDao } from "#dao/character-dao";
-import { TooManyCharactersException } from "#exceptions/exceptions";
+import {
+  CharacterNotFoundException,
+  TooManyCharactersException,
+} from "#exceptions/exceptions";
 import { SequenceCode } from "#models/sequence-model";
 import { inject } from "@adonisjs/core";
 import {
@@ -17,6 +20,14 @@ export default class CharacterService {
     private characterDao: CharacterDao,
     private sequenceService: SequenceService,
   ) {}
+
+  async getById(id: number): Promise<Character> {
+    const character = await this.characterDao.getById(id);
+    if (character == null) {
+      throw new CharacterNotFoundException();
+    }
+    return character;
+  }
 
   async create(params: {
     accountId: number;
@@ -41,6 +52,7 @@ export default class CharacterService {
           name: params.name,
           pronouns: params.pronouns,
           genitals: params.genitals,
+          wearables: [],
         };
 
         await this.characterDao.insert(character);

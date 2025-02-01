@@ -16,6 +16,13 @@ export enum Genitals {
   FUTA = "FUTA",
 }
 
+export interface WearableItemOnCharacter {
+  itemId: number;
+  name: string;
+  description: string;
+  slots: ItemSlot[];
+}
+
 export interface Character {
   id: number;
   // Not sent to client. User shouldn't know that two different characters belong to the same account.
@@ -23,6 +30,7 @@ export interface Character {
   name: string;
   pronouns: Pronouns;
   genitals: Genitals;
+  wearables: WearableItemOnCharacter[];
 }
 
 export interface Position {
@@ -170,6 +178,8 @@ export enum SceneStepType {
   CHOICE = "CHOICE",
   ABORT = "ABORT",
   VARIABLE = "VARIABLE",
+  USE_WEARABLE = "USE_WEARABLE",
+  REMOVE_WEARABLE = "REMOVE_WEARABLE",
 }
 
 export type SceneStep =
@@ -178,7 +188,9 @@ export type SceneStep =
   | SceneStepJump
   | SceneStepChoice
   | SceneStepAbort
-  | SceneStepVariable;
+  | SceneStepVariable
+  | SceneStepUseWearable
+  | SceneStepRemoveWearable;
 
 export interface SceneStepText {
   type: SceneStepType.TEXT;
@@ -215,6 +227,18 @@ export interface SceneStepVariable {
   type: SceneStepType.VARIABLE;
   name: string;
   value: ExpressionSource;
+}
+
+export interface SceneStepUseWearable {
+  type: SceneStepType.USE_WEARABLE;
+  itemsIds: number[];
+  fallbackLabel?: string;
+}
+
+export interface SceneStepRemoveWearable {
+  type: SceneStepType.REMOVE_WEARABLE;
+  slots: ItemSlot[];
+  fallbackLabel?: string;
 }
 
 export interface SceneDefinition {

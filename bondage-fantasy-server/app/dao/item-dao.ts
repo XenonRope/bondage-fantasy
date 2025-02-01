@@ -11,6 +11,12 @@ export class ItemDao {
     return await this.getCollection().findOne({ id: itemId });
   }
 
+  async getManyByIds(itemIds: number[]): Promise<Item[]> {
+    return await this.getCollection()
+      .find({ id: { $in: itemIds } })
+      .toArray();
+  }
+
   async search(params: {
     query: string;
     characterId: number;

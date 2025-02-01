@@ -45,6 +45,7 @@ export const en: ResourceLanguage = {
     "error.unexpecterError": "Unexpected error",
     "error.errorMessage": 'Error code: {{code}}. Message: "{{message}}".',
     "error.somethingWentWrong": "Something went wrong...",
+    "error.item.atLeastOneSlotRequired": "At least one slot is required",
     "accountRegistration.createAccount": "Create account",
     "accountRegistration.usernameTooShort":
       "Username must have at least {{minLength}} characters",
@@ -107,6 +108,8 @@ export const en: ResourceLanguage = {
     "scene.type.VARIABLE": "Variable",
     "scene.type.CHOICE": "Choice",
     "scene.type.ABORT": "Abort",
+    "scene.type.USE_WEARABLE": "Use wearable",
+    "scene.type.REMOVE_WEARABLE": "Remove wearable",
     "item.createNewItem": "Create new item",
     "item.modifyItem": "Modify item",
     "item.createItem": "Create item",

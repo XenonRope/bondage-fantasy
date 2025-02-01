@@ -123,7 +123,7 @@ export class ZoneService {
       if (params.zoneId == null) {
         await this.zoneDao.insert(newZone);
       } else {
-        await this.zoneDao.replace(newZone);
+        await this.zoneDao.update(newZone);
       }
     });
   }
@@ -155,7 +155,7 @@ export class ZoneService {
           characterId: params.characterId,
         });
 
-        await this.zoneDao.replace(zone);
+        await this.zoneDao.update(zone);
       },
     );
   }
@@ -206,7 +206,7 @@ export class ZoneService {
             object.characterId !== params.characterId,
         );
 
-        await this.zoneDao.replace(zone);
+        await this.zoneDao.update(zone);
       },
     );
   }
@@ -258,7 +258,7 @@ export class ZoneService {
 
         characterObject.position = params.destination;
 
-        await this.zoneDao.replace(zone);
+        await this.zoneDao.update(zone);
       },
     );
   }

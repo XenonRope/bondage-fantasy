@@ -41,6 +41,10 @@ export class CharacterDao {
     await this.getCollection().insertOne(character);
   }
 
+  async update(character: Character): Promise<void> {
+    await this.getCollection().replaceOne({ id: character.id }, character);
+  }
+
   private getCollection(): Collection<Character> {
     return this.db.collection("characters");
   }

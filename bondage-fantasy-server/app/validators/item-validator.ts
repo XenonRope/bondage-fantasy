@@ -30,7 +30,7 @@ export const itemSaveRequestValidator = vine.compile(
         }),
         vine.group.if((data) => data.type === ItemType.WEARABLE, {
           type: vine.literal(ItemType.WEARABLE),
-          slots: vine.array(vine.enum(ItemSlot)).distinct(),
+          slots: vine.array(vine.enum(ItemSlot)).distinct().minLength(1),
         }),
       ]),
     ),

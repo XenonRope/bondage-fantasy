@@ -1,5 +1,6 @@
 import vine from "@vinejs/vine";
 import {
+  ItemSlot,
   SCENE_CHOICE_OPTION_NAME_MAX_LENGTH,
   SCENE_CHOICE_OPTION_NAME_MIN_LENGTH,
   SCENE_LABEL_MAX_LENGTH,
@@ -68,6 +69,19 @@ export const sceneStepVariable = vine.object({
   value: expressionSource,
 });
 
+export const sceneStepUseWearable = vine.object({
+  type: vine.literal(SceneStepType.USE_WEARABLE),
+  itemsIds: vine
+    .array(vine.number().withoutDecimals())
+    .minLength(1)
+    .maxLength(Object.keys(ItemSlot).length),
+});
+
+export const sceneStepRemoveWearable = vine.object({
+  type: vine.literal(SceneStepType.REMOVE_WEARABLE),
+  slots: vine.array(vine.enum(ItemSlot)).minLength(1).distinct(),
+});
+
 export const sceneStep = vine.union([
   vine.union.if(
     (value) => "type" in value && value.type === SceneStepType.TEXT,
@@ -92,6 +106,14 @@ export const sceneStep = vine.union([
   vine.union.if(
     (value) => "type" in value && value.type === SceneStepType.VARIABLE,
     sceneStepVariable,
+  ),
+  vine.union.if(
+    (value) => "type" in value && value.type === SceneStepType.USE_WEARABLE,
+    sceneStepUseWearable,
+  ),
+  vine.union.if(
+    (value) => "type" in value && value.type === SceneStepType.REMOVE_WEARABLE,
+    sceneStepRemoveWearable,
   ),
 ]);
 
