@@ -7,15 +7,14 @@ import {
   CharacterZoneVisionObject,
   EventZoneVisionObject,
   Field,
-  getVariables,
   ObjectType,
   parseExpression,
   ZoneObject,
   ZoneVision,
   ZoneVisionObject,
 } from "bondage-fantasy-common";
-import mustache from "mustache";
 import { ExpressionEvaluator } from "./expression-evaluator.js";
+import { TemplateRenderer } from "./template-renderer.js";
 
 @inject()
 export class ZoneVisionService {
@@ -23,6 +22,7 @@ export class ZoneVisionService {
     private zoneDao: ZoneDao,
     private characterDao: CharacterDao,
     private expressionEvaluator: ExpressionEvaluator,
+    private templateRenderer: TemplateRenderer,
   ) {}
 
   async tryGetZoneVision(characterId: number): Promise<ZoneVision | undefined> {
@@ -119,15 +119,8 @@ export class ZoneVisionService {
       throw new CharacterNotFoundException();
     }
 
-    try {
-      return mustache.render(
-        params.field.description,
-        getVariables({
-          character,
-        }),
-      );
-    } catch {
-      return "<ERROR>";
-    }
+    return this.templateRenderer.render(params.field.description, {
+      character,
+    });
   }
 }

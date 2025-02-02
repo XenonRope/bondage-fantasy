@@ -23,6 +23,7 @@ import CharacterService from "./character-service.js";
 import { ExpressionEvaluator } from "./expression-evaluator.js";
 import { SequenceService } from "./sequence-service.js";
 import { CharacterDao } from "#dao/character-dao";
+import { TemplateRenderer } from "./template-renderer.js";
 
 @inject()
 export class SceneService {
@@ -33,6 +34,7 @@ export class SceneService {
     private itemDao: ItemDao,
     private characterService: CharacterService,
     private characterDao: CharacterDao,
+    private templateRenderer: TemplateRenderer,
   ) {}
 
   async getByCharacterId(characterId: number): Promise<Scene> {
@@ -133,7 +135,9 @@ export class SceneService {
 
       const step = scene.definition.steps[scene.currentStep];
       if (step.type === SceneStepType.TEXT) {
-        scene.text = step.text;
+        scene.text = this.templateRenderer.render(step.text, {
+          character,
+        });
         return { characterChanged };
       } else if (step.type === SceneStepType.JUMP) {
         if (
