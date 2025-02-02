@@ -15,6 +15,7 @@ import {
   TextInput,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
+import { useDebouncedValue } from "@mantine/hooks";
 import {
   EXPRESSION_SOURCE_MAX_LENGTH,
   ItemSlot,
@@ -42,11 +43,10 @@ import {
 import { useState } from "react";
 import { Translation, useTranslation } from "react-i18next";
 import { useItemsQuery } from "../utils/item-utils";
+import { DEFAULT_DEBOUNCE } from "../utils/utils";
 import { Validators } from "../utils/validators";
 import { ExpressionEditor } from "./expression-editor";
 import { TextTemplateEditor } from "./text-template-editor";
-import { DEFAULT_DEBOUNCE } from "../utils/utils";
-import { useDebouncedState, useDebouncedValue } from "@mantine/hooks";
 
 function TextStep({
   initialStep,
