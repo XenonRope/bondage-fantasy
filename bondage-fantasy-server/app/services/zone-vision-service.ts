@@ -7,10 +7,9 @@ import {
   CharacterZoneVisionObject,
   EventZoneVisionObject,
   Field,
-  Genitals,
+  getVariables,
   ObjectType,
   parseExpression,
-  Pronouns,
   ZoneObject,
   ZoneVision,
   ZoneVisionObject,
@@ -121,24 +120,12 @@ export class ZoneVisionService {
     }
 
     try {
-      return mustache.render(params.field.description, {
-        name: character.name,
-
-        // Genitals
-        hasVagina:
-          character.genitals === Genitals.VAGINA ||
-          character.genitals === Genitals.FUTA,
-        hasOnlyVagina: character.genitals === Genitals.VAGINA,
-        hasPenis:
-          character.genitals === Genitals.PENIS ||
-          character.genitals === Genitals.FUTA,
-        hasOnlyPenis: character.genitals === Genitals.PENIS,
-        isFuta: character.genitals === Genitals.FUTA,
-
-        // Pronouns
-        sheHer: character.pronouns === Pronouns.SHE_HER,
-        heHim: character.pronouns === Pronouns.HE_HIM,
-      });
+      return mustache.render(
+        params.field.description,
+        getVariables({
+          character,
+        }),
+      );
     } catch {
       return "<ERROR>";
     }

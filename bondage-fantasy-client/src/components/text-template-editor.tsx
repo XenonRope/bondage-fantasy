@@ -1,8 +1,9 @@
-import { CodeEditor } from "./code-editor";
 import { CompletionContext, CompletionResult } from "@codemirror/autocomplete";
 import { LanguageSupport, LRLanguage } from "@codemirror/language";
 import { parser } from "@grumptech/lezer-mustache";
+import { VARIABLES } from "bondage-fantasy-common";
 import { ReactNode } from "react";
+import { CodeEditor } from "./code-editor";
 
 function prepareLanguage() {
   function autocomplete(context: CompletionContext): CompletionResult | null {
@@ -12,16 +13,7 @@ function prepareLanguage() {
     }
     return {
       from: ["#", "/"].includes(word.text[2]) ? word.from + 3 : word.from + 2,
-      options: [
-        { label: "name" },
-        { label: "hasVagina" },
-        { label: "hasOnlyVagina" },
-        { label: "hasPenis" },
-        { label: "hasOnlyPenis" },
-        { label: "isFuta" },
-        { label: "sheHer" },
-        { label: "heHim" },
-      ],
+      options: VARIABLES.map((variable) => ({ label: variable })),
     };
   }
 
