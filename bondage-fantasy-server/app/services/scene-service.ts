@@ -16,6 +16,7 @@ import {
   SceneStepChoice,
   SceneStepType,
   WearableItemOnCharacter,
+  Zone,
 } from "bondage-fantasy-common";
 import { SceneDao } from "../dao/scene-dao.js";
 import CharacterService from "./character-service.js";
@@ -52,14 +53,15 @@ export class SceneService {
 
   async create(params: {
     characterId: number;
-    zoneId: number;
+    zone: Zone;
     definition: SceneDefinition;
   }): Promise<void> {
     const id = await this.sequenceService.nextSequence(SequenceCode.SCENE);
     const scene: Scene = {
       id,
+      ownerCharacterId: params.zone.ownerCharacterId,
       characterId: params.characterId,
-      zoneId: params.zoneId,
+      zoneId: params.zone.id,
       definition: params.definition,
       currentStep: -1,
       text: "",
@@ -171,6 +173,9 @@ export class SceneService {
           await this.itemDao.getManyByIds(step.itemsIds)
         )
           .filter((wearable) => wearable.type === ItemType.WEARABLE)
+          .filter(
+            (wearable) => wearable.ownerCharacterId === scene.ownerCharacterId,
+          )
           .map((wearable) => ({
             itemId: wearable.id,
             name: wearable.name,

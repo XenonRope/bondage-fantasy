@@ -312,7 +312,7 @@ export class ZoneService {
 
         await this.sceneService.create({
           characterId: params.characterId,
-          zoneId: zoneId,
+          zone,
           definition: event.scene,
         });
       },
