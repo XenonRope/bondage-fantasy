@@ -7,12 +7,14 @@ import { CodeEditor } from "./code-editor";
 
 function prepareLanguage() {
   function autocomplete(context: CompletionContext): CompletionResult | null {
-    const word = context.matchBefore(/{{[#/]?[a-zA-Z]*/);
+    const word = context.matchBefore(/{{[#/^]?[a-zA-Z_]*/);
     if (word == null) {
       return null;
     }
     return {
-      from: ["#", "/"].includes(word.text[2]) ? word.from + 3 : word.from + 2,
+      from: ["#", "/", "^"].includes(word.text[2])
+        ? word.from + 3
+        : word.from + 2,
       options: VARIABLES.map((variable) => ({ label: variable })),
     };
   }
