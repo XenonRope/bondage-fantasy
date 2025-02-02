@@ -266,12 +266,13 @@ export interface Scene {
   variables: Record<string, string>;
 }
 
+// Order is important. Slots in client are sorted by this enum.
 export enum ItemSlot {
+  EYES = "EYES",
+  MOUTH = "MOUTH",
   ARMS = "ARMS",
   LEGS = "LEGS",
   FEET = "FEET",
-  MOUTH = "MOUTH",
-  EYES = "EYES",
 }
 
 export type Item = StorableItem | WearableItem;

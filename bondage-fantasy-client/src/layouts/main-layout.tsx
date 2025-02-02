@@ -1,12 +1,20 @@
-import { LanguagePicker } from "../components/language-picker";
-import { errorService } from "../services/error-service";
-import { sessionService } from "../services/session-service";
-import { useAppStore } from "../store";
-import { Anchor, AppShell, Burger, Group, NavLink } from "@mantine/core";
+import {
+  Anchor,
+  AppShell,
+  Burger,
+  Divider,
+  Group,
+  NavLink,
+} from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { useMutation } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { Outlet, useNavigate } from "react-router";
+import { CharacterWearables } from "../components/character-wearables";
+import { LanguagePicker } from "../components/language-picker";
+import { errorService } from "../services/error-service";
+import { sessionService } from "../services/session-service";
+import { useAppStore } from "../store";
 
 export function MainLayout(props: { fixedHeight?: boolean }) {
   const { t } = useTranslation();
@@ -106,6 +114,12 @@ export function MainLayout(props: { fixedHeight?: boolean }) {
             onClick={() => navigate("/characters")}
             label={t("navbar.characters")}
           />
+        )}
+        {character && (
+          <div>
+            <Divider my="md" />
+            <CharacterWearables character={character} />
+          </div>
         )}
       </AppShell.Navbar>
       <AppShell.Main h={props.fixedHeight ? "100dvh" : undefined}>

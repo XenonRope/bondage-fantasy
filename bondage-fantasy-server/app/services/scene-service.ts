@@ -201,8 +201,9 @@ export class SceneService {
         character.wearables.push(...wearablesToAdd);
         characterChanged = true;
       } else if (step.type === SceneStepType.REMOVE_WEARABLE) {
-        character.wearables = character.wearables.filter((wearable) =>
-          wearable.slots.some((slot) => step.slots.includes(slot)),
+        character.wearables = character.wearables.filter(
+          (wearable) =>
+            !wearable.slots.some((slot) => step.slots.includes(slot)),
         );
         characterChanged = true;
       }
