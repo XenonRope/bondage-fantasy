@@ -60,15 +60,15 @@ export default class ItemController {
   }
 
   async search(ctx: HttpContext): Promise<ItemSearchResponse> {
-    const { query, offset, limit } = await ctx.request.validateUsing(
-      itemSearchRequestValidator,
-    );
+    const { query, offset, limit, includeItemsIds } =
+      await ctx.request.validateUsing(itemSearchRequestValidator);
     const characterId = await getCharacterId(ctx);
     const { items, total } = await this.itemDao.search({
       query,
       characterId,
       offset,
       limit,
+      includeItemsIds,
     });
     return {
       items: items.map((item) => ({

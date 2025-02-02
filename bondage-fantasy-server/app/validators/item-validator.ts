@@ -43,6 +43,10 @@ export const itemSearchRequestValidator = vine.compile(
       .minLength(ITEM_SEARCH_QUERY_MIN_LENGTH)
       .maxLength(ITEM_SEARCH_QUERY_MAX_LENGTH),
     offset: vine.number().withoutDecimals().min(0),
-    limit: vine.number().withoutDecimals().min(0),
+    limit: vine.number().withoutDecimals().min(0).max(1000),
+    includeItemsIds: vine
+      .array(vine.number().withoutDecimals())
+      .maxLength(1000)
+      .optional(),
   }),
 );

@@ -22,9 +22,13 @@ export class ItemDao {
     characterId: number;
     offset: number;
     limit: number;
+    includeItemsIds?: number[];
   }): Promise<{ items: Item[]; total: number }> {
     const filter: Filter<Item> = {
-      name: { $regex: escapeRegex(params.query), $options: "i" },
+      $or: [
+        { name: { $regex: escapeRegex(params.query), $options: "i" } },
+        { id: { $in: params.includeItemsIds ?? [] } },
+      ],
       ownerCharacterId: params.characterId,
     };
     const items = await this.getCollection()

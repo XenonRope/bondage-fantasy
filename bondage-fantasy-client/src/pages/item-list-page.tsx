@@ -15,6 +15,8 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import { useItemsQuery } from "../utils/item-utils";
+import { useDebouncedCallback } from "@mantine/hooks";
+import { DEFAULT_DEBOUNCE } from "../utils/utils";
 
 const PAGE_SIZE = 24;
 
@@ -25,7 +27,13 @@ export function ItemListPage() {
     query: "",
     page: 1,
   });
-  const searchResult = useItemsQuery({ ...filter, pageSize: PAGE_SIZE });
+  const setQuery = useDebouncedCallback((query: string) => {
+    setFilter((filter) => ({ ...filter, query, page: 1 }));
+  }, DEFAULT_DEBOUNCE);
+  const searchResult = useItemsQuery(
+    { ...filter, pageSize: PAGE_SIZE },
+    { keepPreviousData: true },
+  );
 
   return (
     <div>
@@ -35,9 +43,7 @@ export function ItemListPage() {
             label={t("common.search")}
             className="w-80"
             maxLength={ITEM_SEARCH_QUERY_MAX_LENGTH}
-            onChange={(event) =>
-              setFilter({ query: event.currentTarget.value, page: 1 })
-            }
+            onChange={(event) => setQuery(event.currentTarget.value)}
           />
           <Button
             className="shrink-0 ml-4"

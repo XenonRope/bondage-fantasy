@@ -87,6 +87,7 @@ export interface ItemSearchRequest {
   query: string;
   offset: number;
   limit: number;
+  includeItemsIds?: number[];
 }
 
 export interface ItemSearchResponse {

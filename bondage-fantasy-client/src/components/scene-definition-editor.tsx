@@ -45,6 +45,8 @@ import { useItemsQuery } from "../utils/item-utils";
 import { Validators } from "../utils/validators";
 import { ExpressionEditor } from "./expression-editor";
 import { TextTemplateEditor } from "./text-template-editor";
+import { DEFAULT_DEBOUNCE } from "../utils/utils";
+import { useDebouncedState, useDebouncedValue } from "@mantine/hooks";
 
 function TextStep({
   initialStep,
@@ -379,11 +381,10 @@ function UseWearableStep({
   onConfirm: (step: SceneStep) => void;
 }) {
   const [itemSearchValue, setItemSearchValue] = useState("");
-  const items = useItemsQuery({
-    query: itemSearchValue,
-    page: 1,
-    pageSize: 20,
-  });
+  const [itemSearchValueDebounced] = useDebouncedValue(
+    itemSearchValue,
+    DEFAULT_DEBOUNCE,
+  );
   const form = useForm({
     initialValues: {
       itemsIds: initialStep?.itemsIds.map((item) => item.toString()) ?? [],
@@ -403,6 +404,17 @@ function UseWearableStep({
           : null,
     },
   });
+  const items = useItemsQuery(
+    {
+      query: itemSearchValueDebounced,
+      page: 1,
+      pageSize: 20 + form.getValues().itemsIds.length,
+      includeItemsIds: form
+        .getValues()
+        .itemsIds.map((itemId) => parseInt(itemId)),
+    },
+    { keepPreviousData: true },
+  );
 
   function handleConfirm() {
     form.onSubmit((values) => {
@@ -414,21 +426,8 @@ function UseWearableStep({
     })();
   }
 
-  function getFilteredItems() {
-    let filteredItems = (items.data?.items ?? []).map((item) => ({
-      value: item.id.toString(),
-      label: item.name,
-    }));
-    filteredItems = filteredItems.filter(
-      (item) => !form.getValues().itemsIds.includes(item.value),
-    );
-    filteredItems.push(
-      ...form.getValues().itemsIds.map((itemId) => ({
-        value: itemId,
-        label: itemId,
-      })),
-    );
-    return filteredItems;
+  if (items.data == null) {
+    return <></>;
   }
 
   return (
@@ -440,7 +439,10 @@ function UseWearableStep({
         searchable
         searchValue={itemSearchValue}
         onSearchChange={setItemSearchValue}
-        data={getFilteredItems()}
+        data={items.data?.items.map((item) => ({
+          value: item.id.toString(),
+          label: item.name,
+        }))}
         hidePickedOptions
       />
       <TextInput
