@@ -19,7 +19,7 @@ class ZoneApi {
     return await httpClient.post("zones/search", request);
   }
 
-  async save(request: ZoneSaveRequest): Promise<SessionData> {
+  async save(request: ZoneSaveRequest): Promise<Zone> {
     return await httpClient.post("zones", request);
   }
 

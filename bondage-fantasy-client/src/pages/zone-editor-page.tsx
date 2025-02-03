@@ -52,7 +52,7 @@ import { ZoneMap } from "../components/zone-map";
 import { ZoneObjectList } from "../components/zone-object-list";
 import { errorService } from "../services/error-service";
 import { notificationService } from "../services/notification-service";
-import { useAppStore } from "../store";
+import { sessionService } from "../services/session-service";
 import { Validators } from "../utils/validators";
 
 interface ZoneFormField {
@@ -176,15 +176,23 @@ export function ZoneEditorPage() {
   const [selectedField, setSelectedField] = useState<FieldKey>();
   const [selectedConnection, setSelectedConnection] =
     useState<FieldConnectionKey>();
+  const { zoneId } = useParams();
   const saveZone = useMutation({
     mutationFn: async (request: ZoneSaveRequest) => {
-      const sessionData = await zoneApi.save(request);
-      useAppStore.getState().updateSessionData(sessionData);
+      return await zoneApi.save(request);
     },
-    onSuccess: () => navigate("/zones"),
+    onSuccess: async (savedZone) => {
+      notificationService.success(
+        null,
+        zoneId ? t("zoneCreation.zoneSaved") : t("zoneCreation.zoneCreated"),
+      );
+      await sessionService.refreshSession();
+      if (!zoneId) {
+        navigate(`/zone/${savedZone.id}/edit`);
+      }
+    },
     onError: (error) => errorService.handleUnexpectedError(error),
   });
-  const { zoneId } = useParams();
   const zone = useQuery({
     queryKey: ["zone", zoneId, uniqueId],
     queryFn: async () =>
@@ -574,7 +582,7 @@ export function ZoneEditorPage() {
         />
         <div className="mt-4">
           {zoneId && (
-            <Button onClick={submitForm}>{t("zoneCreation.modifyZone")}</Button>
+            <Button onClick={submitForm}>{t("zoneCreation.saveZone")}</Button>
           )}
           {!zoneId && (
             <Button onClick={submitForm}>{t("zoneCreation.createZone")}</Button>

@@ -83,7 +83,7 @@ export class ZoneService {
     fields: Field[];
     connections: FieldConnection[];
     objects: ZoneObject[];
-  }): Promise<void> {
+  }): Promise<Zone> {
     this.validateFields(params.fields);
     this.validateConnections(params.connections, params.fields);
     this.validateEntrance(params.entrance, params.fields);
@@ -93,7 +93,7 @@ export class ZoneService {
       params.zoneId == null
         ? [LOCKS.character(params.characterId)]
         : [LOCKS.character(params.characterId), LOCKS.zone(params.zoneId)];
-    await lockService.run(locks, "1s", async () => {
+    return await lockService.run(locks, "1s", async () => {
       const zone =
         params.zoneId == null
           ? undefined
@@ -128,6 +128,8 @@ export class ZoneService {
       } else {
         await this.zoneDao.update(newZone);
       }
+
+      return newZone;
     });
   }
 

@@ -1,7 +1,15 @@
 import { notifications } from "@mantine/notifications";
 
 class NotificationService {
-  error(title: string, message: string): void {
+  success(title: string | null, message: string): void {
+    notifications.show({
+      title,
+      message,
+      color: "green",
+    });
+  }
+
+  error(title: string | null, message: string): void {
     notifications.show({
       title,
       message,

@@ -66,7 +66,9 @@ export const pl: ResourceLanguage = {
     "characterCreation.createCharacter": "Stwórz postać",
     "characterList.createNewCharacter": "Stwórz nową postać",
     "zoneCreation.createZone": "Stwórz strefę",
-    "zoneCreation.modifyZone": "Modyfikuj strefę",
+    "zoneCreation.zoneCreated": "Strefa została stworzona",
+    "zoneCreation.saveZone": "Zapisz strefę",
+    "zoneCreation.zoneSaved": "Strefa została zapisana",
     "zoneCreation.removeField": "Usuń pole",
     "zoneCreation.allowToLeaveZoneOnThisField":
       "Pozwól opuścić strefę na tym polu",

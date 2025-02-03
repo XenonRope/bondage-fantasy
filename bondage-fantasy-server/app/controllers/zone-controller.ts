@@ -61,7 +61,7 @@ export default class ZoneController {
     return zoneDto(zone);
   }
 
-  async save(ctx: HttpContext): Promise<SessionData> {
+  async save(ctx: HttpContext): Promise<Zone> {
     const characterId = await getCharacterId(ctx);
     const {
       zoneId,
@@ -74,7 +74,7 @@ export default class ZoneController {
       objects,
     } = await ctx.request.validateUsing(zoneSaveRequestValidator);
 
-    await this.zoneService.save({
+    const zone = await this.zoneService.save({
       zoneId,
       characterId,
       name,
@@ -86,12 +86,7 @@ export default class ZoneController {
       objects,
     });
 
-    return sessionDataDto(
-      await this.sessionService.getSessionData({
-        account: ctx.auth.user?.id,
-        characterId,
-      }),
-    );
+    return zoneDto(zone);
   }
 
   async join(ctx: HttpContext): Promise<SessionData> {

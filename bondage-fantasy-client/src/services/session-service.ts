@@ -7,10 +7,7 @@ import { LoginRequest } from "bondage-fantasy-common";
 export class SessionService {
   async refreshSession(): Promise<void> {
     try {
-      const characterId = characterService.getDefaultCharacter();
-      const sessionData = await sessionApi.getSessionData({
-        characterId,
-      });
+      const sessionData = await sessionApi.getSessionData();
       useAppStore.getState().updateSessionData(sessionData);
     } catch (error) {
       errorService.handleUnexpectedError(error);
