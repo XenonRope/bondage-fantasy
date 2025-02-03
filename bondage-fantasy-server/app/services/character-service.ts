@@ -53,6 +53,7 @@ export default class CharacterService {
           pronouns: params.pronouns,
           genitals: params.genitals,
           wearables: [],
+          inventory: [],
         };
 
         await this.characterDao.insert(character);
