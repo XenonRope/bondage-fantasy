@@ -15,6 +15,7 @@ export const VARIABLES = [
   "HE_HIM",
   ...Object.values(ItemSlot).map((slot) => `${slot}_ITEM_ID`),
   ...Object.values(ItemSlot).map((slot) => `${slot}_ITEM_NAME`),
+  "ITEM_<id>_COUNT",
 ];
 
 export function getCharacterVariables(
@@ -40,6 +41,12 @@ export function getCharacterVariables(
     };
   }, {});
 
+  const itemCounts = character.inventory.reduce((acc, item) => {
+    return {
+      ...acc,
+      [`ITEM_${item.itemId}_COUNT`]: item.count.toString(),
+    };
+  }, {});
   return {
     NAME: character.name,
     HAS_VAGINA: getBooleanVariable(
@@ -57,6 +64,7 @@ export function getCharacterVariables(
     HE_HIM: getBooleanVariable(character.pronouns === Pronouns.HE_HIM),
     ...itemIds,
     ...itemNames,
+    ...itemCounts,
   };
 }
 
