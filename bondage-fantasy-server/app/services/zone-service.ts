@@ -21,6 +21,7 @@ import {
   FieldConnection,
   findConnectionByConnectionKey,
   findFieldByPosition,
+  getCharacterVariables,
   getFieldConnectionKey,
   getFieldKey,
   hasDuplicates,
@@ -33,6 +34,7 @@ import lockService, { LOCKS } from "./lock-service.js";
 import { SequenceService } from "./sequence-service.js";
 import { ExpressionEvaluator } from "./expression-evaluator.js";
 import { SceneService } from "./scene-service.js";
+import CharacterService from "./character-service.js";
 
 @inject()
 export class ZoneService {
@@ -41,6 +43,7 @@ export class ZoneService {
     private sequenceService: SequenceService,
     private expressionEvaluator: ExpressionEvaluator,
     private sceneService: SceneService,
+    private characterService: CharacterService,
   ) {}
 
   async get(
@@ -293,6 +296,9 @@ export class ZoneService {
         if (characterObject == null) {
           throw new CharacterNotInZoneException();
         }
+        const character = await this.characterService.getById(
+          params.characterId,
+        );
 
         const event = zone.objects.find(
           (object): object is EventObject =>
@@ -302,7 +308,10 @@ export class ZoneService {
         if (
           event == null ||
           (event.condition != null &&
-            !this.expressionEvaluator.evaluateAsBoolean(event.condition))
+            !this.expressionEvaluator.evaluateAsBoolean(
+              event.condition,
+              getCharacterVariables(character),
+            ))
         ) {
           throw new EventNotFoundException(params.eventId);
         }
@@ -311,7 +320,7 @@ export class ZoneService {
         }
 
         await this.sceneService.create({
-          characterId: params.characterId,
+          character,
           zone,
           definition: event.scene,
         });

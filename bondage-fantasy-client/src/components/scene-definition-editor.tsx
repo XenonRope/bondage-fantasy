@@ -174,7 +174,7 @@ function JumpStep({
         <ExpressionEditor
           {...form.getInputProps("condition")}
           key={form.key("condition")}
-          label={<Translation>{(t) => t("scene.condition")}</Translation>}
+          label={<Translation>{(t) => t("common.condition")}</Translation>}
           maxLength={EXPRESSION_SOURCE_MAX_LENGTH}
           className="mt-2"
         />
@@ -346,7 +346,7 @@ function ChoiceStep({
           {form.getValues().options[index].showConditionally && (
             <ExpressionEditor
               {...form.getInputProps(`options.${index}.condition`)}
-              label={<Translation>{(t) => t("scene.condition")}</Translation>}
+              label={<Translation>{(t) => t("common.condition")}</Translation>}
               maxLength={EXPRESSION_SOURCE_MAX_LENGTH}
               className="mt-2"
             />

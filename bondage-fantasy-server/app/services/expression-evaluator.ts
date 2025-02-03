@@ -1,110 +1,125 @@
 import { inject } from "@adonisjs/core";
-import { Expression, Operator } from "bondage-fantasy-common";
-
-const TRUE = "TRUE";
-const FALSE = "FALSE";
+import { Expression, FALSE, Operator, TRUE } from "bondage-fantasy-common";
+import { TemplateRenderer } from "./template-renderer.js";
 
 @inject()
 export class ExpressionEvaluator {
-  evaluateAsBoolean(expression: Expression): boolean {
-    return this.evaluate(expression) === TRUE;
+  constructor(private templateRenderer: TemplateRenderer) {}
+
+  evaluateAsBoolean(
+    expression: Expression,
+    variables: Record<string, string>,
+  ): boolean {
+    return this.evaluate(expression, variables) === TRUE;
   }
 
-  evaluateAsNumber(expression: Expression): number {
-    return parseFloat(this.evaluate(expression));
+  evaluateAsNumber(
+    expression: Expression,
+    variables: Record<string, string>,
+  ): number {
+    return parseFloat(this.evaluate(expression, variables));
   }
 
-  evaluate(expression: Expression): string {
+  evaluate(expression: Expression, variables: Record<string, string>): string {
     if (typeof expression === "string") {
       return expression;
     }
 
     switch (expression.operator) {
       case Operator.EQUAL:
-        return this.evaluate(expression.arguments[0]) ===
-          this.evaluate(expression.arguments[1])
+        return this.evaluate(expression.arguments[0], variables) ===
+          this.evaluate(expression.arguments[1], variables)
           ? TRUE
           : FALSE;
       case Operator.NOT_EQUAL:
-        return this.evaluate(expression.arguments[0]) !==
-          this.evaluate(expression.arguments[1])
+        return this.evaluate(expression.arguments[0], variables) !==
+          this.evaluate(expression.arguments[1], variables)
           ? TRUE
           : FALSE;
       case Operator.GREATER_THAN:
-        return this.evaluateAsNumber(expression.arguments[0]) >
-          this.evaluateAsNumber(expression.arguments[1])
+        return this.evaluateAsNumber(expression.arguments[0], variables) >
+          this.evaluateAsNumber(expression.arguments[1], variables)
           ? TRUE
           : FALSE;
       case Operator.GREATER_THAN_OR_EQUAL:
-        return this.evaluateAsNumber(expression.arguments[0]) >=
-          this.evaluateAsNumber(expression.arguments[1])
+        return this.evaluateAsNumber(expression.arguments[0], variables) >=
+          this.evaluateAsNumber(expression.arguments[1], variables)
           ? TRUE
           : FALSE;
       case Operator.LESS_THAN:
-        return this.evaluateAsNumber(expression.arguments[0]) <
-          this.evaluateAsNumber(expression.arguments[1])
+        return this.evaluateAsNumber(expression.arguments[0], variables) <
+          this.evaluateAsNumber(expression.arguments[1], variables)
           ? TRUE
           : FALSE;
       case Operator.LESS_THAN_OR_EQUAL:
-        return this.evaluateAsNumber(expression.arguments[0]) <=
-          this.evaluateAsNumber(expression.arguments[1])
+        return this.evaluateAsNumber(expression.arguments[0], variables) <=
+          this.evaluateAsNumber(expression.arguments[1], variables)
           ? TRUE
           : FALSE;
       case Operator.NOT:
-        return !this.evaluateAsBoolean(expression.arguments[0]) ? TRUE : FALSE;
+        return !this.evaluateAsBoolean(expression.arguments[0], variables)
+          ? TRUE
+          : FALSE;
       case Operator.AND:
-        return this.evaluateAsBoolean(expression.arguments[0]) &&
-          this.evaluateAsBoolean(expression.arguments[1])
+        return this.evaluateAsBoolean(expression.arguments[0], variables) &&
+          this.evaluateAsBoolean(expression.arguments[1], variables)
           ? TRUE
           : FALSE;
       case Operator.OR:
-        return this.evaluateAsBoolean(expression.arguments[0]) ||
-          this.evaluateAsBoolean(expression.arguments[1])
+        return this.evaluateAsBoolean(expression.arguments[0], variables) ||
+          this.evaluateAsBoolean(expression.arguments[1], variables)
           ? TRUE
           : FALSE;
       case Operator.XOR:
-        return (this.evaluateAsBoolean(expression.arguments[0]) ? 1 : 0) ^
-          (this.evaluateAsBoolean(expression.arguments[1]) ? 1 : 0)
+        return (this.evaluateAsBoolean(expression.arguments[0], variables)
+          ? 1
+          : 0) ^
+          (this.evaluateAsBoolean(expression.arguments[1], variables) ? 1 : 0)
           ? TRUE
           : FALSE;
       case Operator.ADD:
         return (
-          this.evaluateAsNumber(expression.arguments[0]) +
-          this.evaluateAsNumber(expression.arguments[1])
+          this.evaluateAsNumber(expression.arguments[0], variables) +
+          this.evaluateAsNumber(expression.arguments[1], variables)
         ).toString();
       case Operator.SUBTRACT:
         return (
-          this.evaluateAsNumber(expression.arguments[0]) -
-          this.evaluateAsNumber(expression.arguments[1])
+          this.evaluateAsNumber(expression.arguments[0], variables) -
+          this.evaluateAsNumber(expression.arguments[1], variables)
         ).toString();
       case Operator.MULTIPLY:
         return (
-          this.evaluateAsNumber(expression.arguments[0]) *
-          this.evaluateAsNumber(expression.arguments[1])
+          this.evaluateAsNumber(expression.arguments[0], variables) *
+          this.evaluateAsNumber(expression.arguments[1], variables)
         ).toString();
       case Operator.DIVIDE:
         return (
-          this.evaluateAsNumber(expression.arguments[0]) /
-          this.evaluateAsNumber(expression.arguments[1])
+          this.evaluateAsNumber(expression.arguments[0], variables) /
+          this.evaluateAsNumber(expression.arguments[1], variables)
         ).toString();
       case Operator.MODULO:
         return (
-          this.evaluateAsNumber(expression.arguments[0]) %
-          this.evaluateAsNumber(expression.arguments[1])
+          this.evaluateAsNumber(expression.arguments[0], variables) %
+          this.evaluateAsNumber(expression.arguments[1], variables)
         ).toString();
       case Operator.CONCATENATE:
         return (
-          this.evaluate(expression.arguments[0]) +
-          this.evaluate(expression.arguments[1])
+          this.evaluate(expression.arguments[0], variables) +
+          this.evaluate(expression.arguments[1], variables)
         );
       case Operator.VARIABLE:
-        throw new Error("Not implemented");
+        return (
+          variables[this.evaluate(expression.arguments[0], variables)] ?? ""
+        );
       case Operator.INTERPOLATE:
-        throw new Error("Not implemented");
+        return this.templateRenderer.render(
+          this.evaluate(expression.arguments[0], variables),
+          variables,
+        );
       case Operator.IF_ELSE:
-        return this.evaluateAsBoolean(expression.arguments[0])
-          ? this.evaluate(expression.arguments[1])
-          : this.evaluate(expression.arguments[2]);
+        return this.evaluateAsBoolean(expression.arguments[0], variables)
+          ? this.evaluate(expression.arguments[1], variables)
+          : this.evaluate(expression.arguments[2], variables);
     }
   }
 }

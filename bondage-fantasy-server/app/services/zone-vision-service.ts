@@ -1,12 +1,13 @@
 import { CharacterDao } from "#dao/character-dao";
 import { ZoneDao } from "#dao/zone-dao";
-import { CharacterNotFoundException } from "#exceptions/exceptions";
 import { inject } from "@adonisjs/core";
 import {
   arePositionsEqual,
+  Character,
   CharacterZoneVisionObject,
   EventZoneVisionObject,
   Field,
+  getCharacterVariables,
   ObjectType,
   parseExpression,
   ZoneObject,
@@ -25,8 +26,10 @@ export class ZoneVisionService {
     private templateRenderer: TemplateRenderer,
   ) {}
 
-  async tryGetZoneVision(characterId: number): Promise<ZoneVision | undefined> {
-    const zone = await this.zoneDao.getByCharacterObject(characterId);
+  async tryGetZoneVision(
+    character: Character,
+  ): Promise<ZoneVision | undefined> {
+    const zone = await this.zoneDao.getByCharacterObject(character.id);
     if (zone == null) {
       return undefined;
     }
@@ -34,18 +37,21 @@ export class ZoneVisionService {
     const characterObject = zone.objects.find(
       (object) =>
         object.type === ObjectType.CHARACTER &&
-        object.characterId === characterId,
+        object.characterId === character.id,
     )!;
     const objects = zone.objects.filter((object) =>
       arePositionsEqual(object.position, characterObject.position),
     );
-    const zoneVisionObjects = await this.mapObjectsToZoneVisionObjects(objects);
+    const zoneVisionObjects = await this.mapObjectsToZoneVisionObjects(
+      objects,
+      character,
+    );
     const currentField = zone.fields.find((field) =>
       arePositionsEqual(field.position, characterObject.position),
     )!;
     const currentFieldDescription = await this.renderFieldDescription({
       field: currentField,
-      characterId,
+      character,
     });
 
     return {
@@ -68,6 +74,7 @@ export class ZoneVisionService {
 
   async mapObjectsToZoneVisionObjects(
     objects: ZoneObject[],
+    character: Character,
   ): Promise<ZoneVisionObject[]> {
     const charactersIds = objects
       .filter((object) => object.type === ObjectType.CHARACTER)
@@ -77,7 +84,7 @@ export class ZoneVisionService {
     return objects
       .map((object) => {
         if (object.type === ObjectType.CHARACTER) {
-          const character: CharacterZoneVisionObject = {
+          const characterObject: CharacterZoneVisionObject = {
             type: ObjectType.CHARACTER,
             position: object.position,
             characterId: object.characterId,
@@ -86,14 +93,19 @@ export class ZoneVisionService {
                 (character) => character.id === object.characterId,
               )?.name ?? "",
           };
-          return character;
+          return characterObject;
         } else if (object.type === ObjectType.EVENT) {
           if (object.condition != null) {
             const [expression, error] = parseExpression(object.condition);
             if (error) {
               return null;
             }
-            if (!this.expressionEvaluator.evaluateAsBoolean(expression)) {
+            if (
+              !this.expressionEvaluator.evaluateAsBoolean(
+                expression,
+                getCharacterVariables(character),
+              )
+            ) {
               return null;
             }
           }
@@ -112,15 +124,11 @@ export class ZoneVisionService {
 
   private async renderFieldDescription(params: {
     field: Field;
-    characterId: number;
+    character: Character;
   }): Promise<string> {
-    const character = await this.characterDao.getById(params.characterId);
-    if (!character) {
-      throw new CharacterNotFoundException();
-    }
-
-    return this.templateRenderer.render(params.field.description, {
-      character,
-    });
+    return this.templateRenderer.render(
+      params.field.description,
+      getCharacterVariables(params.character),
+    );
   }
 }

@@ -1,3 +1,4 @@
+import { CharacterDao } from "#dao/character-dao";
 import { ItemDao } from "#dao/item-dao";
 import {
   CharacterNotInSceneException,
@@ -8,8 +9,11 @@ import { SequenceCode } from "#models/sequence-model";
 import { inject } from "@adonisjs/core";
 import {
   Character,
+  Expression,
+  getCharacterVariables,
   hasDuplicates,
   ItemType,
+  parseExpression,
   Scene,
   SCENE_EXECUTED_STEPS_MAX_COUNT,
   SceneDefinition,
@@ -19,10 +23,8 @@ import {
   Zone,
 } from "bondage-fantasy-common";
 import { SceneDao } from "../dao/scene-dao.js";
-import CharacterService from "./character-service.js";
 import { ExpressionEvaluator } from "./expression-evaluator.js";
 import { SequenceService } from "./sequence-service.js";
-import { CharacterDao } from "#dao/character-dao";
 import { TemplateRenderer } from "./template-renderer.js";
 
 @inject()
@@ -32,7 +34,6 @@ export class SceneService {
     private sceneDao: SceneDao,
     private sequenceService: SequenceService,
     private itemDao: ItemDao,
-    private characterService: CharacterService,
     private characterDao: CharacterDao,
     private templateRenderer: TemplateRenderer,
   ) {}
@@ -54,7 +55,7 @@ export class SceneService {
   }
 
   async create(params: {
-    characterId: number;
+    character: Character;
     zone: Zone;
     definition: SceneDefinition;
   }): Promise<void> {
@@ -62,19 +63,21 @@ export class SceneService {
     const scene: Scene = {
       id,
       ownerCharacterId: params.zone.ownerCharacterId,
-      characterId: params.characterId,
+      characterId: params.character.id,
       zoneId: params.zone.id,
       definition: params.definition,
       currentStep: -1,
       text: "",
       variables: {},
     };
-    const character = await this.characterService.getById(params.characterId);
 
-    const { characterChanged } = await this.continueScene(scene, character);
+    const { characterChanged } = await this.continueScene(
+      scene,
+      params.character,
+    );
 
     if (characterChanged) {
-      await this.characterDao.update(character);
+      await this.characterDao.update(params.character);
     }
     if (!this.isSceneEnded(scene)) {
       await this.sceneDao.insert(scene);
@@ -135,14 +138,18 @@ export class SceneService {
 
       const step = scene.definition.steps[scene.currentStep];
       if (step.type === SceneStepType.TEXT) {
-        scene.text = this.templateRenderer.render(step.text, {
-          character,
-        });
+        scene.text = this.templateRenderer.render(
+          step.text,
+          this.getVariables(scene, character),
+        );
         return { characterChanged };
       } else if (step.type === SceneStepType.JUMP) {
         if (
           step.condition == null ||
-          this.expressionEvaluator.evaluateAsBoolean(step.condition)
+          this.expressionEvaluator.evaluateAsBoolean(
+            this.parseExpression(step.condition),
+            this.getVariables(scene, character),
+          )
         ) {
           this.jumpToLabel(scene, step.label);
           executedStepsCount++;
@@ -157,7 +164,10 @@ export class SceneService {
           .filter(({ option }) => {
             return (
               option.condition == null ||
-              this.expressionEvaluator.evaluateAsBoolean(option.condition)
+              this.expressionEvaluator.evaluateAsBoolean(
+                this.parseExpression(option.condition),
+                this.getVariables(scene, character),
+              )
             );
           })
           .map(({ option, index }) => ({
@@ -170,7 +180,8 @@ export class SceneService {
         return { characterChanged };
       } else if (step.type === SceneStepType.VARIABLE) {
         scene.variables[step.name] = this.expressionEvaluator.evaluate(
-          step.value,
+          this.parseExpression(step.value),
+          this.getVariables(scene, character),
         );
       } else if (step.type === SceneStepType.USE_WEARABLE) {
         const wearablesToAdd: WearableItemOnCharacter[] = (
@@ -216,6 +227,24 @@ export class SceneService {
     }
 
     return { characterChanged };
+  }
+
+  private getVariables(
+    scene: Scene,
+    character: Character,
+  ): Record<string, string> {
+    return {
+      ...getCharacterVariables(character),
+      ...scene.variables,
+    };
+  }
+
+  private parseExpression(expressionSource: string): Expression {
+    const [expression, error] = parseExpression(expressionSource);
+    if (error) {
+      return "<ERROR>";
+    }
+    return expression;
   }
 
   private abort(scene: Scene): void {

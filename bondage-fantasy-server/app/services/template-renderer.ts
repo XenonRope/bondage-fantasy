@@ -1,17 +1,12 @@
 import { inject } from "@adonisjs/core";
-import { Character, getVariables, Template } from "bondage-fantasy-common";
+import { Template } from "bondage-fantasy-common";
 import mustache from "mustache";
 
 @inject()
 export class TemplateRenderer {
-  render(template: Template, params: { character: Character }): string {
+  render(template: Template, variables: Record<string, string>): string {
     try {
-      return mustache.render(
-        template,
-        getVariables({
-          character: params.character,
-        }),
-      );
+      return mustache.render(template, variables);
     } catch {
       return "<ERROR>";
     }

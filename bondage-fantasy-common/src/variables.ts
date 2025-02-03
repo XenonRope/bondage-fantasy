@@ -1,5 +1,9 @@
 import { Character, Genitals, ItemSlot, Pronouns } from "./model.js";
 
+export const TRUE = "TRUE";
+// Cannot use string "FALSE" because Mustache interprets non-empty strings as true
+export const FALSE = "";
+
 export const VARIABLES = [
   "NAME",
   "HAS_VAGINA",
@@ -13,9 +17,11 @@ export const VARIABLES = [
   ...Object.values(ItemSlot).map((slot) => `${slot}_ITEM_NAME`),
 ];
 
-export function getVariables(params: { character: Character }) {
+export function getCharacterVariables(
+  character: Character,
+): Record<string, string> {
   const itemIds = Object.values(ItemSlot).reduce((acc, slot) => {
-    const item = params.character.wearables.find((wearable) =>
+    const item = character.wearables.find((wearable) =>
       wearable.slots.includes(slot),
     );
     return {
@@ -25,7 +31,7 @@ export function getVariables(params: { character: Character }) {
   }, {});
 
   const itemNames = Object.values(ItemSlot).reduce((acc, slot) => {
-    const item = params.character.wearables.find((wearable) =>
+    const item = character.wearables.find((wearable) =>
       wearable.slots.includes(slot),
     );
     return {
@@ -35,19 +41,25 @@ export function getVariables(params: { character: Character }) {
   }, {});
 
   return {
-    NAME: params.character.name,
-    HAS_VAGINA:
-      params.character.genitals === Genitals.VAGINA ||
-      params.character.genitals === Genitals.FUTA,
-    HAS_ONLY_VAGINA: params.character.genitals === Genitals.VAGINA,
-    HAS_PENIS:
-      params.character.genitals === Genitals.PENIS ||
-      params.character.genitals === Genitals.FUTA,
-    HAS_ONLY_PENIS: params.character.genitals === Genitals.PENIS,
-    IS_FUTA: params.character.genitals === Genitals.FUTA,
-    SHE_HER: params.character.pronouns === Pronouns.SHE_HER,
-    HE_HIM: params.character.pronouns === Pronouns.HE_HIM,
+    NAME: character.name,
+    HAS_VAGINA: getBooleanVariable(
+      character.genitals === Genitals.VAGINA ||
+        character.genitals === Genitals.FUTA,
+    ),
+    HAS_ONLY_VAGINA: getBooleanVariable(character.genitals === Genitals.VAGINA),
+    HAS_PENIS: getBooleanVariable(
+      character.genitals === Genitals.PENIS ||
+        character.genitals === Genitals.FUTA,
+    ),
+    HAS_ONLY_PENIS: getBooleanVariable(character.genitals === Genitals.PENIS),
+    IS_FUTA: getBooleanVariable(character.genitals === Genitals.FUTA),
+    SHE_HER: getBooleanVariable(character.pronouns === Pronouns.SHE_HER),
+    HE_HIM: getBooleanVariable(character.pronouns === Pronouns.HE_HIM),
     ...itemIds,
     ...itemNames,
   };
+}
+
+function getBooleanVariable(value: boolean): string {
+  return value ? TRUE : FALSE;
 }

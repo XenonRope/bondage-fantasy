@@ -44,9 +44,7 @@ export class SessionService {
       };
     }
 
-    const zone = await this.zoneVisionService.tryGetZoneVision(
-      params.characterId,
-    );
+    const zone = await this.zoneVisionService.tryGetZoneVision(character);
     const scene = await this.sceneService.tryGetByCharacterId(character.id);
 
     return {
