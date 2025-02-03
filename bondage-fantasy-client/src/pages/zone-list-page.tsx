@@ -106,7 +106,7 @@ export function ZoneListPage() {
                       <ActionIcon
                         variant="transparent"
                         size="sm"
-                        onClick={() => navigate(`/zone/${zone.id}/edit`)}
+                        onClick={() => navigate(`/zones/${zone.id}/edit`)}
                       >
                         <FontAwesomeIcon icon={faGear} />
                       </ActionIcon>

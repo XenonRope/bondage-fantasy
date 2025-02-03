@@ -275,6 +275,9 @@ export class SceneService {
         count: 0,
       };
       character.inventory.push(itemInInventory);
+    } else {
+      itemInInventory.name = item.name;
+      itemInInventory.description = item.description;
     }
     itemInInventory.count += delta;
     if (itemInInventory.count > ITEM_IN_INVENTORY_STACK_MAX_COUNT) {

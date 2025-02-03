@@ -105,6 +105,12 @@ export function MainLayout(props: { fixedHeight?: boolean }) {
         )}
         {character && (
           <NavLink
+            onClick={() => navigate("/inventory")}
+            label={t("navbar.inventory")}
+          />
+        )}
+        {character && (
+          <NavLink
             onClick={() => navigate("/items")}
             label={t("navbar.items")}
           />

@@ -188,7 +188,7 @@ export function ZoneEditorPage() {
       );
       await sessionService.refreshSession();
       if (!zoneId) {
-        navigate(`/zone/${savedZone.id}/edit`);
+        navigate(`/zones/${savedZone.id}/edit`);
       }
     },
     onError: (error) => errorService.handleUnexpectedError(error),

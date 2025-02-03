@@ -32,6 +32,7 @@ export const pl: ResourceLanguage = {
     "navbar.zones": "Strefy",
     "navbar.explore": "Eksploruj",
     "navbar.items": "Przedmioty",
+    "navbar.inventory": "Ekwipunek",
     "pronouns.SHE_HER": "Ona/Jej",
     "pronouns.HE_HIM": "On/Jego",
     "genitals.VAGINA": "Wagina",

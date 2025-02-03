@@ -39,6 +39,7 @@ import buttonClasses from "./theme/Button.module.css";
 import { AuthRequired } from "./utils/auth-required";
 import { CharacterRequired } from "./utils/character-required";
 import { ZoneOrSceneRequired } from "./utils/zone-required";
+import { InventoryPage } from "./pages/inventory-page";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -118,6 +119,7 @@ function AppRouter() {
             <Route path="/items" element={<ItemListPage />} />
             <Route path="/new-item" element={<ItemEditorPage />} />
             <Route path="/items/:itemId/edit" element={<ItemEditorPage />} />
+            <Route path="/inventory" element={<InventoryPage />} />
           </Route>
         </Route>
       </Route>
@@ -128,7 +130,7 @@ function AppRouter() {
         <Route element={<AuthRequired />}>
           <Route element={<CharacterRequired />}>
             <Route path="/new-zone" element={<ZoneEditorPage />} />
-            <Route path="/zone/:zoneId/edit" element={<ZoneEditorPage />} />
+            <Route path="/zones/:zoneId/edit" element={<ZoneEditorPage />} />
             <Route element={<ZoneOrSceneRequired />}>
               <Route path="/explore" element={<ExplorePage />} />
             </Route>
