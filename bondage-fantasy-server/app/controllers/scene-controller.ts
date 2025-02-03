@@ -8,6 +8,7 @@ import { inject } from "@adonisjs/core";
 import { HttpContext } from "@adonisjs/core/http";
 import { SessionData } from "bondage-fantasy-common";
 import { getCharacterId } from "./utils.js";
+import { sessionDataDto } from "./dto.js";
 
 @inject()
 export default class SceneController {
@@ -46,10 +47,12 @@ export default class SceneController {
           await this.sceneService.update(scene);
         }
 
-        return await this.sessionService.getSessionData({
-          account: ctx.auth.user?.id,
-          characterId,
-        });
+        return sessionDataDto(
+          await this.sessionService.getSessionData({
+            account: ctx.auth.user?.id,
+            characterId,
+          }),
+        );
       },
     );
   }

@@ -10,6 +10,7 @@ import { Item, ItemSearchResponse, SessionData } from "bondage-fantasy-common";
 import { SessionService } from "#services/session-service";
 import { ItemDao } from "#dao/item-dao";
 import { ItemType } from "bondage-fantasy-common";
+import { itemDto, sessionDataDto } from "./dto.js";
 
 @inject()
 export default class ItemController {
@@ -42,21 +43,23 @@ export default class ItemController {
           },
     );
 
-    return await this.sessionService.getSessionData({
-      account: ctx.auth.user?.id,
-      characterId,
-    });
+    return sessionDataDto(
+      await this.sessionService.getSessionData({
+        account: ctx.auth.user?.id,
+        characterId,
+      }),
+    );
   }
 
   async getById(ctx: HttpContext): Promise<Item> {
     const itemId: number = ctx.params.id;
     const characterId = await getCharacterId(ctx);
 
-    const zone = await this.itemService.getById(itemId, {
+    const item = await this.itemService.getById(itemId, {
       checkAccessForCharacterId: characterId,
     });
 
-    return zone;
+    return itemDto(item);
   }
 
   async search(ctx: HttpContext): Promise<ItemSearchResponse> {

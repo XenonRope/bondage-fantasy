@@ -17,6 +17,7 @@ import {
   ZoneSearchResponse,
 } from "bondage-fantasy-common";
 import { getCharacterId } from "./utils.js";
+import { sessionDataDto, zoneDto } from "./dto.js";
 
 @inject()
 export default class ZoneController {
@@ -57,7 +58,7 @@ export default class ZoneController {
       checkAccessForCharacterId: characterId,
     });
 
-    return zone;
+    return zoneDto(zone);
   }
 
   async save(ctx: HttpContext): Promise<SessionData> {
@@ -85,10 +86,12 @@ export default class ZoneController {
       objects,
     });
 
-    return await this.sessionService.getSessionData({
-      account: ctx.auth.user?.id,
-      characterId,
-    });
+    return sessionDataDto(
+      await this.sessionService.getSessionData({
+        account: ctx.auth.user?.id,
+        characterId,
+      }),
+    );
   }
 
   async join(ctx: HttpContext): Promise<SessionData> {
@@ -99,10 +102,12 @@ export default class ZoneController {
 
     await this.zoneService.join({ characterId, zoneId });
 
-    return await this.sessionService.getSessionData({
-      account: ctx.auth.user?.id,
-      characterId,
-    });
+    return sessionDataDto(
+      await this.sessionService.getSessionData({
+        account: ctx.auth.user?.id,
+        characterId,
+      }),
+    );
   }
 
   async leave(ctx: HttpContext): Promise<SessionData> {
@@ -110,10 +115,12 @@ export default class ZoneController {
 
     await this.zoneService.leave({ characterId });
 
-    return await this.sessionService.getSessionData({
-      account: ctx.auth.user?.id,
-      characterId,
-    });
+    return sessionDataDto(
+      await this.sessionService.getSessionData({
+        account: ctx.auth.user?.id,
+        characterId,
+      }),
+    );
   }
 
   async move(ctx: HttpContext): Promise<SessionData> {
@@ -124,10 +131,12 @@ export default class ZoneController {
 
     await this.zoneService.move({ characterId, destination });
 
-    return await this.sessionService.getSessionData({
-      account: ctx.auth.user?.id,
-      characterId,
-    });
+    return sessionDataDto(
+      await this.sessionService.getSessionData({
+        account: ctx.auth.user?.id,
+        characterId,
+      }),
+    );
   }
 
   async interactWithEvent(ctx: HttpContext): Promise<SessionData> {
@@ -138,9 +147,11 @@ export default class ZoneController {
 
     await this.zoneService.interactWithEvent({ characterId, eventId });
 
-    return await this.sessionService.getSessionData({
-      account: ctx.auth.user?.id,
-      characterId,
-    });
+    return sessionDataDto(
+      await this.sessionService.getSessionData({
+        account: ctx.auth.user?.id,
+        characterId,
+      }),
+    );
   }
 }

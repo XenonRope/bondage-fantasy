@@ -253,6 +253,7 @@ export interface SceneChoiceOption {
 
 export interface Scene {
   id: number;
+  // Not sent to client
   ownerCharacterId: number;
   characterId: number;
   zoneId: number;
