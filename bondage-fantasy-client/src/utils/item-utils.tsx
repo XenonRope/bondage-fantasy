@@ -1,6 +1,6 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { itemApi } from "../api/item-api";
-import { ITEM_SEARCH_QUERY_MIN_LENGTH } from "bondage-fantasy-common";
+import { ITEM_SEARCH_QUERY_MIN_LENGTH, ItemType } from "bondage-fantasy-common";
 import { useId } from "react";
 
 export const useItemsQuery = (
@@ -9,6 +9,7 @@ export const useItemsQuery = (
     page: number;
     pageSize: number;
     includeItemsIds?: number[];
+    types?: ItemType[];
   },
   params?: { keepPreviousData?: boolean },
 ) => {
@@ -21,6 +22,7 @@ export const useItemsQuery = (
         offset: (filter.page - 1) * filter.pageSize,
         limit: filter.pageSize,
         includeItemsIds: filter.includeItemsIds,
+        types: filter.types,
       }),
     enabled: () => filter.query.length >= ITEM_SEARCH_QUERY_MIN_LENGTH,
     placeholderData: params?.keepPreviousData ? keepPreviousData : undefined,

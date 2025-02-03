@@ -1,6 +1,6 @@
 import { inject } from "@adonisjs/core";
 import { Collection, Db, Filter } from "mongodb";
-import { Item } from "bondage-fantasy-common";
+import { Item, ItemType } from "bondage-fantasy-common";
 import { escapeRegex } from "../utils.js";
 
 @inject()
@@ -23,12 +23,17 @@ export class ItemDao {
     offset: number;
     limit: number;
     includeItemsIds?: number[];
+    types?: ItemType[];
   }): Promise<{ items: Item[]; total: number }> {
+    const filters: Filter<Item>[] = [];
+    filters.push({
+      name: { $regex: escapeRegex(params.query), $options: "i" },
+    });
+    if (params.types != null) {
+      filters.push({ type: { $in: params.types } });
+    }
     const filter: Filter<Item> = {
-      $or: [
-        { name: { $regex: escapeRegex(params.query), $options: "i" } },
-        { id: { $in: params.includeItemsIds ?? [] } },
-      ],
+      $or: [{ $and: filters }, { id: { $in: params.includeItemsIds ?? [] } }],
       ownerCharacterId: params.characterId,
     };
     const items = await this.getCollection()

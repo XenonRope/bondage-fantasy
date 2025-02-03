@@ -19,6 +19,7 @@ import { useDebouncedValue } from "@mantine/hooks";
 import {
   EXPRESSION_SOURCE_MAX_LENGTH,
   ItemSlot,
+  ItemType,
   SCENE_CHOICE_OPTION_NAME_MAX_LENGTH,
   SCENE_CHOICE_OPTION_NAME_MIN_LENGTH,
   SCENE_CHOICE_OPTIONS_MAX_COUNT,
@@ -412,6 +413,7 @@ function UseWearableStep({
       includeItemsIds: form
         .getValues()
         .itemsIds.map((itemId) => parseInt(itemId)),
+      types: [ItemType.WEARABLE],
     },
     { keepPreviousData: true },
   );

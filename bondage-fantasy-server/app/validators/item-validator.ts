@@ -48,5 +48,6 @@ export const itemSearchRequestValidator = vine.compile(
       .array(vine.number().withoutDecimals())
       .maxLength(1000)
       .optional(),
+    types: vine.array(vine.enum(ItemType)).distinct().optional(),
   }),
 );

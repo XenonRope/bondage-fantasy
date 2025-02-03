@@ -88,6 +88,7 @@ export interface ItemSearchRequest {
   offset: number;
   limit: number;
   includeItemsIds?: number[];
+  types?: ItemType[];
 }
 
 export interface ItemSearchResponse {
