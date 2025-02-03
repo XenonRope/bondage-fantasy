@@ -1,6 +1,3 @@
-import { zoneApi } from "../api/zone-api";
-import { errorService } from "../services/error-service";
-import { useAppStore } from "../store";
 import { faGear } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -14,20 +11,22 @@ import {
   TextInput,
   Tooltip,
 } from "@mantine/core";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query";
 import {
   ZONE_SEARCH_QUERY_MAX_LENGTH,
   ZONE_SEARCH_QUERY_MIN_LENGTH,
   ZoneJoinRequest,
 } from "bondage-fantasy-common";
-import { useId, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
+import { zoneApi } from "../api/zone-api";
+import { errorService } from "../services/error-service";
+import { useAppStore } from "../store";
 
 const PAGE_SIZE = 24;
 
 export function ZoneListPage() {
-  const uniqueId = useId();
   const { t } = useTranslation();
   const navigate = useNavigate();
   const inZone = useAppStore((state) => state.zone != null);
@@ -38,7 +37,7 @@ export function ZoneListPage() {
     page: 1,
   });
   const searchResult = useQuery({
-    queryKey: ["zones", filter, characterId, uniqueId],
+    queryKey: ["zones", filter, characterId],
     queryFn: () =>
       zoneApi.search({
         query: filter.query,
@@ -46,6 +45,7 @@ export function ZoneListPage() {
         limit: PAGE_SIZE,
       }),
     enabled: () => filter.query.length >= ZONE_SEARCH_QUERY_MIN_LENGTH,
+    placeholderData: keepPreviousData,
   });
   const join = useMutation({
     mutationFn: async (request: ZoneJoinRequest) => {

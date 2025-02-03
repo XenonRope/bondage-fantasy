@@ -1,7 +1,6 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { itemApi } from "../api/item-api";
 import { ITEM_SEARCH_QUERY_MIN_LENGTH, ItemType } from "bondage-fantasy-common";
-import { useId } from "react";
+import { itemApi } from "../api/item-api";
 
 export const useItemsQuery = (
   filter: {
@@ -13,9 +12,8 @@ export const useItemsQuery = (
   },
   params?: { keepPreviousData?: boolean },
 ) => {
-  const uniqueId = useId();
   return useQuery({
-    queryKey: ["items", filter, uniqueId],
+    queryKey: ["items", filter],
     queryFn: () =>
       itemApi.search({
         query: filter.query,

@@ -11,6 +11,7 @@ import {
   Checkbox,
   Modal,
   MultiSelect,
+  Select,
   SimpleGrid,
   TextInput,
 } from "@mantine/core";
@@ -32,6 +33,7 @@ import {
   SCENE_VARIABLE_NAME_MIN_LENGTH,
   SceneDefinition,
   SceneStep,
+  SceneStepChangeItemsCount,
   SceneStepChoice,
   SceneStepJump,
   SceneStepLabel,
@@ -461,6 +463,83 @@ function UseWearableStep({
   );
 }
 
+function ChangeItemsCountStep({
+  initialStep,
+  onConfirm,
+}: {
+  initialStep?: SceneStepChangeItemsCount;
+  onConfirm: (step: SceneStep) => void;
+}) {
+  const [itemSearchValue, setItemSearchValue] = useState("");
+  const [itemSearchValueDebounced] = useDebouncedValue(
+    itemSearchValue,
+    DEFAULT_DEBOUNCE,
+  );
+  const form = useForm({
+    initialValues: {
+      itemId: initialStep?.itemId.toString() ?? "",
+      delta: initialStep?.delta ?? "",
+    },
+    validate: {
+      itemId: Validators.notEmpty(),
+      delta: Validators.expression(),
+    },
+  });
+  const items = useItemsQuery(
+    {
+      query: itemSearchValueDebounced,
+      page: 1,
+      pageSize: form.getValues().itemId ? 21 : 20,
+      includeItemsIds: form.getValues().itemId
+        ? [parseInt(form.getValues().itemId)]
+        : undefined,
+      types: [ItemType.STORABLE],
+    },
+    { keepPreviousData: true },
+  );
+
+  function handleConfirm() {
+    form.onSubmit((values) => {
+      onConfirm({
+        type: SceneStepType.CHANGE_ITEMS_COUNT,
+        itemId: parseInt(values.itemId),
+        delta: values.delta,
+      });
+    })();
+  }
+
+  if (items.data == null) {
+    return <></>;
+  }
+
+  return (
+    <>
+      <Select
+        {...form.getInputProps("itemId")}
+        key={form.key("itemId")}
+        label={<Translation>{(t) => t("common.item")}</Translation>}
+        searchable
+        searchValue={itemSearchValue}
+        onSearchChange={setItemSearchValue}
+        data={items.data?.items.map((item) => ({
+          value: item.id.toString(),
+          label: item.name,
+        }))}
+      />
+      <ExpressionEditor
+        {...form.getInputProps("delta")}
+        key={form.key("delta")}
+        label={<Translation>{(t) => t("scene.itemDelta")}</Translation>}
+        maxLength={EXPRESSION_SOURCE_MAX_LENGTH}
+        className="mt-2"
+      />
+      <Button onClick={handleConfirm} className="mt-4">
+        <Translation>{(t) => t("common.confirm")}</Translation>
+      </Button>
+    </>
+  );
+}
+
 function RemoveWearableStep({
   initialStep,
   onConfirm,
@@ -717,6 +796,11 @@ export function SceneDefinitionEditor(props: {
         ) : stepType === SceneStepType.REMOVE_WEARABLE ? (
           <RemoveWearableStep
             initialStep={stepToEdit as SceneStepRemoveWearable}
+            onConfirm={handleStepConfirm}
+          />
+        ) : stepType === SceneStepType.CHANGE_ITEMS_COUNT ? (
+          <ChangeItemsCountStep
+            initialStep={stepToEdit as SceneStepChangeItemsCount}
             onConfirm={handleStepConfirm}
           />
         ) : null}
