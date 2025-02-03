@@ -12,11 +12,14 @@ import {
   Expression,
   getCharacterVariables,
   hasDuplicates,
+  ITEM_IN_INVENTORY_STACK_MAX_COUNT,
+  ITEM_IN_INVENTORY_UNIQUE_MAX_COUNT,
   ItemType,
   parseExpression,
   Scene,
   SCENE_EXECUTED_STEPS_MAX_COUNT,
   SceneDefinition,
+  SceneStepChangeItemsCount,
   SceneStepChoice,
   SceneStepType,
   WearableItemOnCharacter,
@@ -221,12 +224,65 @@ export class SceneService {
             !wearable.slots.some((slot) => step.slots.includes(slot)),
         );
         characterChanged = true;
+      } else if (step.type === SceneStepType.CHANGE_ITEMS_COUNT) {
+        const { changed } = await this.executeStepChangeItemsCount(
+          step,
+          scene,
+          character,
+        );
+        if (changed) {
+          characterChanged = true;
+        }
       }
       scene.currentStep++;
       executedStepsCount++;
     }
 
     return { characterChanged };
+  }
+
+  private async executeStepChangeItemsCount(
+    step: SceneStepChangeItemsCount,
+    scene: Scene,
+    character: Character,
+  ): Promise<{ changed: boolean }> {
+    const item = await this.itemDao.getById(step.itemId);
+    if (
+      item == null ||
+      item.ownerCharacterId !== scene.ownerCharacterId ||
+      item.type !== ItemType.STORABLE
+    ) {
+      return { changed: false };
+    }
+    const delta = this.expressionEvaluator.evaluateAsInteger(
+      this.parseExpression(step.delta),
+      this.getVariables(scene, character),
+    );
+    if (isNaN(delta)) {
+      return { changed: false };
+    }
+    let itemInInventory = character.inventory.find(
+      (item) => item.itemId === step.itemId,
+    );
+    if (itemInInventory == null) {
+      if (character.inventory.length >= ITEM_IN_INVENTORY_UNIQUE_MAX_COUNT) {
+        return { changed: false };
+      }
+      itemInInventory = {
+        itemId: step.itemId,
+        name: item.name,
+        description: item.description,
+        count: 0,
+      };
+      character.inventory.push(itemInInventory);
+    }
+    itemInInventory.count += delta;
+    if (itemInInventory.count > ITEM_IN_INVENTORY_STACK_MAX_COUNT) {
+      itemInInventory.count = ITEM_IN_INVENTORY_STACK_MAX_COUNT;
+    }
+    character.inventory = character.inventory.filter(({ count }) => count > 0);
+
+    return { changed: true };
   }
 
   private getVariables(

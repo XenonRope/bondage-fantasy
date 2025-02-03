@@ -93,6 +93,12 @@ export const sceneStepRemoveWearable = vine.object({
     .optional(),
 });
 
+export const sceneStepChangeItemsCount = vine.object({
+  type: vine.literal(SceneStepType.CHANGE_ITEMS_COUNT),
+  itemId: vine.number().withoutDecimals(),
+  delta: expressionSource,
+});
+
 export const sceneStep = vine.union([
   vine.union.if(
     (value) => "type" in value && value.type === SceneStepType.TEXT,
@@ -125,6 +131,11 @@ export const sceneStep = vine.union([
   vine.union.if(
     (value) => "type" in value && value.type === SceneStepType.REMOVE_WEARABLE,
     sceneStepRemoveWearable,
+  ),
+  vine.union.if(
+    (value) =>
+      "type" in value && value.type === SceneStepType.CHANGE_ITEMS_COUNT,
+    sceneStepChangeItemsCount,
   ),
 ]);
 

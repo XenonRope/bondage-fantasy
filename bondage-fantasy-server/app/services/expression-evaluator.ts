@@ -13,6 +13,13 @@ export class ExpressionEvaluator {
     return this.evaluate(expression, variables) === TRUE;
   }
 
+  evaluateAsInteger(
+    expression: Expression,
+    variables: Record<string, string>,
+  ): number {
+    return parseInt(this.evaluate(expression, variables));
+  }
+
   evaluateAsNumber(
     expression: Expression,
     variables: Record<string, string>,

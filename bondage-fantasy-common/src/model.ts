@@ -23,6 +23,14 @@ export interface WearableItemOnCharacter {
   slots: ItemSlot[];
 }
 
+export interface StorableItemInInventory {
+  itemId: number;
+  name: string;
+  description: string;
+  // Must be greater than 0
+  count: number;
+}
+
 export interface Character {
   id: number;
   // Not sent to client. User shouldn't know that two different characters belong to the same account.
@@ -31,6 +39,7 @@ export interface Character {
   pronouns: Pronouns;
   genitals: Genitals;
   wearables: WearableItemOnCharacter[];
+  inventory: StorableItemInInventory[];
 }
 
 export interface Position {
@@ -180,6 +189,7 @@ export enum SceneStepType {
   VARIABLE = "VARIABLE",
   USE_WEARABLE = "USE_WEARABLE",
   REMOVE_WEARABLE = "REMOVE_WEARABLE",
+  CHANGE_ITEMS_COUNT = "CHANGE_ITEMS_COUNT",
 }
 
 export type SceneStep =
@@ -190,7 +200,8 @@ export type SceneStep =
   | SceneStepAbort
   | SceneStepVariable
   | SceneStepUseWearable
-  | SceneStepRemoveWearable;
+  | SceneStepRemoveWearable
+  | SceneStepChangeItemsCount;
 
 export interface SceneStepText {
   type: SceneStepType.TEXT;
@@ -239,6 +250,12 @@ export interface SceneStepRemoveWearable {
   type: SceneStepType.REMOVE_WEARABLE;
   slots: ItemSlot[];
   fallbackLabel?: string;
+}
+
+export interface SceneStepChangeItemsCount {
+  type: SceneStepType.CHANGE_ITEMS_COUNT;
+  itemId: number;
+  delta: ExpressionSource;
 }
 
 export interface SceneDefinition {
