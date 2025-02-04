@@ -27,7 +27,7 @@ export function getCharacterVariables(
     );
     return {
       ...acc,
-      [`${slot}_ITEM_ID`]: item?.itemId,
+      [`${slot}_ITEM_ID`]: item?.itemId?.toString(),
     };
   }, {});
 
