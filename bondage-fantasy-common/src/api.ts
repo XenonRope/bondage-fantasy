@@ -29,7 +29,7 @@ export interface ZoneSaveRequest {
   zoneId?: number;
   name: string;
   description: string;
-  draft: boolean;
+  private: boolean;
   entrance: Position;
   fields: Field[];
   connections: FieldConnection[];
@@ -48,7 +48,7 @@ export interface ZoneSearchResponse {
     ownerCharacterId: number;
     name: string;
     description: string;
-    draft: boolean;
+    private: boolean;
   }>;
   total: number;
 }

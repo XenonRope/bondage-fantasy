@@ -81,16 +81,6 @@ export class ZoneNotFoundException extends ApplicationException {
   }
 }
 
-export class ZoneIsDraftException extends ApplicationException {
-  constructor() {
-    super({
-      code: ErrorCode.E_ZONE_IS_DRAFT,
-      message: "Zone is marked as a draft",
-      status: 422,
-    });
-  }
-}
-
 export class CharacterInZoneException extends ApplicationException {
   constructor() {
     super({

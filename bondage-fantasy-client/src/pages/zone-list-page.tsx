@@ -88,14 +88,14 @@ export function ZoneListPage() {
               className="h-32"
             >
               <div className="flex justify-between items-center">
-                <span>
+                <div className="flex items-center">
                   <span className="font-medium">{zone.name}</span>
-                  {zone.draft && (
+                  {zone.private && (
                     <Badge size="sm" className="ml-2">
-                      {t("common.draft")}
+                      {t("zone.private")}
                     </Badge>
                   )}
-                </span>
+                </div>
                 <div className="flex items-center gap-2">
                   {zone.ownerCharacterId === characterId && (
                     <Tooltip
@@ -115,7 +115,7 @@ export function ZoneListPage() {
                   <Button
                     size="compact-sm"
                     radius="xl"
-                    disabled={inZone || inScene || zone.draft}
+                    disabled={inZone || inScene}
                     onClick={() =>
                       !join.isPending && join.mutate({ zoneId: zone.id })
                     }

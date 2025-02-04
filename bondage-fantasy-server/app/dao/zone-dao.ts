@@ -43,7 +43,7 @@ export class ZoneDao {
     limit: number;
   }): Promise<{ zones: Zone[]; total: number }> {
     const filters: Filter<Zone>[] = [
-      { $or: [{ ownerCharacterId: params.characterId }, { draft: false }] },
+      { $or: [{ ownerCharacterId: params.characterId }, { private: false }] },
     ];
     if (params.query) {
       filters.push({

@@ -9,7 +9,6 @@ import {
   EventNotFoundException,
   InvalidZoneException,
   NoAccessToZoneException,
-  ZoneIsDraftException,
   ZoneNotFoundException,
 } from "#exceptions/exceptions";
 import { SequenceCode } from "#models/sequence-model";
@@ -30,11 +29,11 @@ import {
   Zone,
   ZoneObject,
 } from "bondage-fantasy-common";
-import lockService, { LOCKS } from "./lock-service.js";
-import { SequenceService } from "./sequence-service.js";
-import { ExpressionEvaluator } from "./expression-evaluator.js";
-import { SceneService } from "./scene-service.js";
 import CharacterService from "./character-service.js";
+import { ExpressionEvaluator } from "./expression-evaluator.js";
+import lockService, { LOCKS } from "./lock-service.js";
+import { SceneService } from "./scene-service.js";
+import { SequenceService } from "./sequence-service.js";
 
 @inject()
 export class ZoneService {
@@ -60,7 +59,7 @@ export class ZoneService {
     if (
       params?.checkLimitedAccessForCharacterId != null &&
       params.checkLimitedAccessForCharacterId !== zone.ownerCharacterId &&
-      zone.draft
+      zone.private
     ) {
       throw new ZoneNotFoundException();
     }
@@ -78,7 +77,7 @@ export class ZoneService {
     characterId: number;
     name: string;
     description: string;
-    draft: boolean;
+    private: boolean;
     entrance: Position;
     fields: Field[];
     connections: FieldConnection[];
@@ -100,14 +99,13 @@ export class ZoneService {
           : await this.get(params.zoneId, {
               checkAccessForCharacterId: params.characterId,
             });
-      const characterObjects =
-        !zone || params.draft
-          ? []
-          : zone.objects.filter(
-              (object) =>
-                object.type === ObjectType.CHARACTER &&
-                findFieldByPosition(params.fields, object.position) != null,
-            );
+      const characterObjects = !zone
+        ? []
+        : zone.objects.filter(
+            (object) =>
+              object.type === ObjectType.CHARACTER &&
+              findFieldByPosition(params.fields, object.position) != null,
+          );
 
       const newZone: Zone = {
         id:
@@ -116,7 +114,7 @@ export class ZoneService {
         ownerCharacterId: params.characterId,
         name: params.name,
         description: params.description,
-        draft: params.draft,
+        private: params.private,
         entrance: params.entrance,
         fields: params.fields,
         connections: params.connections,
@@ -150,9 +148,6 @@ export class ZoneService {
         const zone = await this.get(params.zoneId, {
           checkLimitedAccessForCharacterId: params.characterId,
         });
-        if (zone.draft) {
-          throw new ZoneIsDraftException();
-        }
 
         zone.objects.push({
           type: ObjectType.CHARACTER,

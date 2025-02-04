@@ -65,7 +65,7 @@ interface ZoneFormField {
 interface ZoneForm {
   name: string;
   description: string;
-  draft: boolean;
+  private: boolean;
   entrance?: FieldKey;
   fields: Record<FieldKey, ZoneFormField>;
   connections: Record<FieldConnectionKey, true>;
@@ -166,7 +166,7 @@ export function ZoneEditorPage() {
     initialValues: {
       name: "",
       description: "",
-      draft: true,
+      private: true,
       entrance: undefined,
       fields: {},
       connections: {},
@@ -209,7 +209,7 @@ export function ZoneEditorPage() {
       form.setValues({
         name: zone.data.name,
         description: zone.data.description,
-        draft: zone.data.draft,
+        private: zone.data.private,
         entrance: getFieldKey(zone.data.entrance),
         fields: mapFieldsToFormFields(zone.data.fields, zone.data),
         connections: mapConnectionsToFormConnections(zone.data.connections),
@@ -360,7 +360,7 @@ export function ZoneEditorPage() {
       zoneId: zoneId == null ? undefined : parseInt(zoneId),
       name: form.getValues().name,
       description: form.getValues().description,
-      draft: form.getValues().draft,
+      private: form.getValues().private,
       entrance: getPositionFromFieldKey(form.getValues().entrance!),
       fields: getFieldsAsArray(),
       connections: getConnectionsAsArray(),
@@ -573,11 +573,11 @@ export function ZoneEditorPage() {
           className="mt-2 max-w-lg"
         />
         <Checkbox
-          {...form.getInputProps("draft", {
+          {...form.getInputProps("private", {
             type: "checkbox",
           })}
-          key={form.key("draft")}
-          label={t("common.draft")}
+          key={form.key("private")}
+          label={t("zone.private")}
           className="mt-4"
         />
         <div className="mt-4">

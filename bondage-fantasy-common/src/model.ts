@@ -67,7 +67,7 @@ export interface Zone {
   ownerCharacterId: number;
   name: string;
   description: string;
-  draft: boolean;
+  private: boolean;
   entrance: Position;
   fields: Field[];
   connections: FieldConnection[];
