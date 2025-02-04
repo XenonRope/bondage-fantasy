@@ -55,9 +55,11 @@ import { TextTemplateEditor } from "./text-template-editor";
 function TextStep({
   initialStep,
   onConfirm,
+  existingVariables,
 }: {
   initialStep?: SceneStepText;
   onConfirm: (step: SceneStep) => void;
+  existingVariables: string[];
 }) {
   const form = useForm({
     initialValues: {
@@ -82,6 +84,7 @@ function TextStep({
         label={<Translation>{(t) => t("scene.text")}</Translation>}
         maxLength={SCENE_TEXT_MAX_LENGTH}
         classNames={{ input: "min-h-14 max-h-52 overflow-auto" }}
+        customVariables={existingVariables}
       />
       <Button onClick={handleConfirm} className="mt-4">
         <Translation>{(t) => t("common.confirm")}</Translation>
@@ -137,10 +140,12 @@ function JumpStep({
   initialStep,
   onConfirm,
   existingLabels,
+  existingVariables,
 }: {
   initialStep?: SceneStepJump;
   onConfirm: (step: SceneStep) => void;
   existingLabels: string[];
+  existingVariables: string[];
 }) {
   const form = useForm({
     initialValues: {
@@ -187,6 +192,7 @@ function JumpStep({
           label={<Translation>{(t) => t("common.condition")}</Translation>}
           maxLength={EXPRESSION_SOURCE_MAX_LENGTH}
           className="mt-2"
+          customVariables={existingVariables}
         />
       )}
       <Button onClick={handleConfirm} className="mt-4">
@@ -199,9 +205,11 @@ function JumpStep({
 function VariableStep({
   initialStep,
   onConfirm,
+  existingVariables,
 }: {
   initialStep?: SceneStepVariable;
   onConfirm: (step: SceneStep) => void;
+  existingVariables: string[];
 }) {
   const form = useForm({
     initialValues: {
@@ -239,6 +247,7 @@ function VariableStep({
         label={<Translation>{(t) => t("scene.variableValue")}</Translation>}
         maxLength={EXPRESSION_SOURCE_MAX_LENGTH}
         className="mt-2"
+        customVariables={existingVariables}
       />
       <Button onClick={handleConfirm} className="mt-4">
         <Translation>{(t) => t("common.confirm")}</Translation>
@@ -251,10 +260,12 @@ function ChoiceStep({
   initialStep,
   onConfirm,
   existingLabels,
+  existingVariables,
 }: {
   initialStep?: SceneStepChoice;
   onConfirm: (step: SceneStep) => void;
   existingLabels: string[];
+  existingVariables: string[];
 }) {
   const form = useForm({
     initialValues: {
@@ -362,6 +373,7 @@ function ChoiceStep({
               label={<Translation>{(t) => t("common.condition")}</Translation>}
               maxLength={EXPRESSION_SOURCE_MAX_LENGTH}
               className="mt-2"
+              customVariables={existingVariables}
             />
           )}
         </div>
@@ -479,9 +491,11 @@ function UseWearableStep({
 function ChangeItemsCountStep({
   initialStep,
   onConfirm,
+  existingVariables,
 }: {
   initialStep?: SceneStepChangeItemsCount;
   onConfirm: (step: SceneStep) => void;
+  existingVariables: string[];
 }) {
   const [itemSearchValue, setItemSearchValue] = useState("");
   const [itemSearchValueDebounced] = useDebouncedValue(
@@ -545,6 +559,7 @@ function ChangeItemsCountStep({
         label={<Translation>{(t) => t("scene.itemDelta")}</Translation>}
         maxLength={EXPRESSION_SOURCE_MAX_LENGTH}
         className="mt-2"
+        customVariables={existingVariables}
       />
       <Button onClick={handleConfirm} className="mt-4">
         <Translation>{(t) => t("common.confirm")}</Translation>
@@ -654,6 +669,15 @@ export function SceneDefinitionEditor(props: {
       ),
     [props.scene.steps],
   );
+  const existingVariables = useMemo(() => {
+    return Array.from(
+      new Set(
+        props.scene.steps
+          .filter((step) => step.type === SceneStepType.VARIABLE)
+          .map((step) => step.name),
+      ),
+    );
+  }, [props.scene.steps]);
 
   function handleAddStepClick(): void {
     if (props.scene.steps.length >= SCENE_STEPS_MAX_COUNT) {
@@ -812,6 +836,7 @@ export function SceneDefinitionEditor(props: {
           <TextStep
             initialStep={stepToEdit as SceneStepText}
             onConfirm={handleStepConfirm}
+            existingVariables={existingVariables}
           />
         ) : stepType === SceneStepType.LABEL ? (
           <LabelStep
@@ -824,17 +849,20 @@ export function SceneDefinitionEditor(props: {
             initialStep={stepToEdit as SceneStepJump}
             onConfirm={handleStepConfirm}
             existingLabels={existingLabels}
+            existingVariables={existingVariables}
           />
         ) : stepType === SceneStepType.VARIABLE ? (
           <VariableStep
             initialStep={stepToEdit as SceneStepVariable}
             onConfirm={handleStepConfirm}
+            existingVariables={existingVariables}
           />
         ) : stepType === SceneStepType.CHOICE ? (
           <ChoiceStep
             initialStep={stepToEdit as SceneStepChoice}
             onConfirm={handleStepConfirm}
             existingLabels={existingLabels}
+            existingVariables={existingVariables}
           />
         ) : stepType === SceneStepType.USE_WEARABLE ? (
           <UseWearableStep
@@ -852,6 +880,7 @@ export function SceneDefinitionEditor(props: {
           <ChangeItemsCountStep
             initialStep={stepToEdit as SceneStepChangeItemsCount}
             onConfirm={handleStepConfirm}
+            existingVariables={existingVariables}
           />
         ) : null}
       </Modal>

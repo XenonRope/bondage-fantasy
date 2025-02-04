@@ -3,9 +3,9 @@ import { CodeEditor } from "./code-editor";
 import { CompletionContext, CompletionResult } from "@codemirror/autocomplete";
 import { LanguageSupport, LRLanguage } from "@codemirror/language";
 import { expressionParser, Operator, VARIABLES } from "bondage-fantasy-common";
-import { ReactNode } from "react";
+import { ReactNode, useMemo } from "react";
 
-function prepareLanguage() {
+function prepareLanguage(params: { variables: string[] }) {
   function autocomplete(context: CompletionContext): CompletionResult | null {
     const operationToken = context.tokenBefore(["Operation"]);
     if (operationToken != null) {
@@ -19,7 +19,7 @@ function prepareLanguage() {
         ) {
           return {
             from: stringToken.from + 1,
-            options: VARIABLES.map((variable) => ({ label: variable })),
+            options: params.variables.map((variable) => ({ label: variable })),
           };
         }
       }
@@ -51,8 +51,6 @@ function prepareLanguage() {
   return languageSupport;
 }
 
-const language = prepareLanguage();
-
 export function ExpressionEditor(props: {
   value?: string;
   defaultValue?: string;
@@ -64,6 +62,15 @@ export function ExpressionEditor(props: {
   classNames?: {
     input?: string;
   };
+  customVariables?: string[];
 }) {
+  const language = useMemo(() => {
+    return prepareLanguage({
+      variables: Array.from(
+        new Set([...(props.customVariables ?? []), ...VARIABLES]),
+      ),
+    });
+  }, [props.customVariables]);
+
   return <CodeEditor langauge={language} {...props} />;
 }

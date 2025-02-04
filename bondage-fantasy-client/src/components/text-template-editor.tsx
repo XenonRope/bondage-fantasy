@@ -2,10 +2,10 @@ import { CompletionContext, CompletionResult } from "@codemirror/autocomplete";
 import { LanguageSupport, LRLanguage } from "@codemirror/language";
 import { parser } from "@grumptech/lezer-mustache";
 import { VARIABLES } from "bondage-fantasy-common";
-import { ReactNode } from "react";
+import { ReactNode, useMemo } from "react";
 import { CodeEditor } from "./code-editor";
 
-function prepareLanguage() {
+function prepareLanguage(params: { variables: string[] }) {
   function autocomplete(context: CompletionContext): CompletionResult | null {
     const word = context.matchBefore(/{{[#/^]?[a-zA-Z_]*/);
     if (word == null) {
@@ -15,7 +15,7 @@ function prepareLanguage() {
       from: ["#", "/", "^"].includes(word.text[2])
         ? word.from + 3
         : word.from + 2,
-      options: VARIABLES.map((variable) => ({ label: variable })),
+      options: params.variables.map((variable) => ({ label: variable })),
     };
   }
 
@@ -32,8 +32,6 @@ function prepareLanguage() {
   return languageSupport;
 }
 
-const language = prepareLanguage();
-
 export function TextTemplateEditor(props: {
   value?: string;
   defaultValue?: string;
@@ -45,6 +43,15 @@ export function TextTemplateEditor(props: {
   classNames?: {
     input?: string;
   };
+  customVariables?: string[];
 }) {
+  const language = useMemo(() => {
+    return prepareLanguage({
+      variables: Array.from(
+        new Set([...(props.customVariables ?? []), ...VARIABLES]),
+      ),
+    });
+  }, [props.customVariables]);
+
   return <CodeEditor langauge={language} {...props} />;
 }
