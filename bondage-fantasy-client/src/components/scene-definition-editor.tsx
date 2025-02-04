@@ -7,6 +7,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   ActionIcon,
+  Autocomplete,
   Button,
   Checkbox,
   Modal,
@@ -43,7 +44,7 @@ import {
   SceneStepUseWearable,
   SceneStepVariable,
 } from "bondage-fantasy-common";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Translation, useTranslation } from "react-i18next";
 import { useItemsQuery } from "../utils/item-utils";
 import { DEFAULT_DEBOUNCE } from "../utils/utils";
@@ -92,9 +93,11 @@ function TextStep({
 function LabelStep({
   initialStep,
   onConfirm,
+  existingLabels,
 }: {
   initialStep?: SceneStepLabel;
   onConfirm: (step: SceneStep) => void;
+  existingLabels: string[];
 }) {
   const form = useForm({
     initialValues: {
@@ -116,10 +119,11 @@ function LabelStep({
 
   return (
     <>
-      <TextInput
+      <Autocomplete
         {...form.getInputProps("label")}
         key={form.key("label")}
         label={<Translation>{(t) => t("scene.label")}</Translation>}
+        data={existingLabels}
         maxLength={SCENE_LABEL_MAX_LENGTH}
       />
       <Button onClick={handleConfirm} className="mt-4">
@@ -132,9 +136,11 @@ function LabelStep({
 function JumpStep({
   initialStep,
   onConfirm,
+  existingLabels,
 }: {
   initialStep?: SceneStepJump;
   onConfirm: (step: SceneStep) => void;
+  existingLabels: string[];
 }) {
   const form = useForm({
     initialValues: {
@@ -161,10 +167,11 @@ function JumpStep({
 
   return (
     <>
-      <TextInput
+      <Autocomplete
         {...form.getInputProps("label")}
         key={form.key("label")}
         label={<Translation>{(t) => t("scene.label")}</Translation>}
+        data={existingLabels}
         maxLength={SCENE_LABEL_MAX_LENGTH}
       />
       <Checkbox
@@ -243,9 +250,11 @@ function VariableStep({
 function ChoiceStep({
   initialStep,
   onConfirm,
+  existingLabels,
 }: {
   initialStep?: SceneStepChoice;
   onConfirm: (step: SceneStep) => void;
+  existingLabels: string[];
 }) {
   const form = useForm({
     initialValues: {
@@ -314,11 +323,12 @@ function ChoiceStep({
               }
               maxLength={SCENE_CHOICE_OPTION_NAME_MAX_LENGTH}
             />
-            <TextInput
+            <Autocomplete
               {...form.getInputProps(`options.${index}.label`)}
               label={
                 <Translation>{(t) => t("scene.choiceOptionLabel")}</Translation>
               }
+              data={existingLabels}
               maxLength={SCENE_LABEL_MAX_LENGTH}
               className="ml-2"
             />
@@ -379,9 +389,11 @@ function ChoiceStep({
 function UseWearableStep({
   initialStep,
   onConfirm,
+  existingLabels,
 }: {
   initialStep?: SceneStepUseWearable;
   onConfirm: (step: SceneStep) => void;
+  existingLabels: string[];
 }) {
   const [itemSearchValue, setItemSearchValue] = useState("");
   const [itemSearchValueDebounced] = useDebouncedValue(
@@ -449,10 +461,11 @@ function UseWearableStep({
         }))}
         hidePickedOptions
       />
-      <TextInput
+      <Autocomplete
         {...form.getInputProps("fallbackLabel")}
         key={form.key("fallbackLabel")}
         label={<Translation>{(t) => t("scene.fallbackLabel")}</Translation>}
+        data={existingLabels}
         maxLength={SCENE_LABEL_MAX_LENGTH}
         className="mt-2"
       />
@@ -543,9 +556,11 @@ function ChangeItemsCountStep({
 function RemoveWearableStep({
   initialStep,
   onConfirm,
+  existingLabels,
 }: {
   initialStep?: SceneStepRemoveWearable;
   onConfirm: (step: SceneStep) => void;
+  existingLabels: string[];
 }) {
   const { t, i18n } = useTranslation();
   const form = useForm({
@@ -589,10 +604,11 @@ function RemoveWearableStep({
           label: t(`item.slots.${slot}`),
         }))}
       />
-      <TextInput
+      <Autocomplete
         {...form.getInputProps("fallbackLabel")}
         key={form.key("fallbackLabel")}
         label={<Translation>{(t) => t("scene.fallbackLabel")}</Translation>}
+        data={existingLabels}
         maxLength={SCENE_LABEL_MAX_LENGTH}
         className="mt-2"
       />
@@ -610,6 +626,34 @@ export function SceneDefinitionEditor(props: {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [stepType, setStepType] = useState<SceneStepType | null>(null);
   const [stepToEdit, setStepToEdit] = useState<SceneStep | null>(null);
+  const existingLabels = useMemo(
+    () =>
+      Array.from(
+        new Set(
+          props.scene.steps
+            .flatMap((step) => {
+              if (
+                step.type === SceneStepType.LABEL ||
+                step.type === SceneStepType.JUMP
+              ) {
+                return [step.label];
+              }
+              if (step.type === SceneStepType.CHOICE) {
+                return step.options.map((option) => option.label);
+              }
+              if (
+                step.type === SceneStepType.USE_WEARABLE ||
+                step.type === SceneStepType.REMOVE_WEARABLE
+              ) {
+                return step.fallbackLabel ? [step.fallbackLabel] : [];
+              }
+              return [];
+            })
+            .filter((label) => label?.length > 0),
+        ),
+      ),
+    [props.scene.steps],
+  );
 
   function handleAddStepClick(): void {
     if (props.scene.steps.length >= SCENE_STEPS_MAX_COUNT) {
@@ -772,11 +816,13 @@ export function SceneDefinitionEditor(props: {
           <LabelStep
             initialStep={stepToEdit as SceneStepLabel}
             onConfirm={handleStepConfirm}
+            existingLabels={existingLabels}
           />
         ) : stepType === SceneStepType.JUMP ? (
           <JumpStep
             initialStep={stepToEdit as SceneStepJump}
             onConfirm={handleStepConfirm}
+            existingLabels={existingLabels}
           />
         ) : stepType === SceneStepType.VARIABLE ? (
           <VariableStep
@@ -787,16 +833,19 @@ export function SceneDefinitionEditor(props: {
           <ChoiceStep
             initialStep={stepToEdit as SceneStepChoice}
             onConfirm={handleStepConfirm}
+            existingLabels={existingLabels}
           />
         ) : stepType === SceneStepType.USE_WEARABLE ? (
           <UseWearableStep
             initialStep={stepToEdit as SceneStepUseWearable}
             onConfirm={handleStepConfirm}
+            existingLabels={existingLabels}
           />
         ) : stepType === SceneStepType.REMOVE_WEARABLE ? (
           <RemoveWearableStep
             initialStep={stepToEdit as SceneStepRemoveWearable}
             onConfirm={handleStepConfirm}
+            existingLabels={existingLabels}
           />
         ) : stepType === SceneStepType.CHANGE_ITEMS_COUNT ? (
           <ChangeItemsCountStep
