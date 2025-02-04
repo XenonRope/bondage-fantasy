@@ -88,7 +88,7 @@ export function ZoneObjectList(props: {
   return (
     <div>
       {sortedObjects.map((object, index) => (
-        <div key={index} className="flex justify-between">
+        <div key={index} className="flex justify-between hover:bg-gray-100">
           {object.type === ObjectType.CHARACTER && (
             <CharacterItem object={object} />
           )}
