@@ -65,6 +65,9 @@ function traverse(
   cursor: TreeCursor,
 ): [Expression, null] | [null, ExpressionParserError] {
   if (cursor.type.id === expressionParserTerms.String) {
+    if (source.length < 2 || source[cursor.to - 1] !== '"') {
+      return [null, { type: ExpressionParserErrorType.INVALID_SYNTAX }];
+    }
     const stringExpression = source
       // Skip quotation marks
       .substring(cursor.from + 1, cursor.to - 1)

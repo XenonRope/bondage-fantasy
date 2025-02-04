@@ -794,7 +794,8 @@ export function SceneDefinitionEditor(props: {
           )
         }
         size="lg"
-        closeOnClickOutside={stepType == null}
+        closeOnClickOutside={false}
+        closeOnEscape={false}
       >
         {stepType === null ? (
           <SimpleGrid cols={3}>

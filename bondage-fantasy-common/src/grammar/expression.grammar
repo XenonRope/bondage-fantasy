@@ -9,7 +9,7 @@ Operation { Operator LeftParenthesis expression ("," expression)* RightParenthes
 @tokens {
   space { @whitespace+ }
   Operator { $[A-Z_]+ }
-  String { '"' (!["] | "\\" _)* '"' }
+  String { '"' (!["] | "\\" _)* '"' | '"' (!["] | "\\" _)* }
   LeftParenthesis { "(" }
   RightParenthesis { ")" }
 }
