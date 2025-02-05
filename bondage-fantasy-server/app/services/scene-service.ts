@@ -145,6 +145,16 @@ export class SceneService {
           step.text,
           this.getVariables(scene, character),
         );
+
+        if (
+          scene.definition.steps[scene.currentStep + 1]?.type ===
+          SceneStepType.CHOICE
+        ) {
+          scene.currentStep++;
+          executedStepsCount++;
+          continue;
+        }
+
         return { characterChanged };
       } else if (step.type === SceneStepType.JUMP) {
         if (
