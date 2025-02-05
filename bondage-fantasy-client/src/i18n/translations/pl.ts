@@ -6,6 +6,7 @@ export const pl: ResourceLanguage = {
     "common.language.pl": "Polski",
     "common.username": "Nazwa użytkownika",
     "common.password": "Hasło",
+    "common.characterName": "Nazwa postaci",
     "common.characterNameShort": "Imię",
     "common.pronouns": "Zaimki",
     "common.genitals": "Genitalia",

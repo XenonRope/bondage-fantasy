@@ -141,6 +141,8 @@ export class SceneService {
 
       const step = scene.definition.steps[scene.currentStep];
       if (step.type === SceneStepType.TEXT) {
+        scene.textCharacterName = step.characterName;
+        scene.textCharacterNameColor = step.characterNameColor;
         scene.text = this.templateRenderer.render(
           step.text,
           this.getVariables(scene, character),

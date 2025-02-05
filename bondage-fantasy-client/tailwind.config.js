@@ -14,6 +14,13 @@ export default {
         lg: "var(--mantine-spacing-lg)",
         xl: "var(--mantine-spacing-xl)",
       },
+      fontSize: {
+        xs: "var(--mantine-font-size-xs)",
+        sm: "var(--mantine-font-size-sm)",
+        md: "var(--mantine-font-size-md)",
+        lg: "var(--mantine-font-size-lg)",
+        xl: "var(--mantine-font-size-xl)",
+      },
     },
   },
   plugins: [],

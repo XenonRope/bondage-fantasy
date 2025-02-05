@@ -6,6 +6,8 @@ import {
   SCENE_LABEL_MAX_LENGTH,
   SCENE_LABEL_MIN_LENGTH,
   SCENE_STEPS_MAX_COUNT,
+  SCENE_TEXT_CHARACTER_NAME_MAX_LENGTH,
+  SCENE_TEXT_CHARACTER_NAME_MIN_LENGTH,
   SCENE_TEXT_MAX_LENGTH,
   SCENE_TEXT_MIN_LENGTH,
   SCENE_VARIABLE_NAME_MAX_LENGTH,
@@ -16,6 +18,15 @@ import { expressionSource } from "./expression-validator.js";
 
 export const sceneStepText = vine.object({
   type: vine.literal(SceneStepType.TEXT),
+  characterName: vine
+    .string()
+    .minLength(SCENE_TEXT_CHARACTER_NAME_MIN_LENGTH)
+    .maxLength(SCENE_TEXT_CHARACTER_NAME_MAX_LENGTH)
+    .optional(),
+  characterNameColor: vine
+    .string()
+    .regex(/^#([0-9a-fA-F]{6})$/)
+    .optional(),
   text: vine
     .string()
     .minLength(SCENE_TEXT_MIN_LENGTH)

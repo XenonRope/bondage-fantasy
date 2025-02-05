@@ -205,6 +205,8 @@ export type SceneStep =
 
 export interface SceneStepText {
   type: SceneStepType.TEXT;
+  characterName?: string;
+  characterNameColor?: string;
   text: Template;
 }
 
@@ -278,6 +280,8 @@ export interface Scene {
   definition: SceneDefinition;
   // Not sent to client
   currentStep: number;
+  textCharacterName?: string;
+  textCharacterNameColor?: string;
   text: string;
   choices?: SceneChoiceOption[];
   // Not sent to client

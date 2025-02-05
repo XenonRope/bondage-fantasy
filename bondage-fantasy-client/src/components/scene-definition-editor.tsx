@@ -10,6 +10,7 @@ import {
   Autocomplete,
   Button,
   Checkbox,
+  ColorInput,
   Modal,
   MultiSelect,
   Select,
@@ -28,6 +29,8 @@ import {
   SCENE_LABEL_MAX_LENGTH,
   SCENE_LABEL_MIN_LENGTH,
   SCENE_STEPS_MAX_COUNT,
+  SCENE_TEXT_CHARACTER_NAME_MAX_LENGTH,
+  SCENE_TEXT_CHARACTER_NAME_MIN_LENGTH,
   SCENE_TEXT_MAX_LENGTH,
   SCENE_TEXT_MIN_LENGTH,
   SCENE_VARIABLE_NAME_MAX_LENGTH,
@@ -63,26 +66,78 @@ function TextStep({
 }) {
   const form = useForm({
     initialValues: {
+      characterName: initialStep?.characterName ?? "",
+      characterNameColor: initialStep?.characterNameColor ?? "#000000",
       text: initialStep?.text ?? "",
     },
     validate: {
+      characterName: Validators.inRange(
+        SCENE_TEXT_CHARACTER_NAME_MIN_LENGTH,
+        SCENE_TEXT_CHARACTER_NAME_MAX_LENGTH,
+      ),
       text: Validators.inRange(SCENE_TEXT_MIN_LENGTH, SCENE_TEXT_MAX_LENGTH),
     },
   });
 
   function handleConfirm() {
     form.onSubmit((values) => {
-      onConfirm({ type: SceneStepType.TEXT, text: values.text });
+      onConfirm({
+        type: SceneStepType.TEXT,
+        characterName: values.characterName,
+        characterNameColor: values.characterNameColor,
+        text: values.text,
+      });
     })();
+  }
+
+  function fixHexColor() {
+    const color = form.getValues().characterNameColor;
+    if (color.match(/^#([0-9a-fA-F]{6})$/)) {
+      form.setFieldValue("characterNameColor", color.toLowerCase());
+      return;
+    }
+    if (color.match(/^#([0-9a-fA-F]{3,4})$/)) {
+      form.setFieldValue(
+        "characterNameColor",
+        `#${color[1]}${color[1]}${color[2]}${color[2]}${color[3]}${color[3]}`.toLowerCase(),
+      );
+      return;
+    }
+    form.setFieldValue("characterNameColor", "#000000");
   }
 
   return (
     <>
+      <div className="flex gap-2 items-end">
+        <TextInput
+          {...form.getInputProps("characterName")}
+          key={form.key("characterName")}
+          label={<Translation>{(t) => t("common.characterName")}</Translation>}
+          maxLength={SCENE_TEXT_CHARACTER_NAME_MAX_LENGTH}
+          className="flex-1"
+          classNames={{
+            input: "text-md font-medium",
+          }}
+          styles={{
+            input: {
+              color: form.getValues().characterNameColor,
+            },
+          }}
+        />
+        <ColorInput
+          {...form.getInputProps("characterNameColor")}
+          key={form.key("characterNameColor")}
+          format="hex"
+          onBlur={fixHexColor}
+          disabled={form.getValues().characterName == null}
+        />
+      </div>
       <TextTemplateEditor
         {...form.getInputProps("text")}
         key={form.key("text")}
         label={<Translation>{(t) => t("scene.text")}</Translation>}
         maxLength={SCENE_TEXT_MAX_LENGTH}
+        className="mt-2"
         classNames={{ input: "min-h-14 max-h-52 overflow-auto" }}
         customVariables={existingVariables}
       />

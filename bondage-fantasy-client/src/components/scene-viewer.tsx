@@ -17,7 +17,15 @@ export function SceneViewer(props: { scene: Scene }) {
 
   return (
     <div className="p-md">
-      <p>{props.scene.text}</p>
+      {props.scene.textCharacterName && (
+        <div
+          className="text-md font-medium mb-1"
+          style={{ color: props.scene.textCharacterNameColor ?? "#000" }}
+        >
+          {props.scene.textCharacterName}
+        </div>
+      )}
+      <div>{props.scene.text}</div>
       {props.scene.choices && props.scene.choices.length > 0 && (
         <div className="mt-4">
           {props.scene.choices.map((choice, index) => (
