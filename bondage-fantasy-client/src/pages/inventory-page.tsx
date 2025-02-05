@@ -10,6 +10,8 @@ import { ITEM_SEARCH_QUERY_MAX_LENGTH } from "bondage-fantasy-common";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useAppStore } from "../store";
+import { IdBadge } from "../components/id-badge";
+import { NameWithId } from "../components/name-with-id";
 
 const PAGE_SIZE = 24;
 
@@ -58,9 +60,9 @@ export function InventoryPage() {
               className="h-32"
             >
               <div className="flex justify-between items-center">
-                <span className="font-medium">{item.name}</span>
-                <Badge variant="default" size="lg">
-                  {item.count}
+                <NameWithId name={item.name} id={item.itemId} />
+                <Badge variant="default" size="lg" className="normal-case">
+                  {"x" + item.count}
                 </Badge>
               </div>
               <Text size="sm" c="dimmed" className="mt-2">

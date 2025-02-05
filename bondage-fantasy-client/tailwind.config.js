@@ -5,6 +5,7 @@ export default {
     extend: {
       colors: {
         "app-shell": "var(--app-shell-border-color)",
+        dimmed: "var(--mantine-color-dimmed)",
       },
       spacing: {
         xs: "var(--mantine-spacing-xs)",

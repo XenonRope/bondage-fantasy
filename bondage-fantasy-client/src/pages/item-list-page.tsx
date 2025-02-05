@@ -17,6 +17,7 @@ import { useNavigate } from "react-router";
 import { useItemsQuery } from "../utils/item-utils";
 import { useDebouncedCallback } from "@mantine/hooks";
 import { DEFAULT_DEBOUNCE } from "../utils/utils";
+import { NameWithId } from "../components/name-with-id";
 
 const PAGE_SIZE = 24;
 
@@ -65,7 +66,7 @@ export function ItemListPage() {
               className="h-32"
             >
               <div className="flex justify-between items-center">
-                <span className="font-medium">{item.name}</span>
+                <NameWithId name={item.name} id={item.id} />
                 <div className="flex items-center gap-2">
                   <Tooltip
                     label={t("common.edit")}

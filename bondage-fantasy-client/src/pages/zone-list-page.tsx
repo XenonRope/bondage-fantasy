@@ -23,6 +23,7 @@ import { useNavigate } from "react-router";
 import { zoneApi } from "../api/zone-api";
 import { errorService } from "../services/error-service";
 import { useAppStore } from "../store";
+import { NameWithId } from "../components/name-with-id";
 
 const PAGE_SIZE = 24;
 
@@ -89,7 +90,7 @@ export function ZoneListPage() {
             >
               <div className="flex justify-between items-center">
                 <div className="flex items-center">
-                  <span className="font-medium">{zone.name}</span>
+                  <NameWithId name={zone.name} id={zone.id} />
                   {zone.private && (
                     <Badge size="sm" className="ml-2">
                       {t("zone.private")}

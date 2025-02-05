@@ -18,7 +18,7 @@ export default function CharacterListPage() {
       <Button onClick={() => naviage("/new-character")}>
         {t("characterList.createNewCharacter")}
       </Button>
-      <SimpleGrid className="mt-4" cols={5}>
+      <SimpleGrid className="mt-4" cols={3}>
         {characters.data?.map((character) => (
           <CharacterCard key={character.id} character={character} />
         ))}

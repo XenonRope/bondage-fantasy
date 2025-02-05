@@ -1,6 +1,7 @@
-import { characterService } from "../services/character-service";
 import { Card } from "@mantine/core";
 import { Character } from "bondage-fantasy-common";
+import { characterService } from "../services/character-service";
+import { NameWithId } from "./name-with-id";
 
 export function CharacterCard(props: { character: Character }) {
   return (
@@ -10,9 +11,9 @@ export function CharacterCard(props: { character: Character }) {
       padding="lg"
       radius="md"
       withBorder
-      className="cursor-pointer hover:bg-gray-100"
+      className="cursor-pointer hover:bg-gray-100 h-32"
     >
-      <span>{props.character.name}</span>
+      <NameWithId name={props.character.name} id={props.character.id} />
     </Card>
   );
 }
