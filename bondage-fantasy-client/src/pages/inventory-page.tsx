@@ -9,9 +9,8 @@ import {
 import { ITEM_SEARCH_QUERY_MAX_LENGTH } from "bondage-fantasy-common";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useAppStore } from "../store";
-import { IdBadge } from "../components/id-badge";
 import { NameWithId } from "../components/name-with-id";
+import { useAppStore } from "../store";
 
 const PAGE_SIZE = 24;
 
