@@ -88,7 +88,7 @@ export function ZoneListPage() {
               withBorder
               className="h-32"
             >
-              <div className="flex justify-between items-center">
+              <div className="flex justify-between items-start">
                 <div className="flex items-center">
                   <NameWithId name={zone.name} id={zone.id} />
                   {zone.private && (

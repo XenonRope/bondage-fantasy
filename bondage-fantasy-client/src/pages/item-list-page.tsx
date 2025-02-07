@@ -3,21 +3,21 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   ActionIcon,
   Button,
-  Card,
   Pagination,
   SimpleGrid,
   Text,
   TextInput,
   Tooltip,
 } from "@mantine/core";
+import { useDebouncedCallback } from "@mantine/hooks";
 import { ITEM_SEARCH_QUERY_MAX_LENGTH } from "bondage-fantasy-common";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
-import { useItemsQuery } from "../utils/item-utils";
-import { useDebouncedCallback } from "@mantine/hooks";
-import { DEFAULT_DEBOUNCE } from "../utils/utils";
+import { CardWithImage } from "../components/card-with-image";
 import { NameWithId } from "../components/name-with-id";
+import { useItemsQuery } from "../utils/item-utils";
+import { DEFAULT_DEBOUNCE } from "../utils/utils";
 
 const PAGE_SIZE = 24;
 
@@ -57,14 +57,7 @@ export function ItemListPage() {
       <div className="mt-8">
         <SimpleGrid cols={3}>
           {searchResult.data?.items.map((item) => (
-            <Card
-              key={item.id}
-              shadow="sm"
-              padding="lg"
-              radius="md"
-              withBorder
-              className="h-32"
-            >
+            <CardWithImage key={item.id}>
               <div className="flex justify-between items-center">
                 <NameWithId name={item.name} id={item.id} />
                 <div className="flex items-center gap-2">
@@ -86,7 +79,7 @@ export function ItemListPage() {
               <Text size="sm" c="dimmed" className="mt-2">
                 {item.description}
               </Text>
-            </Card>
+            </CardWithImage>
           ))}
         </SimpleGrid>
       </div>

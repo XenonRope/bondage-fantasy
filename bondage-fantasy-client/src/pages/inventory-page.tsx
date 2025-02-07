@@ -58,7 +58,7 @@ export function InventoryPage() {
               withBorder
               className="h-32"
             >
-              <div className="flex justify-between items-center">
+              <div className="flex justify-between items-start">
                 <NameWithId name={item.name} id={item.itemId} />
                 <Badge variant="default" size="lg" className="normal-case">
                   {"x" + item.count}
