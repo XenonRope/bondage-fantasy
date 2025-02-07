@@ -11,6 +11,7 @@ import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { NameWithId } from "../components/name-with-id";
 import { useAppStore } from "../store";
+import { CardWithImage } from "../components/card-with-image";
 
 const PAGE_SIZE = 24;
 
@@ -50,14 +51,7 @@ export function InventoryPage() {
       <div className="mt-8">
         <SimpleGrid cols={3}>
           {items.map((item) => (
-            <Card
-              key={item.itemId}
-              shadow="sm"
-              padding="lg"
-              radius="md"
-              withBorder
-              className="h-32"
-            >
+            <CardWithImage key={item.itemId}>
               <div className="flex justify-between items-start">
                 <NameWithId name={item.name} id={item.itemId} />
                 <Badge variant="default" size="lg" className="normal-case">
@@ -67,7 +61,7 @@ export function InventoryPage() {
               <Text size="sm" c="dimmed" className="mt-2">
                 {item.description}
               </Text>
-            </Card>
+            </CardWithImage>
           ))}
         </SimpleGrid>
       </div>
