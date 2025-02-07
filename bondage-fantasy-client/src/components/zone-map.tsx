@@ -147,7 +147,10 @@ export function ZoneMap(props: {
           {[...Array(ZONE_MAX_WIDTH).keys()].map((x) => (
             <div key={x} className="relative">
               <div
-                onClick={() => props.onFieldClick?.({ x, y })}
+                onClick={() =>
+                  (fields[y][x] || props.editMode) &&
+                  props.onFieldClick?.({ x, y })
+                }
                 className={getFieldClasses(x, y)}
                 style={{ width: `${FIELD_SIZE}px`, height: `${FIELD_SIZE}px` }}
               >
