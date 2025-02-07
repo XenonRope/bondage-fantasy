@@ -1,17 +1,10 @@
-import {
-  Badge,
-  Card,
-  Pagination,
-  SimpleGrid,
-  Text,
-  TextInput,
-} from "@mantine/core";
+import { Badge, Pagination, SimpleGrid, Text, TextInput } from "@mantine/core";
 import { ITEM_SEARCH_QUERY_MAX_LENGTH } from "bondage-fantasy-common";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { CardWithImage } from "../components/card-with-image";
 import { NameWithId } from "../components/name-with-id";
 import { useAppStore } from "../store";
-import { CardWithImage } from "../components/card-with-image";
 
 const PAGE_SIZE = 24;
 
