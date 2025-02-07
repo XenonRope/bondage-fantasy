@@ -31,7 +31,7 @@ export const en: ResourceLanguage = {
     "navbar.characters": "Characters",
     "navbar.zones": "Zones",
     "navbar.explore": "Explore",
-    "navbar.items": "Items",
+    "navbar.crafting": "Crafting",
     "navbar.inventory": "Inventory",
     "common.item": "Item",
     "pronouns.SHE_HER": "She/Her",
