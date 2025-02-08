@@ -1,7 +1,10 @@
-import { useAppStore } from "../store";
-import { faEllipsis, faStar, faUser } from "@fortawesome/free-solid-svg-icons";
+import {
+  faStar,
+  faUser,
+  IconDefinition,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { ActionIcon, Menu } from "@mantine/core";
+import { ActionIcon, Tooltip } from "@mantine/core";
 import {
   CharacterZoneVisionObject,
   EventZoneVisionObject,
@@ -9,6 +12,11 @@ import {
   ZoneVisionObject,
 } from "bondage-fantasy-common";
 import { ReactNode, useMemo } from "react";
+import { useAppStore } from "../store";
+import {
+  DEFAULT_TOOLTIP_DELAY,
+  DEFAULT_TOOLTIP_TRANSITION_DURATION,
+} from "../utils/utils";
 
 function CharacterItem(props: { object: CharacterZoneVisionObject }) {
   const characterId = useAppStore((state) => state.character?.id);
@@ -37,37 +45,43 @@ function EventItem(props: { object: EventZoneVisionObject }) {
   );
 }
 
-function ObjectActions(props: {
-  actions: { label: ReactNode; onClick: () => void }[];
-}) {
+export type ZoneObjectAction = {
+  name: ReactNode;
+  icon: IconDefinition;
+  iconColor?: string;
+  onClick: () => void;
+};
+
+function ObjectActions(props: { actions: ZoneObjectAction[] }) {
   if (props.actions.length === 0) {
     return <></>;
   }
 
   return (
-    <Menu shadow="md" width={200}>
-      <Menu.Target>
-        <ActionIcon variant="transparent">
-          <FontAwesomeIcon icon={faEllipsis} />
-        </ActionIcon>
-      </Menu.Target>
-
-      <Menu.Dropdown>
-        {props.actions.map((action, index) => (
-          <Menu.Item key={index} onClick={action.onClick}>
-            {action.label}
-          </Menu.Item>
-        ))}
-      </Menu.Dropdown>
-    </Menu>
+    <div className="flex gap-2">
+      {props.actions.map((action, index) => (
+        <Tooltip
+          label={action.name}
+          openDelay={DEFAULT_TOOLTIP_DELAY}
+          transitionProps={{ duration: DEFAULT_TOOLTIP_TRANSITION_DURATION }}
+        >
+          <ActionIcon
+            key={index}
+            variant="transparent"
+            onClick={action.onClick}
+            data-variant-color={action.iconColor}
+          >
+            <FontAwesomeIcon icon={action.icon} />
+          </ActionIcon>
+        </Tooltip>
+      ))}
+    </div>
   );
 }
 
 export function ZoneObjectList(props: {
   objects: ZoneVisionObject[];
-  actions?: (
-    object: ZoneVisionObject,
-  ) => { label: ReactNode; onClick: () => void }[];
+  actions?: (object: ZoneVisionObject) => ZoneObjectAction[];
 }) {
   const characterId = useAppStore((state) => state.character?.id);
   const sortedObjects = useMemo(() => {
@@ -93,9 +107,7 @@ export function ZoneObjectList(props: {
             <CharacterItem object={object} />
           )}
           {object.type === ObjectType.EVENT && <EventItem object={object} />}
-          <ObjectActions
-            actions={props.actions?.(object) ?? []}
-          ></ObjectActions>
+          <ObjectActions actions={props.actions?.(object) ?? []} />
         </div>
       ))}
     </div>

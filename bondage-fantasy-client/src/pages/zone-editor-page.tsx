@@ -1,3 +1,4 @@
+import { faGear, faTrash } from "@fortawesome/free-solid-svg-icons";
 import {
   Alert,
   Button,
@@ -41,7 +42,7 @@ import {
   ZoneSaveRequest,
   ZoneVisionObject,
 } from "bondage-fantasy-common";
-import { ReactNode, useEffect, useId, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { Translation, useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router";
 import { zoneApi } from "../api/zone-api";
@@ -49,7 +50,10 @@ import { ExpressionEditor } from "../components/expression-editor";
 import { SceneDefinitionEditor } from "../components/scene-definition-editor";
 import { TextTemplateEditor } from "../components/text-template-editor";
 import { ZoneMap } from "../components/zone-map";
-import { ZoneObjectList } from "../components/zone-object-list";
+import {
+  ZoneObjectAction,
+  ZoneObjectList,
+} from "../components/zone-object-list";
 import { errorService } from "../services/error-service";
 import { notificationService } from "../services/notification-service";
 import { sessionService } from "../services/session-service";
@@ -494,11 +498,12 @@ export function ZoneEditorPage() {
 
   function getObjectActions(
     visionObject: ZoneVisionObject,
-  ): { label: ReactNode; onClick: () => void }[] {
+  ): ZoneObjectAction[] {
     if (visionObject.type === ObjectType.EVENT) {
       return [
         {
-          label: <Translation>{(t) => t("common.edit")}</Translation>,
+          name: <Translation>{(t) => t("common.edit")}</Translation>,
+          icon: faGear,
           onClick: () => {
             setEventToEdit(
               form
@@ -512,7 +517,9 @@ export function ZoneEditorPage() {
           },
         },
         {
-          label: <Translation>{(t) => t("common.remove")}</Translation>,
+          name: <Translation>{(t) => t("common.remove")}</Translation>,
+          icon: faTrash,
+          iconColor: "danger",
           onClick: () => {
             form.setFieldValue(
               `fields.${getFieldKey(visionObject.position)}.objects`,

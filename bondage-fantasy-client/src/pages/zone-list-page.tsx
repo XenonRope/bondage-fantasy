@@ -21,9 +21,13 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import { zoneApi } from "../api/zone-api";
+import { NameWithId } from "../components/name-with-id";
 import { errorService } from "../services/error-service";
 import { useAppStore } from "../store";
-import { NameWithId } from "../components/name-with-id";
+import {
+  DEFAULT_TOOLTIP_DELAY,
+  DEFAULT_TOOLTIP_TRANSITION_DURATION,
+} from "../utils/utils";
 
 const PAGE_SIZE = 24;
 
@@ -101,8 +105,10 @@ export function ZoneListPage() {
                   {zone.ownerCharacterId === characterId && (
                     <Tooltip
                       label={t("zoneList.edit")}
-                      openDelay={500}
-                      transitionProps={{ duration: 300 }}
+                      openDelay={DEFAULT_TOOLTIP_DELAY}
+                      transitionProps={{
+                        duration: DEFAULT_TOOLTIP_TRANSITION_DURATION,
+                      }}
                     >
                       <ActionIcon
                         variant="transparent"

@@ -1,8 +1,4 @@
-import { zoneApi } from "../api/zone-api";
-import { ZoneMap } from "../components/zone-map";
-import { ZoneObjectList } from "../components/zone-object-list";
-import { errorService } from "../services/error-service";
-import { useAppStore } from "../store";
+import { faCommentDots } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "@mantine/core";
 import { useMutation } from "@tanstack/react-query";
 import {
@@ -17,10 +13,18 @@ import {
   Position,
   ZoneVisionObject,
 } from "bondage-fantasy-common";
-import { ReactNode, useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useMemo, useState } from "react";
+import { Translation, useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
+import { zoneApi } from "../api/zone-api";
 import { SceneViewer } from "../components/scene-viewer";
+import { ZoneMap } from "../components/zone-map";
+import {
+  ZoneObjectAction,
+  ZoneObjectList,
+} from "../components/zone-object-list";
+import { errorService } from "../services/error-service";
+import { useAppStore } from "../store";
 
 export function ExplorePage() {
   const { t } = useTranslation();
@@ -99,11 +103,12 @@ export function ExplorePage() {
 
   function getObjectActions(
     visionObject: ZoneVisionObject,
-  ): { label: ReactNode; onClick: () => void }[] {
+  ): ZoneObjectAction[] {
     if (visionObject.type === ObjectType.EVENT && visionObject.canInteract) {
       return [
         {
-          label: t("explore.interact"),
+          name: <Translation>{(t) => t("explore.interact")}</Translation>,
+          icon: faCommentDots,
           onClick: () =>
             !interact.isPending && interact.mutate(visionObject.eventId),
         },

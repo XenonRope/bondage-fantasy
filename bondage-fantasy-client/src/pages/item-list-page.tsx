@@ -17,7 +17,11 @@ import { useNavigate } from "react-router";
 import { CardWithImage } from "../components/card-with-image";
 import { NameWithId } from "../components/name-with-id";
 import { useItemsQuery } from "../utils/item-utils";
-import { DEFAULT_DEBOUNCE } from "../utils/utils";
+import {
+  DEFAULT_DEBOUNCE,
+  DEFAULT_TOOLTIP_DELAY,
+  DEFAULT_TOOLTIP_TRANSITION_DURATION,
+} from "../utils/utils";
 
 const PAGE_SIZE = 24;
 
@@ -63,8 +67,10 @@ export function ItemListPage() {
                 <div className="flex items-center gap-2">
                   <Tooltip
                     label={t("common.edit")}
-                    openDelay={500}
-                    transitionProps={{ duration: 300 }}
+                    openDelay={DEFAULT_TOOLTIP_DELAY}
+                    transitionProps={{
+                      duration: DEFAULT_TOOLTIP_TRANSITION_DURATION,
+                    }}
                   >
                     <ActionIcon
                       variant="transparent"
