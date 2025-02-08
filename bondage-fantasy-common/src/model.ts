@@ -31,6 +31,7 @@ export interface StorableItemInInventory {
   itemId: number;
   name: string;
   description: string;
+  imageKey?: string;
   // Must be greater than 0
   count: number;
 }

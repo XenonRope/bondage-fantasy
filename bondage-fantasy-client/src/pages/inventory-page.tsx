@@ -44,7 +44,7 @@ export function InventoryPage() {
       <div className="mt-8">
         <SimpleGrid cols={3}>
           {items.map((item) => (
-            <CardWithImage key={item.itemId}>
+            <CardWithImage key={item.itemId} image={item.imageKey}>
               <div className="flex justify-between items-start">
                 <NameWithId name={item.name} id={item.itemId} />
                 <Badge variant="default" size="lg" className="normal-case">

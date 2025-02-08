@@ -25,7 +25,13 @@ export function ImageWithPlaceholder(props: { image?: File | string }) {
   }, [props.image, config]);
 
   if (imageUrl) {
-    return <img src={imageUrl} className="h-full w-full object-contain" />;
+    return (
+      <img
+        src={imageUrl}
+        className="h-full w-full object-contain"
+        onError={() => setImageUrl(undefined)}
+      />
+    );
   }
 
   return (

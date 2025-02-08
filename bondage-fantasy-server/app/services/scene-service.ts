@@ -284,12 +284,14 @@ export class SceneService {
         itemId: step.itemId,
         name: item.name,
         description: item.description,
+        imageKey: item.imageKey,
         count: 0,
       };
       character.inventory.push(itemInInventory);
     } else {
       itemInInventory.name = item.name;
       itemInInventory.description = item.description;
+      itemInInventory.imageKey = item.imageKey;
     }
     itemInInventory.count += delta;
     if (itemInInventory.count > ITEM_IN_INVENTORY_STACK_MAX_COUNT) {
