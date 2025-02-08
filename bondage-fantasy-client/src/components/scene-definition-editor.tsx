@@ -804,7 +804,9 @@ export function SceneDefinitionEditor(props: {
 
   return (
     <div>
-      <div className="text-sm font-medium mb-2">Scene</div>
+      <div className="text-sm font-medium mb-2">
+        <Translation>{(t) => t("common.scene")}</Translation>
+      </div>
       <div>
         <div className="flex flex-col gap-2 max-w-lg">
           {props.scene.steps.map((step, index) => (
