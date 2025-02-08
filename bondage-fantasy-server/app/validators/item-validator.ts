@@ -2,6 +2,7 @@ import vine from "@vinejs/vine";
 import {
   ITEM_DESCRIPTION_MAX_LENGTH,
   ITEM_DESCRIPTION_MIN_LENGTH,
+  ITEM_IMAGE_MAX_SIZE,
   ITEM_NAME_MAX_LENGTH,
   ITEM_NAME_MIN_LENGTH,
   ITEM_SEARCH_QUERY_MAX_LENGTH,
@@ -15,7 +16,7 @@ export const itemSaveRequestValidator = vine.compile(
     json: vine.string(),
     image: vine
       .file({
-        size: "128kb",
+        size: ITEM_IMAGE_MAX_SIZE,
         extnames: ["jpeg", "jpg", "png"],
       })
       .optional(),

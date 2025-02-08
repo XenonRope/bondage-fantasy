@@ -57,7 +57,7 @@ export function ItemListPage() {
       <div className="mt-8">
         <SimpleGrid cols={3}>
           {searchResult.data?.items.map((item) => (
-            <CardWithImage key={item.id}>
+            <CardWithImage key={item.id} image={item.imageKey}>
               <div className="flex justify-between items-center">
                 <NameWithId name={item.name} id={item.id} />
                 <div className="flex items-center gap-2">

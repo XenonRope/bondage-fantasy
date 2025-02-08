@@ -1,16 +1,22 @@
 import {
+  faArrowUpFromBracket,
+  faXmark,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
   Button,
-  Textarea,
-  TextInput,
+  FileButton,
   MultiSelect,
   Select,
-  FileButton,
+  Textarea,
+  TextInput,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   ITEM_DESCRIPTION_MAX_LENGTH,
   ITEM_DESCRIPTION_MIN_LENGTH,
+  ITEM_IMAGE_MAX_SIZE,
   ITEM_NAME_MAX_LENGTH,
   ITEM_NAME_MIN_LENGTH,
   ItemSaveRequest,
@@ -21,16 +27,18 @@ import { useEffect, useId } from "react";
 import { Translation, useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router";
 import { itemApi } from "../api/item-api";
+import { ImageWithPlaceholder } from "../components/image-with-placeholder";
 import { errorService } from "../services/error-service";
 import { useAppStore } from "../store";
 import { Validators } from "../utils/validators";
+import { notificationService } from "../services/notification-service";
 
 interface ItemForm {
   name: string;
   description: string;
   type: ItemType;
+  image?: File | string;
   slots: ItemSlot[];
-  image: File | undefined;
 }
 
 export function ItemEditorPage() {
@@ -85,6 +93,7 @@ export function ItemEditorPage() {
         name: item.data.name,
         description: item.data.description,
         type: item.data.type,
+        image: item.data.imageKey,
         ...(item.data.type === ItemType.WEARABLE
           ? { slots: item.data.slots }
           : {}),
@@ -98,6 +107,8 @@ export function ItemEditorPage() {
     const name = form.getValues().name;
     const description = form.getValues().description;
     const type = form.getValues().type;
+    const image = form.getValues().image;
+    const imageKey = typeof image === "string" ? image : undefined;
 
     return type === ItemType.WEARABLE
       ? {
@@ -105,6 +116,7 @@ export function ItemEditorPage() {
           name,
           description,
           type,
+          imageKey,
           slots: form.getValues().slots,
         }
       : {
@@ -112,18 +124,28 @@ export function ItemEditorPage() {
           name,
           description,
           type,
+          imageKey,
         };
   }
 
   function submitForm(): void {
     form.onSubmit(() => {
       if (!saveItem.isPending) {
+        const image = form.getValues().image;
         saveItem.mutate({
           json: prepareItemSaveRequest(),
-          image: form.getValues().image,
+          image: image instanceof File ? image : undefined,
         });
       }
     })();
+  }
+
+  function validateImage(image: File): boolean {
+    if (image.size > ITEM_IMAGE_MAX_SIZE) {
+      notificationService.error(null, t("common.fileTooLarge"));
+      return false;
+    }
+    return true;
   }
 
   if (itemId && !item.data) {
@@ -173,12 +195,43 @@ export function ItemEditorPage() {
           className="mt-2 max-w-lg"
         />
       )}
-      <FileButton
-        {...form.getInputProps("image")}
-        accept="image/png,image/jpeg"
-      >
-        {(props) => <Button {...props}>Upload image</Button>}
-      </FileButton>
+      <div className="mt-4">
+        <div className="flex gap-2">
+          <FileButton
+            {...form.getInputProps("image")}
+            onChange={(file) => {
+              if (file && validateImage(file)) {
+                form.setFieldValue("image", file);
+              }
+            }}
+            accept="image/jpeg,image/png"
+          >
+            {(props) => (
+              <Button
+                {...props}
+                variant="light"
+                leftSection={<FontAwesomeIcon icon={faArrowUpFromBracket} />}
+              >
+                {t("common.uploadImage")}
+              </Button>
+            )}
+          </FileButton>
+          {form.getValues().image && (
+            <Button
+              onClick={() => form.setFieldValue("image", undefined)}
+              variant="light"
+              color="red"
+              leftSection={<FontAwesomeIcon icon={faXmark} />}
+            >
+              {t("common.removeImage")}
+            </Button>
+          )}
+        </div>
+        <div className="mt-2 h-32 w-32">
+          <ImageWithPlaceholder image={form.getValues().image} />
+        </div>
+      </div>
+
       <div className="mt-4">
         {itemId && <Button onClick={submitForm}>{t("item.modifyItem")}</Button>}
         {!itemId && (
