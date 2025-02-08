@@ -1,4 +1,10 @@
-import { Account, Character, Scene, ZoneVision } from "bondage-fantasy-common";
+import {
+  Account,
+  AppConfig,
+  Character,
+  Scene,
+  ZoneVision,
+} from "bondage-fantasy-common";
 import { NavigateFunction, SessionData } from "react-router";
 import { create } from "zustand";
 
@@ -12,7 +18,11 @@ export interface Store {
   character?: Character;
   zone?: ZoneVision;
   scene?: Scene;
-  initialize: (params: { navigate: NavigateFunction }) => void;
+  config?: AppConfig;
+  initialize: (params: {
+    navigate: NavigateFunction;
+    config?: AppConfig;
+  }) => void;
   updateSessionData: (sessionData: SessionData) => void;
 }
 
@@ -21,10 +31,11 @@ export const useAppStore = create<Store>()((set) => ({
   sessionInitializedPromise: new Promise((resolve) => {
     resolveSessionInitializedPromise = resolve;
   }),
-  initialize: ({ navigate }) =>
+  initialize: ({ navigate, config }) =>
     set((state) => ({
       ...state,
       navigate,
+      config,
     })),
   updateSessionData: ({ account, character, zone, scene }) => {
     resolveSessionInitializedPromise?.();

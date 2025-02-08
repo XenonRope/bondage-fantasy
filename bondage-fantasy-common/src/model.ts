@@ -1,3 +1,7 @@
+export interface AppConfig {
+  filesUrl: string;
+}
+
 export interface Account {
   id: number;
   username: string;

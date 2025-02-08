@@ -1,16 +1,20 @@
 import { faImage } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
+import { useAppStore } from "../store";
 
 export function ImageWithPlaceholder(props: { image?: File | string }) {
   const [imageUrl, setImageUrl] = useState<string>();
+  const config = useAppStore((state) => state.config);
   useEffect(() => {
     if (!props.image) {
       setImageUrl(undefined);
       return;
     }
     if (typeof props.image === "string") {
-      setImageUrl("/files/" + props.image);
+      if (config) {
+        setImageUrl(config.filesUrl + props.image);
+      }
       return;
     }
 
@@ -18,7 +22,7 @@ export function ImageWithPlaceholder(props: { image?: File | string }) {
     setImageUrl(objectUrl);
 
     return () => URL.revokeObjectURL(objectUrl);
-  }, [props.image]);
+  }, [props.image, config]);
 
   if (imageUrl) {
     return <img src={imageUrl} className="h-full w-full object-contain" />;

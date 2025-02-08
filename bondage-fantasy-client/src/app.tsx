@@ -14,7 +14,7 @@ import {
   QueryClientProvider,
   useQuery,
 } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { BrowserRouter, Route, Routes, useNavigate } from "react-router";
 import { sessionApi } from "./api/session-api";
 import "./app.css";
@@ -40,6 +40,8 @@ import { AuthRequired } from "./utils/auth-required";
 import { CharacterRequired } from "./utils/character-required";
 import { ZoneOrSceneRequired } from "./utils/zone-required";
 import { InventoryPage } from "./pages/inventory-page";
+import { configService } from "./services/config-service";
+import { AppConfig } from "bondage-fantasy-common";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -84,9 +86,13 @@ function App() {
 
 function AppRouter() {
   const navigate = useNavigate();
+  const [config, setConfig] = useState<AppConfig>();
   useEffect(() => {
-    useAppStore.getState().initialize({ navigate });
-  }, [navigate]);
+    configService.getConfig().then(setConfig);
+  }, []);
+  useEffect(() => {
+    useAppStore.getState().initialize({ navigate, config });
+  }, [navigate, config]);
   const sessionData = useQuery({
     queryKey: ["sessionData"],
     queryFn: async () => {

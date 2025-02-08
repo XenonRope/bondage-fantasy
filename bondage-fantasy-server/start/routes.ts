@@ -13,6 +13,7 @@ const CharacterController = () => import("#controllers/character-controller");
 const ZoneController = () => import("#controllers/zone-controller");
 const SceneController = () => import("#controllers/scene-controller");
 const ItemController = () => import("#controllers/item-controller");
+const ConfigController = () => import("#controllers/config-controller");
 import router from "@adonisjs/core/services/router";
 import { middleware } from "./kernel.js";
 
@@ -22,7 +23,7 @@ router
     router.post("/session/login", [SessionController, "login"]);
     router.post("/session/logout", [SessionController, "logout"]);
     router.get("/session", [SessionController, "getSessionData"]);
-
+    router.get("/config", [ConfigController, "get"]);
     router
       .group(() => {
         router.get("/characters", [CharacterController, "list"]);

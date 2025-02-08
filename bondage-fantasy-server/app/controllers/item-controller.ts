@@ -93,6 +93,7 @@ export default class ItemController {
         id: item.id,
         name: item.name,
         description: item.description,
+        imageKey: item.imageKey,
       })),
       total,
     };
