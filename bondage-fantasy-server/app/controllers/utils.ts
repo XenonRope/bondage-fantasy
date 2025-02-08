@@ -5,6 +5,8 @@ import {
 } from "#exceptions/exceptions";
 import { HttpContext } from "@adonisjs/core/http";
 import app from "@adonisjs/core/services/app";
+import { Exception } from "@poppinss/utils";
+import jsonUtils from "@poppinss/utils/json";
 import { ErrorCode } from "bondage-fantasy-common";
 
 export function getCharacterIdWithoutCheck(
@@ -34,4 +36,14 @@ export async function getCharacterId(ctx: HttpContext): Promise<number> {
   }
 
   return characterId;
+}
+
+export function safeParseJson(json: string): any {
+  try {
+    return jsonUtils.safeParse(json);
+  } catch (error) {
+    throw new Exception("Invalid JSON", {
+      status: 422,
+    });
+  }
 }

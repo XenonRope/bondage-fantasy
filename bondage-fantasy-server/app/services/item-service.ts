@@ -9,6 +9,9 @@ import { inject } from "@adonisjs/core";
 import { Item, ItemSlot, ItemType } from "bondage-fantasy-common";
 import lockService, { LOCKS } from "./lock-service.js";
 import { SequenceService } from "./sequence-service.js";
+import { MultipartFile } from "@adonisjs/core/bodyparser";
+import { cuid } from "@adonisjs/core/helpers";
+import drive from "@adonisjs/drive/services/main";
 
 @inject()
 export class ItemService {
@@ -40,6 +43,8 @@ export class ItemService {
       characterId: number;
       name: string;
       description: string;
+      imageKey?: string;
+      image?: MultipartFile;
     } & (
       | {
           type: ItemType.STORABLE;
@@ -56,13 +61,24 @@ export class ItemService {
         : [LOCKS.character(params.characterId), LOCKS.item(params.itemId)];
 
     return await lockService.run(locks, "1s", async () => {
-      if (params.itemId != null) {
-        const existingItem = await this.getById(params.itemId, {
-          checkAccessForCharacterId: params.characterId,
-        });
+      const existingItem =
+        params.itemId != null
+          ? await this.getById(params.itemId, {
+              checkAccessForCharacterId: params.characterId,
+            })
+          : undefined;
+      if (existingItem != null) {
         if (existingItem.type !== params.type) {
           throw new InvalidItemException(
             "You cannot change the type of an item",
+          );
+        }
+        if (
+          params.imageKey != null &&
+          params.imageKey != existingItem.imageKey
+        ) {
+          throw new InvalidItemException(
+            "Image key cannot be changed manually",
           );
         }
       }
@@ -70,6 +86,18 @@ export class ItemService {
       const itemId =
         params.itemId ??
         (await this.sequenceService.nextSequence(SequenceCode.ITEM));
+      const imageKey = params.image
+        ? `images/${cuid()}.${params.image.extname}`
+        : params.imageKey;
+
+      if (
+        existingItem?.imageKey &&
+        existingItem.imageKey !== imageKey &&
+        (await drive.use().exists(existingItem.imageKey))
+      ) {
+        await drive.use().delete(existingItem.imageKey);
+      }
+
       const newItem: Item =
         params.type === ItemType.WEARABLE
           ? {
@@ -78,6 +106,7 @@ export class ItemService {
               ownerCharacterId: params.characterId,
               name: params.name,
               description: params.description,
+              imageKey,
               slots: params.slots,
             }
           : {
@@ -86,12 +115,17 @@ export class ItemService {
               ownerCharacterId: params.characterId,
               name: params.name,
               description: params.description,
+              imageKey,
             };
 
       if (params.itemId == null) {
         await this.itemDao.insert(newItem);
       } else {
         await this.itemDao.replace(newItem);
+      }
+
+      if (params.image) {
+        await params.image.moveToDisk(imageKey!);
       }
     });
   }

@@ -21,7 +21,7 @@ class HttpClient {
 
   async post<T>(
     url: string,
-    body?: unknown,
+    body?: FormData | unknown,
     params?: { characterId?: number },
   ): Promise<T> {
     return this.sendRequest(url, {
@@ -35,7 +35,7 @@ class HttpClient {
     url: string,
     params: {
       method: string;
-      body?: unknown;
+      body?: FormData | unknown;
       characterId?: number;
       doNotWaitForSessionInitialization?: boolean;
     },
@@ -45,8 +45,10 @@ class HttpClient {
     }
     const headers: HeadersInit = {
       Accept: "application/json",
-      "Content-Type": "application/json",
     };
+    if (!(params.body instanceof FormData)) {
+      headers["Content-Type"] = "application/json";
+    }
     if (this.csrfToken) {
       headers["X-XSRF-TOKEN"] = this.csrfToken;
     }
@@ -58,7 +60,12 @@ class HttpClient {
 
     const response = await fetch(`/api/${url}`, {
       method: params.method,
-      body: params.body != null ? JSON.stringify(params.body) : undefined,
+      body:
+        params.body instanceof FormData
+          ? params.body
+          : params.body != null
+            ? JSON.stringify(params.body)
+            : undefined,
       headers,
     });
 

@@ -310,6 +310,7 @@ export interface BaseItem {
   ownerCharacterId: number;
   name: string;
   description: string;
+  imageKey?: string;
 }
 
 export interface StorableItem extends BaseItem {

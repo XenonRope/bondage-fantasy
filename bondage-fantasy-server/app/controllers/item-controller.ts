@@ -1,16 +1,21 @@
+import { ItemDao } from "#dao/item-dao";
 import { ItemService } from "#services/item-service";
+import { SessionService } from "#services/session-service";
 import {
+  itemSaveRequestJsonValidator,
   itemSaveRequestValidator,
   itemSearchRequestValidator,
 } from "#validators/item-validator";
 import { inject } from "@adonisjs/core";
 import { HttpContext } from "@adonisjs/core/http";
-import { getCharacterId } from "./utils.js";
-import { Item, ItemSearchResponse, SessionData } from "bondage-fantasy-common";
-import { SessionService } from "#services/session-service";
-import { ItemDao } from "#dao/item-dao";
-import { ItemType } from "bondage-fantasy-common";
+import {
+  Item,
+  ItemSearchResponse,
+  ItemType,
+  SessionData,
+} from "bondage-fantasy-common";
 import { itemDto, sessionDataDto } from "./dto.js";
+import { getCharacterId, safeParseJson } from "./utils.js";
 
 @inject()
 export default class ItemController {
@@ -21,7 +26,12 @@ export default class ItemController {
   ) {}
 
   async save(ctx: HttpContext): Promise<SessionData> {
-    const request = await ctx.request.validateUsing(itemSaveRequestValidator);
+    const { json, image } = await ctx.request.validateUsing(
+      itemSaveRequestValidator,
+    );
+    const request = await itemSaveRequestJsonValidator.validate(
+      safeParseJson(json),
+    );
     const characterId = await getCharacterId(ctx);
 
     await this.itemService.save(
@@ -32,6 +42,8 @@ export default class ItemController {
             name: request.name,
             description: request.description,
             type: request.type,
+            imageKey: request.imageKey,
+            image,
           }
         : {
             itemId: request.itemId,
@@ -39,6 +51,8 @@ export default class ItemController {
             name: request.name,
             description: request.description,
             type: request.type,
+            imageKey: request.imageKey,
+            image,
             slots: request.slots,
           },
     );

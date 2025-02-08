@@ -73,6 +73,7 @@ export type ItemSaveRequest = {
   itemId?: number;
   name: string;
   description: string;
+  imageKey?: string;
 } & (
   | {
       type: ItemType.STORABLE;

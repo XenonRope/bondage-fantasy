@@ -49,4 +49,15 @@ export default await Env.create(new URL("../", import.meta.url), {
   */
   MONGODB_CONNECTION_STRING: Env.schema.string(),
   MONGODB_DATABASE: Env.schema.string(),
+
+  /*
+  |----------------------------------------------------------
+  | Variables for configuring the drive package
+  |----------------------------------------------------------
+  */
+  DRIVE_DISK: Env.schema.enum(["fs", "r2"] as const),
+  R2_KEY: Env.schema.string(),
+  R2_SECRET: Env.schema.string(),
+  R2_BUCKET: Env.schema.string(),
+  R2_ENDPOINT: Env.schema.string(),
 });

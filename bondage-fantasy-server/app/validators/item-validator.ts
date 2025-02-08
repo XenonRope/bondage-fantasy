@@ -11,6 +11,18 @@ import {
 } from "bondage-fantasy-common";
 
 export const itemSaveRequestValidator = vine.compile(
+  vine.object({
+    json: vine.string(),
+    image: vine
+      .file({
+        size: "128kb",
+        extnames: ["jpeg", "jpg", "png"],
+      })
+      .optional(),
+  }),
+);
+
+export const itemSaveRequestJsonValidator = vine.compile(
   vine
     .object({
       itemId: vine.number().withoutDecimals().optional(),
@@ -22,6 +34,7 @@ export const itemSaveRequestValidator = vine.compile(
         .string()
         .minLength(ITEM_DESCRIPTION_MIN_LENGTH)
         .maxLength(ITEM_DESCRIPTION_MAX_LENGTH),
+      imageKey: vine.string().optional(),
     })
     .merge(
       vine.group([

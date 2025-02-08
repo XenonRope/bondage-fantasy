@@ -36,6 +36,7 @@ export default defineConfig({
     () => import("@adonisjs/redis/redis_provider"),
     () => import("@adonisjs/auth/auth_provider"),
     () => import("@adonisjs/shield/shield_provider"),
+    () => import("@adonisjs/drive/drive_provider"),
   ],
 
   /*

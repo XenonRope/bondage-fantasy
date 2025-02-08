@@ -8,7 +8,9 @@ export default defineConfig({
     proxy: {
       "/api": {
         target: "http://localhost:3333",
-        ws: true,
+      },
+      "/files": {
+        target: "http://localhost:3333",
       },
     },
   },

@@ -4,6 +4,7 @@ import {
   TextInput,
   MultiSelect,
   Select,
+  FileButton,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -29,6 +30,7 @@ interface ItemForm {
   description: string;
   type: ItemType;
   slots: ItemSlot[];
+  image: File | undefined;
 }
 
 export function ItemEditorPage() {
@@ -42,6 +44,7 @@ export function ItemEditorPage() {
       name: "",
       description: "",
       slots: [],
+      image: undefined,
     },
     validate: {
       name: Validators.inRange(ITEM_NAME_MIN_LENGTH, ITEM_NAME_MAX_LENGTH),
@@ -60,8 +63,8 @@ export function ItemEditorPage() {
     },
   });
   const saveItem = useMutation({
-    mutationFn: async (request: ItemSaveRequest) => {
-      const sessionData = await itemApi.save(request);
+    mutationFn: async (params: { json: ItemSaveRequest; image?: File }) => {
+      const sessionData = await itemApi.save(params.json, params.image);
       useAppStore.getState().updateSessionData(sessionData);
     },
     onSuccess: () => navigate("/items"),
@@ -115,7 +118,10 @@ export function ItemEditorPage() {
   function submitForm(): void {
     form.onSubmit(() => {
       if (!saveItem.isPending) {
-        saveItem.mutate(prepareItemSaveRequest());
+        saveItem.mutate({
+          json: prepareItemSaveRequest(),
+          image: form.getValues().image,
+        });
       }
     })();
   }
@@ -167,6 +173,12 @@ export function ItemEditorPage() {
           className="mt-2 max-w-lg"
         />
       )}
+      <FileButton
+        {...form.getInputProps("image")}
+        accept="image/png,image/jpeg"
+      >
+        {(props) => <Button {...props}>Upload image</Button>}
+      </FileButton>
       <div className="mt-4">
         {itemId && <Button onClick={submitForm}>{t("item.modifyItem")}</Button>}
         {!itemId && (
