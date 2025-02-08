@@ -19,11 +19,13 @@ export interface Store {
   zone?: ZoneVision;
   scene?: Scene;
   config?: AppConfig;
+  invalidImageKeys: string[];
   initialize: (params: {
     navigate: NavigateFunction;
     config?: AppConfig;
   }) => void;
   updateSessionData: (sessionData: SessionData) => void;
+  addInvalidImageKey: (imageKey: string) => void;
 }
 
 export const useAppStore = create<Store>()((set) => ({
@@ -31,6 +33,7 @@ export const useAppStore = create<Store>()((set) => ({
   sessionInitializedPromise: new Promise((resolve) => {
     resolveSessionInitializedPromise = resolve;
   }),
+  invalidImageKeys: [],
   initialize: ({ navigate, config }) =>
     set((state) => ({
       ...state,
@@ -46,6 +49,12 @@ export const useAppStore = create<Store>()((set) => ({
       character,
       zone,
       scene,
+    }));
+  },
+  addInvalidImageKey: (imageKey: string) => {
+    set((state) => ({
+      ...state,
+      invalidImageKeys: [...state.invalidImageKeys, imageKey],
     }));
   },
 }));

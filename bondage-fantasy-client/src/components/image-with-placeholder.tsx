@@ -12,7 +12,10 @@ export function ImageWithPlaceholder(props: { image?: File | string }) {
       return;
     }
     if (typeof props.image === "string") {
-      if (config) {
+      if (
+        config &&
+        !useAppStore.getState().invalidImageKeys.includes(props.image)
+      ) {
         setImageUrl(config.filesUrl + props.image);
       }
       return;
@@ -29,7 +32,12 @@ export function ImageWithPlaceholder(props: { image?: File | string }) {
       <img
         src={imageUrl}
         className="h-full w-full object-contain"
-        onError={() => setImageUrl(undefined)}
+        onError={() => {
+          if (typeof props.image === "string") {
+            useAppStore.getState().addInvalidImageKey(props.image);
+          }
+          setImageUrl(undefined);
+        }}
       />
     );
   }
