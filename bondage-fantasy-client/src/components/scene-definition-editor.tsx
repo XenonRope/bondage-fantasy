@@ -877,6 +877,7 @@ export function SceneDefinitionEditor(props: {
         size="lg"
         closeOnClickOutside={false}
         closeOnEscape={false}
+        transitionProps={{ transition: "fade" }}
       >
         {stepType === null ? (
           <SimpleGrid cols={3}>
