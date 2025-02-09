@@ -2,6 +2,7 @@ import { ItemDao } from "#dao/item-dao";
 import { ItemService } from "#services/item-service";
 import { SessionService } from "#services/session-service";
 import {
+  itemListRequestValidator,
   itemSaveRequestJsonValidator,
   itemSaveRequestValidator,
   itemSearchRequestValidator,
@@ -10,6 +11,8 @@ import { inject } from "@adonisjs/core";
 import { HttpContext } from "@adonisjs/core/http";
 import {
   Item,
+  ITEM_LIST_REQUEST_FIELDS,
+  ItemListResponse,
   ItemSearchResponse,
   ItemType,
   SessionData,
@@ -74,6 +77,26 @@ export default class ItemController {
     });
 
     return itemDto(item);
+  }
+
+  async list(ctx: HttpContext): Promise<ItemListResponse> {
+    const { itemsIds, fields } = await ctx.request.validateUsing(
+      itemListRequestValidator,
+    );
+    const characterId = await getCharacterId(ctx);
+
+    const items = await this.itemDao.getMany({
+      itemsIds,
+      ownerCharactersIds: [characterId],
+      fields: fields ?? ITEM_LIST_REQUEST_FIELDS,
+    });
+
+    return {
+      items: items.map((item) => ({
+        id: item.id,
+        name: item.name,
+      })),
+    };
   }
 
   async search(ctx: HttpContext): Promise<ItemSearchResponse> {

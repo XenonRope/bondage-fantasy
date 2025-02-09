@@ -1,5 +1,5 @@
 import { inject } from "@adonisjs/core";
-import { Collection, Db, Filter } from "mongodb";
+import { Collection, Db, Document, Filter } from "mongodb";
 import { Item, ItemType } from "bondage-fantasy-common";
 import { escapeRegex } from "../utils.js";
 
@@ -15,6 +15,32 @@ export class ItemDao {
     return await this.getCollection()
       .find({ id: { $in: itemIds } })
       .toArray();
+  }
+
+  async getMany(params: {
+    itemsIds?: number[];
+    ownerCharactersIds?: number[];
+    fields?: readonly string[];
+  }): Promise<Item[]> {
+    const filters: Filter<Item>[] = [];
+    if (params.itemsIds != null) {
+      filters.push({ id: { $in: params.itemsIds } });
+    }
+    if (params.ownerCharactersIds != null) {
+      filters.push({ ownerCharacterId: { $in: params.ownerCharactersIds } });
+    }
+    const filter = filters.length > 0 ? { $and: filters } : {};
+    const projection = params.fields?.reduce((acc, field) => {
+      acc[field] = 1;
+      return acc;
+    }, {} as Document);
+
+    const cursor = this.getCollection().find(filter);
+    if (projection != null) {
+      cursor.project(projection);
+    }
+
+    return await cursor.toArray();
   }
 
   async search(params: {

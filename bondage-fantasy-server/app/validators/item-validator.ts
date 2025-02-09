@@ -3,6 +3,7 @@ import {
   ITEM_DESCRIPTION_MAX_LENGTH,
   ITEM_DESCRIPTION_MIN_LENGTH,
   ITEM_IMAGE_MAX_SIZE,
+  ITEM_LIST_REQUEST_FIELDS,
   ITEM_NAME_MAX_LENGTH,
   ITEM_NAME_MIN_LENGTH,
   ITEM_SEARCH_QUERY_MAX_LENGTH,
@@ -48,6 +49,20 @@ export const itemSaveRequestJsonValidator = vine.compile(
         }),
       ]),
     ),
+);
+
+export const itemListRequestValidator = vine.compile(
+  vine.object({
+    itemsIds: vine
+      .array(vine.number().withoutDecimals())
+      .notEmpty()
+      .maxLength(1000),
+    fields: vine
+      .array(vine.enum(ITEM_LIST_REQUEST_FIELDS))
+      .distinct()
+      .notEmpty()
+      .optional(),
+  }),
 );
 
 export const itemSearchRequestValidator = vine.compile(

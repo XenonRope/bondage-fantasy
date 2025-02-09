@@ -54,6 +54,8 @@ import { DEFAULT_DEBOUNCE } from "../utils/utils";
 import { Validators } from "../utils/validators";
 import { ExpressionEditor } from "./expression-editor";
 import { TextTemplateEditor } from "./text-template-editor";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { itemApi } from "../api/item-api";
 
 function TextStep({
   initialStep,
@@ -693,6 +695,7 @@ export function SceneDefinitionEditor(props: {
   scene: SceneDefinition;
   onChange: (scene: SceneDefinition) => void;
 }) {
+  const { t } = useTranslation();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [stepType, setStepType] = useState<SceneStepType | null>(null);
   const [stepToEdit, setStepToEdit] = useState<SceneStep | null>(null);
@@ -733,6 +736,31 @@ export function SceneDefinitionEditor(props: {
       ),
     );
   }, [props.scene.steps]);
+  const itemsIds = useMemo(() => {
+    return Array.from(
+      new Set(
+        props.scene.steps.flatMap((step) => {
+          if (step.type === SceneStepType.USE_WEARABLE) {
+            return step.itemsIds;
+          }
+          if (step.type === SceneStepType.CHANGE_ITEMS_COUNT) {
+            return [step.itemId];
+          }
+          return [];
+        }),
+      ),
+    ).sort((a, b) => a - b);
+  }, [props.scene.steps]);
+  const items = useQuery({
+    queryKey: ["items", { itemsIds, fields: ["id", "name"] }],
+    queryFn: async () => {
+      if (itemsIds.length === 0) {
+        return { items: [] };
+      }
+      return itemApi.list({ itemsIds, fields: ["id", "name"] });
+    },
+    placeholderData: keepPreviousData,
+  });
 
   function handleAddStepClick(): void {
     if (props.scene.steps.length >= SCENE_STEPS_MAX_COUNT) {
@@ -808,13 +836,116 @@ export function SceneDefinitionEditor(props: {
         <Translation>{(t) => t("common.scene")}</Translation>
       </div>
       <div>
-        <div className="flex flex-col gap-2 max-w-lg">
+        <div className="flex flex-col gap-2 max-w-xl">
           {props.scene.steps.map((step, index) => (
             <div
               key={index}
-              className="flex justify-between items-center p-2 border border-black"
+              className="flex justify-between items-start p-2 border border-black"
             >
-              <div>{step.type}</div>
+              <div>
+                {step.type === SceneStepType.TEXT && (
+                  <div className="line-clamp-2">
+                    {step.characterName && (
+                      <span>{step.characterName}:&nbsp;</span>
+                    )}
+                    <span>{step.text}</span>
+                  </div>
+                )}
+                {step.type === SceneStepType.LABEL && (
+                  <>
+                    <span className="font-medium">Label&nbsp;</span>
+                    <span>{step.label}</span>
+                  </>
+                )}
+                {step.type === SceneStepType.JUMP && (
+                  <>
+                    <span className="font-medium">Jump to&nbsp;</span>
+                    <span>{step.label}</span>
+                    {step.condition && (
+                      <>
+                        <span className="font-medium">&nbsp;if&nbsp;</span>
+                        <span>{step.condition}</span>
+                      </>
+                    )}
+                  </>
+                )}
+                {step.type === SceneStepType.VARIABLE && (
+                  <>
+                    <span className="font-medium">Set&nbsp;</span>
+                    <span>{step.name}</span>
+                    <span className="font-medium">&nbsp;to&nbsp;</span>
+                    <span>{step.value}</span>
+                  </>
+                )}
+                {step.type === SceneStepType.CHOICE && (
+                  <div>
+                    <div className="font-medium">Choice&nbsp;</div>
+                    {step.options.map((option) => (
+                      <div key={option.name}>
+                        <span>{option.name}</span>
+                        {option.condition && (
+                          <>
+                            <span className="font-medium">&nbsp;if&nbsp;</span>
+                            <span>{option.condition}</span>
+                          </>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {step.type === SceneStepType.USE_WEARABLE && (
+                  <>
+                    <div>
+                      <span className="font-medium">Use&nbsp;</span>
+                      <span>
+                        {step.itemsIds
+                          .map(
+                            (id) =>
+                              (items.data?.items.find((item) => item.id === id)
+                                ?.name ?? "") + ` (${id})`,
+                          )
+                          .join(", ")}
+                      </span>
+                    </div>
+                    {step.fallbackLabel && (
+                      <>
+                        <span className="font-medium">Fallback&nbsp;</span>
+                        <span>{step.fallbackLabel}</span>
+                      </>
+                    )}
+                  </>
+                )}
+                {step.type === SceneStepType.REMOVE_WEARABLE && (
+                  <>
+                    <div>
+                      <span className="font-medium">Remove from&nbsp;</span>
+                      <span>
+                        {step.slots
+                          .map((slot) => t(`item.slots.${slot}`))
+                          .join(", ")}
+                      </span>
+                    </div>
+                    {step.fallbackLabel && (
+                      <>
+                        <span className="font-medium">Fallback&nbsp;</span>
+                        <span>{step.fallbackLabel}</span>
+                      </>
+                    )}
+                  </>
+                )}
+                {step.type === SceneStepType.CHANGE_ITEMS_COUNT && (
+                  <>
+                    <span className="font-medium">Change count of&nbsp;</span>
+                    <span>
+                      {(items.data?.items.find(
+                        (item) => item.id === step.itemId,
+                      )?.name ?? "") + ` (${step.itemId})`}
+                    </span>
+                    <span className="font-medium">&nbsp;by&nbsp;</span>
+                    <span>{step.delta}</span>
+                  </>
+                )}
+              </div>
               <div className="flex items-center ml-auto">
                 <ActionIcon
                   variant="transparent"

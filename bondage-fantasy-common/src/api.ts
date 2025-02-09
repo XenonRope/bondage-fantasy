@@ -84,6 +84,22 @@ export type ItemSaveRequest = {
     }
 );
 
+export const ITEM_LIST_REQUEST_FIELDS = ["id", "name"] as const;
+
+export type ItemListRequestFields = (typeof ITEM_LIST_REQUEST_FIELDS)[number];
+
+export interface ItemListRequest {
+  itemsIds: number[];
+  fields?: ItemListRequestFields[];
+}
+
+export interface ItemListResponse {
+  items: Array<{
+    id: number;
+    name: string;
+  }>;
+}
+
 export interface ItemSearchRequest {
   query: string;
   offset: number;

@@ -48,6 +48,7 @@ router
         router
           .get("/items/:id", [ItemController, "getById"])
           .where("id", router.matchers.number());
+        router.post("/items/list", [ItemController, "list"]);
         router.post("/items/search", [ItemController, "search"]);
       })
       .use(middleware.auth());

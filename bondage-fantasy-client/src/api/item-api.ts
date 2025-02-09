@@ -1,6 +1,8 @@
 import { httpClient } from "./http-client";
 import {
   Item,
+  ItemListRequest,
+  ItemListResponse,
   ItemSaveRequest,
   ItemSearchRequest,
   ItemSearchResponse,
@@ -18,6 +20,10 @@ class ItemApi {
 
   async getById(itemId: number): Promise<Item> {
     return await httpClient.get(`items/${itemId}`);
+  }
+
+  async list(request: ItemListRequest): Promise<ItemListResponse> {
+    return await httpClient.post("items/list", request);
   }
 
   async search(request: ItemSearchRequest): Promise<ItemSearchResponse> {
