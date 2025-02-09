@@ -61,12 +61,12 @@ function ObjectActions(props: { actions: ZoneObjectAction[] }) {
     <div className="flex gap-2">
       {props.actions.map((action, index) => (
         <Tooltip
+          key={index}
           label={action.name}
           openDelay={DEFAULT_TOOLTIP_DELAY}
           transitionProps={{ duration: DEFAULT_TOOLTIP_TRANSITION_DURATION }}
         >
           <ActionIcon
-            key={index}
             variant="transparent"
             onClick={action.onClick}
             data-variant-color={action.iconColor}

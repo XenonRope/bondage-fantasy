@@ -210,6 +210,7 @@ export class SceneService {
             itemId: wearable.id,
             name: wearable.name,
             description: wearable.description,
+            imageKey: wearable.imageKey,
             slots: wearable.slots,
           }));
         const slots = wearablesToAdd.flatMap((wearable) => wearable.slots);

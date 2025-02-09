@@ -3,19 +3,42 @@ import {
   ItemSlot,
   WearableItemOnCharacter,
 } from "bondage-fantasy-common";
+import { Translation } from "react-i18next";
+import { ImageWithPlaceholder } from "./image-with-placeholder";
+
+function CharacterWearableSlot(props: {
+  slot: ItemSlot;
+  wearable?: WearableItemOnCharacter;
+}) {
+  return (
+    <div className="flex gap-2">
+      <div className="h-11 w-11 flex-shrink-0">
+        {props.wearable && (
+          <ImageWithPlaceholder image={props.wearable.imageKey} />
+        )}
+        {!props.wearable && <div className="h-full border border-gray-300" />}
+      </div>
+      <div className="overflow-hidden">
+        <div className="text-sm font-medium">
+          <Translation>{(t) => t(`item.slots.${props.slot}`)}</Translation>
+        </div>
+        <div className="text-sm truncate">{props.wearable?.name}</div>
+      </div>
+    </div>
+  );
+}
 
 export function CharacterWearables(props: { character: Character }) {
-  function getSortedWearables(): WearableItemOnCharacter[] {
-    const allSlots = Object.values(ItemSlot);
-    return props.character.wearables.sort((a, b) => {
-      return allSlots.indexOf(a.slots[0]) - allSlots.indexOf(b.slots[0]);
-    });
-  }
-
   return (
-    <div>
-      {getSortedWearables().map((wearable) => (
-        <div key={wearable.slots[0]}>{wearable.name}</div>
+    <div className="flex flex-col gap-1">
+      {Object.values(ItemSlot).map((slot) => (
+        <CharacterWearableSlot
+          key={slot}
+          slot={slot}
+          wearable={props.character.wearables.find((wearable) =>
+            wearable.slots.includes(slot),
+          )}
+        />
       ))}
     </div>
   );

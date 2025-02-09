@@ -24,6 +24,7 @@ export interface WearableItemOnCharacter {
   itemId: number;
   name: string;
   description: string;
+  imageKey?: string;
   slots: ItemSlot[];
 }
 
