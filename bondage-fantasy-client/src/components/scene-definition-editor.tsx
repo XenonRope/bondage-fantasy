@@ -945,6 +945,9 @@ export function SceneDefinitionEditor(props: {
                     <span>{step.delta}</span>
                   </>
                 )}
+                {step.type === SceneStepType.ABORT && (
+                  <span className="font-medium">Abort</span>
+                )}
               </div>
               <div className="flex items-center ml-auto">
                 <ActionIcon
