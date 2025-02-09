@@ -22,25 +22,26 @@ function CharacterItem(props: { object: CharacterZoneVisionObject }) {
   const characterId = useAppStore((state) => state.character?.id);
 
   return (
-    <div>
+    <div className="flex items-center">
       <FontAwesomeIcon
         icon={faUser}
         className={
-          props.object.characterId === characterId
+          "w-4 h-4 " +
+          (props.object.characterId === characterId
             ? "text-indigo-700"
-            : "text-yellow-700"
+            : "text-yellow-700")
         }
       />
-      <span className="ml-2">{props.object.name}</span>
+      <div className="ml-2">{props.object.name}</div>
     </div>
   );
 }
 
 function EventItem(props: { object: EventZoneVisionObject }) {
   return (
-    <div>
-      <FontAwesomeIcon icon={faStar} className={"text-green-700"} />
-      <span className="ml-2">{props.object.name}</span>
+    <div className="flex items-center">
+      <FontAwesomeIcon icon={faStar} className="w-4 h-4 text-green-700" />
+      <div className="ml-2">{props.object.name}</div>
     </div>
   );
 }
@@ -102,7 +103,7 @@ export function ZoneObjectList(props: {
   return (
     <div>
       {sortedObjects.map((object, index) => (
-        <div key={index} className="flex justify-between hover:bg-gray-100">
+        <div key={index} className="flex justify-between h-7 hover:bg-gray-100">
           {object.type === ObjectType.CHARACTER && (
             <CharacterItem object={object} />
           )}
