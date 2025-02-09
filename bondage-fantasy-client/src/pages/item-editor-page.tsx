@@ -29,9 +29,10 @@ import { useNavigate, useParams } from "react-router";
 import { itemApi } from "../api/item-api";
 import { ImageWithPlaceholder } from "../components/image-with-placeholder";
 import { errorService } from "../services/error-service";
-import { useAppStore } from "../store";
-import { Validators } from "../utils/validators";
 import { notificationService } from "../services/notification-service";
+import { useAppStore } from "../store";
+import { formatBytes } from "../utils/utils";
+import { Validators } from "../utils/validators";
 
 interface ItemForm {
   name: string;
@@ -227,7 +228,18 @@ export function ItemEditorPage() {
             </Button>
           )}
         </div>
-        <div className="mt-2 h-32 w-32">
+        <div className="mt-1 text-sm text-gray-500">
+          <Translation>
+            {(t) =>
+              t("common.recommendedImageData", {
+                width: 128,
+                height: 128,
+                maxSize: formatBytes(ITEM_IMAGE_MAX_SIZE),
+              })
+            }
+          </Translation>
+        </div>
+        <div className="mt-1 h-32 w-32">
           <ImageWithPlaceholder image={form.getValues().image} />
         </div>
       </div>

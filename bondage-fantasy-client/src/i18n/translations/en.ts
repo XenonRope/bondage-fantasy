@@ -33,6 +33,8 @@ export const en: ResourceLanguage = {
     "common.removeImage": "Remove image",
     "common.fileTooLarge": "File is too large",
     "common.scene": "Scene",
+    "common.recommendedImageData":
+      "Recommended image resolutation: {{width}}x{{height}}. Max size: {{maxSize}}.",
     "navbar.characters": "Characters",
     "navbar.zones": "Zones",
     "navbar.explore": "Explore",

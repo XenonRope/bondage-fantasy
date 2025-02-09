@@ -32,6 +32,8 @@ export const pl: ResourceLanguage = {
     "common.removeImage": "Usuń obraz",
     "common.fileTooLarge": "Plik jest za duży",
     "common.scene": "Scena",
+    "common.recommendedImageData":
+      "Zalecana rozdzielczość obrazu: {{width}}x{{height}}. Maksymalny rozmiar: {{maxSize}}.",
     "navbar.characters": "Postacie",
     "navbar.zones": "Strefy",
     "navbar.explore": "Eksploruj",
