@@ -1,3 +1,20 @@
+import {
+  closestCenter,
+  DndContext,
+  DragEndEvent,
+  DragStartEvent,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import { restrictToParentElement } from "@dnd-kit/modifiers";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 import { Button, Modal, SimpleGrid } from "@mantine/core";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import {
@@ -88,6 +105,13 @@ export function SceneDefinitionEditor(props: {
     },
     placeholderData: keepPreviousData,
   });
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    }),
+  );
+  const [draggedStepId, setDraggedStepId] = useState<number>();
 
   function onStepsChange(steps: SceneStep[]): void {
     setSteps(steps);
@@ -133,34 +157,25 @@ export function SceneDefinitionEditor(props: {
     onStepsChange(newSteps);
   }
 
-  function handleMoveStepUp(index: number): void {
-    if (index <= 0) {
-      return;
-    }
-    const newSteps = [...steps];
-    [newSteps[index - 1], newSteps[index]] = [
-      newSteps[index],
-      newSteps[index - 1],
-    ];
-    onStepsChange(newSteps);
-  }
-
-  function handleMoveStepDown(index: number): void {
-    if (index >= steps.length - 1) {
-      return;
-    }
-    const newSteps = [...steps];
-    [newSteps[index], newSteps[index + 1]] = [
-      newSteps[index + 1],
-      newSteps[index],
-    ];
-    onStepsChange(newSteps);
-  }
-
   function handleEditStep(step: SceneStep): void {
     setStepType(step.type);
     setStepToEdit(step);
     setDialogOpen(true);
+  }
+
+  function handleDragStart(event: DragStartEvent) {
+    setDraggedStepId(event.active.id as number);
+  }
+
+  function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event;
+    setDraggedStepId(undefined);
+
+    if (over && active.id !== over.id) {
+      const oldIndex = steps.findIndex((step) => step.id === active.id);
+      const newIndex = steps.findIndex((step) => step.id === over.id);
+      onStepsChange(arrayMove(steps, oldIndex, newIndex));
+    }
   }
 
   return (
@@ -170,21 +185,29 @@ export function SceneDefinitionEditor(props: {
       </div>
       <div>
         <div className="flex flex-col gap-2 max-w-xl">
-          {steps.map((step, index) => (
-            <SceneDefinitionEditorStepTile
-              key={index}
-              step={step}
-              items={items.data?.items ?? []}
-              onMoveUp={index > 0 ? () => handleMoveStepUp(index) : undefined}
-              onMoveDown={
-                index < steps.length - 1
-                  ? () => handleMoveStepDown(index)
-                  : undefined
-              }
-              onEdit={() => handleEditStep(step)}
-              onRemove={() => handleRemoveStep(index)}
-            />
-          ))}
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}
+            modifiers={[restrictToParentElement]}
+          >
+            <SortableContext
+              items={steps.map((step) => step.id as number)}
+              strategy={verticalListSortingStrategy}
+            >
+              {steps.map((step, index) => (
+                <SceneDefinitionEditorStepTile
+                  key={step.id}
+                  step={step}
+                  items={items.data?.items ?? []}
+                  onEdit={() => handleEditStep(step)}
+                  onRemove={() => handleRemoveStep(index)}
+                  dragging={draggedStepId === step.id}
+                />
+              ))}
+            </SortableContext>
+          </DndContext>
         </div>
         <div className={`flex gap-4 ${steps.length > 0 ? "mt-4" : ""}`}>
           <Button

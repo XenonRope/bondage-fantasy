@@ -1,8 +1,9 @@
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import {
-  faArrowDown,
-  faArrowUp,
   faGear,
   faTrash,
+  faUpDownLeftRight,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ActionIcon } from "@mantine/core";
@@ -19,13 +20,25 @@ export function SceneDefinitionEditorStepTile(props: {
     id: number;
     name: string;
   }>;
-  onMoveUp?: () => void;
-  onMoveDown?: () => void;
   onEdit: () => void;
   onRemove: () => void;
+  dragging?: boolean;
 }) {
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id: props.step.id as number });
+
+  const style = {
+    transform: CSS.Translate.toString(transform),
+    transition,
+    zIndex: props.dragging ? 1000 : undefined,
+  };
+
   return (
-    <div className="flex justify-between items-start p-2 border border-black">
+    <div
+      className="flex justify-between items-start p-2 border border-black bg-white"
+      ref={setNodeRef}
+      style={style}
+    >
       <div>
         {props.step.type === SceneStepType.TEXT && (
           <div className="line-clamp-2">
@@ -137,20 +150,6 @@ export function SceneDefinitionEditorStepTile(props: {
       <div className="flex items-center ml-auto">
         <ActionIcon
           variant="transparent"
-          onClick={props.onMoveUp}
-          disabled={!props.onMoveUp}
-        >
-          <FontAwesomeIcon icon={faArrowUp} />
-        </ActionIcon>
-        <ActionIcon
-          variant="transparent"
-          onClick={props.onMoveDown}
-          disabled={!props.onMoveDown}
-        >
-          <FontAwesomeIcon icon={faArrowDown} />
-        </ActionIcon>
-        <ActionIcon
-          variant="transparent"
           onClick={props.onEdit}
           disabled={props.step.type === SceneStepType.ABORT}
         >
@@ -162,6 +161,9 @@ export function SceneDefinitionEditorStepTile(props: {
           onClick={props.onRemove}
         >
           <FontAwesomeIcon icon={faTrash} />
+        </ActionIcon>
+        <ActionIcon variant="transparent" {...attributes} {...listeners}>
+          <FontAwesomeIcon icon={faUpDownLeftRight} />
         </ActionIcon>
       </div>
     </div>
