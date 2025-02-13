@@ -147,7 +147,7 @@ function EventForm(props: {
         />
       )}
       <div className="mt-4">
-        <SceneDefinitionEditor scene={scene} onChange={setScene} />
+        <SceneDefinitionEditor initialScene={scene} onChange={setScene} />
       </div>
       <div className="mt-4">
         <Button onClick={() => form.onSubmit(onConfirm)()}>

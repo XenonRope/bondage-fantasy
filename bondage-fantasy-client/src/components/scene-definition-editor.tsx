@@ -6,16 +6,23 @@ import {
   SceneStep,
   SceneStepType,
 } from "bondage-fantasy-common";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { Translation } from "react-i18next";
 import { itemApi } from "../api/item-api";
 import { SceneDefinitionEditorStepForm } from "./scene-definition-editor-step-form";
 import { SceneDefinitionEditorStepTile } from "./scene-definition-editor-step-tile";
 
 export function SceneDefinitionEditor(props: {
-  scene: SceneDefinition;
+  initialScene: SceneDefinition;
   onChange: (scene: SceneDefinition) => void;
 }) {
+  const nextStepId = useRef(1);
+  const [steps, setSteps] = useState<SceneStep[]>(
+    props.initialScene.steps.map((step) => ({
+      ...step,
+      id: nextStepId.current++,
+    })),
+  );
   const [dialogOpen, setDialogOpen] = useState(false);
   const [stepType, setStepType] = useState<SceneStepType>();
   const [stepToEdit, setStepToEdit] = useState<SceneStep>();
@@ -23,7 +30,7 @@ export function SceneDefinitionEditor(props: {
     () =>
       Array.from(
         new Set(
-          props.scene.steps
+          steps
             .flatMap((step) => {
               if (
                 step.type === SceneStepType.LABEL ||
@@ -45,21 +52,21 @@ export function SceneDefinitionEditor(props: {
             .filter((label) => label?.length > 0),
         ),
       ),
-    [props.scene.steps],
+    [steps],
   );
   const existingVariables = useMemo(() => {
     return Array.from(
       new Set(
-        props.scene.steps
+        steps
           .filter((step) => step.type === SceneStepType.VARIABLE)
           .map((step) => step.name),
       ),
     );
-  }, [props.scene.steps]);
+  }, [steps]);
   const itemsIds = useMemo(() => {
     return Array.from(
       new Set(
-        props.scene.steps.flatMap((step) => {
+        steps.flatMap((step) => {
           if (step.type === SceneStepType.USE_WEARABLE) {
             return step.itemsIds;
           }
@@ -70,7 +77,7 @@ export function SceneDefinitionEditor(props: {
         }),
       ),
     ).sort((a, b) => a - b);
-  }, [props.scene.steps]);
+  }, [steps]);
   const items = useQuery({
     queryKey: ["items", { itemsIds, fields: ["id", "name"] }],
     queryFn: async () => {
@@ -82,8 +89,13 @@ export function SceneDefinitionEditor(props: {
     placeholderData: keepPreviousData,
   });
 
+  function onStepsChange(steps: SceneStep[]): void {
+    setSteps(steps);
+    props.onChange({ ...props.initialScene, steps });
+  }
+
   function handleAddStepClick(): void {
-    if (props.scene.steps.length >= SCENE_STEPS_MAX_COUNT) {
+    if (steps.length >= SCENE_STEPS_MAX_COUNT) {
       return;
     }
     setStepType(undefined);
@@ -104,44 +116,45 @@ export function SceneDefinitionEditor(props: {
   }
 
   function handleStepConfirm(step: SceneStep): void {
+    const newStep = { ...step, id: nextStepId.current++ };
     if (stepToEdit != null) {
-      const newSteps = [...props.scene.steps];
-      newSteps[newSteps.indexOf(stepToEdit)] = step;
-      props.onChange({ ...props.scene, steps: newSteps });
+      const newSteps = [...steps];
+      newSteps[newSteps.indexOf(stepToEdit)] = newStep;
+      onStepsChange(newSteps);
     } else {
-      props.onChange({ ...props.scene, steps: [...props.scene.steps, step] });
+      onStepsChange([...steps, newStep]);
     }
     setDialogOpen(false);
   }
 
   function handleRemoveStep(index: number): void {
-    const newSteps = [...props.scene.steps];
+    const newSteps = [...steps];
     newSteps.splice(index, 1);
-    props.onChange({ ...props.scene, steps: newSteps });
+    onStepsChange(newSteps);
   }
 
   function handleMoveStepUp(index: number): void {
     if (index <= 0) {
       return;
     }
-    const newSteps = [...props.scene.steps];
+    const newSteps = [...steps];
     [newSteps[index - 1], newSteps[index]] = [
       newSteps[index],
       newSteps[index - 1],
     ];
-    props.onChange({ ...props.scene, steps: newSteps });
+    onStepsChange(newSteps);
   }
 
   function handleMoveStepDown(index: number): void {
-    if (index >= props.scene.steps.length - 1) {
+    if (index >= steps.length - 1) {
       return;
     }
-    const newSteps = [...props.scene.steps];
+    const newSteps = [...steps];
     [newSteps[index], newSteps[index + 1]] = [
       newSteps[index + 1],
       newSteps[index],
     ];
-    props.onChange({ ...props.scene, steps: newSteps });
+    onStepsChange(newSteps);
   }
 
   function handleEditStep(step: SceneStep): void {
@@ -157,14 +170,14 @@ export function SceneDefinitionEditor(props: {
       </div>
       <div>
         <div className="flex flex-col gap-2 max-w-xl">
-          {props.scene.steps.map((step, index) => (
+          {steps.map((step, index) => (
             <SceneDefinitionEditorStepTile
               key={index}
               step={step}
               items={items.data?.items ?? []}
               onMoveUp={index > 0 ? () => handleMoveStepUp(index) : undefined}
               onMoveDown={
-                index < props.scene.steps.length - 1
+                index < steps.length - 1
                   ? () => handleMoveStepDown(index)
                   : undefined
               }
@@ -173,12 +186,10 @@ export function SceneDefinitionEditor(props: {
             />
           ))}
         </div>
-        <div
-          className={`flex gap-4 ${props.scene.steps.length > 0 ? "mt-4" : ""}`}
-        >
+        <div className={`flex gap-4 ${steps.length > 0 ? "mt-4" : ""}`}>
           <Button
             onClick={handleAddStepClick}
-            disabled={props.scene.steps.length >= SCENE_STEPS_MAX_COUNT}
+            disabled={steps.length >= SCENE_STEPS_MAX_COUNT}
           >
             <Translation>{(t) => t("scene.addStep")}</Translation>
           </Button>

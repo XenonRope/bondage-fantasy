@@ -209,19 +209,25 @@ export type SceneStep =
   | SceneStepRemoveWearable
   | SceneStepChangeItemsCount;
 
-export interface SceneStepText {
+export interface SceneStepBase {
+  type: SceneStepType;
+  // Used only in client
+  id?: number;
+}
+
+export interface SceneStepText extends SceneStepBase {
   type: SceneStepType.TEXT;
   characterName?: string;
   characterNameColor?: string;
   text: Template;
 }
 
-export interface SceneStepLabel {
+export interface SceneStepLabel extends SceneStepBase {
   type: SceneStepType.LABEL;
   label: string;
 }
 
-export interface SceneStepJump {
+export interface SceneStepJump extends SceneStepBase {
   type: SceneStepType.JUMP;
   label: string;
   condition?: ExpressionSource;
@@ -233,34 +239,34 @@ export interface SceneStepChoiceOption {
   condition?: ExpressionSource;
 }
 
-export interface SceneStepChoice {
+export interface SceneStepChoice extends SceneStepBase {
   type: SceneStepType.CHOICE;
   options: SceneStepChoiceOption[];
 }
 
-export interface SceneStepAbort {
+export interface SceneStepAbort extends SceneStepBase {
   type: SceneStepType.ABORT;
 }
 
-export interface SceneStepVariable {
+export interface SceneStepVariable extends SceneStepBase {
   type: SceneStepType.VARIABLE;
   name: string;
   value: ExpressionSource;
 }
 
-export interface SceneStepUseWearable {
+export interface SceneStepUseWearable extends SceneStepBase {
   type: SceneStepType.USE_WEARABLE;
   itemsIds: number[];
   fallbackLabel?: string;
 }
 
-export interface SceneStepRemoveWearable {
+export interface SceneStepRemoveWearable extends SceneStepBase {
   type: SceneStepType.REMOVE_WEARABLE;
   slots: ItemSlot[];
   fallbackLabel?: string;
 }
 
-export interface SceneStepChangeItemsCount {
+export interface SceneStepChangeItemsCount extends SceneStepBase {
   type: SceneStepType.CHANGE_ITEMS_COUNT;
   itemId: number;
   delta: ExpressionSource;
