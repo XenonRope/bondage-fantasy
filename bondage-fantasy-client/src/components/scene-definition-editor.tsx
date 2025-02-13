@@ -1,11 +1,4 @@
-import {
-  faArrowDown,
-  faArrowUp,
-  faGear,
-  faTrash,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { ActionIcon, Button, Modal, SimpleGrid } from "@mantine/core";
+import { Button, Modal, SimpleGrid } from "@mantine/core";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import {
   SCENE_STEPS_MAX_COUNT,
@@ -14,15 +7,15 @@ import {
   SceneStepType,
 } from "bondage-fantasy-common";
 import { useMemo, useState } from "react";
-import { Translation, useTranslation } from "react-i18next";
+import { Translation } from "react-i18next";
 import { itemApi } from "../api/item-api";
 import { SceneDefinitionEditorStepForm } from "./scene-definition-editor-step-form";
+import { SceneDefinitionEditorStepTile } from "./scene-definition-editor-step-tile";
 
 export function SceneDefinitionEditor(props: {
   scene: SceneDefinition;
   onChange: (scene: SceneDefinition) => void;
 }) {
-  const { t } = useTranslation();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [stepType, setStepType] = useState<SceneStepType>();
   const [stepToEdit, setStepToEdit] = useState<SceneStep>();
@@ -165,148 +158,19 @@ export function SceneDefinitionEditor(props: {
       <div>
         <div className="flex flex-col gap-2 max-w-xl">
           {props.scene.steps.map((step, index) => (
-            <div
+            <SceneDefinitionEditorStepTile
               key={index}
-              className="flex justify-between items-start p-2 border border-black"
-            >
-              <div>
-                {step.type === SceneStepType.TEXT && (
-                  <div className="line-clamp-2">
-                    {step.characterName && (
-                      <span>{step.characterName}:&nbsp;</span>
-                    )}
-                    <span>{step.text}</span>
-                  </div>
-                )}
-                {step.type === SceneStepType.LABEL && (
-                  <>
-                    <span className="font-medium">Label&nbsp;</span>
-                    <span>{step.label}</span>
-                  </>
-                )}
-                {step.type === SceneStepType.JUMP && (
-                  <>
-                    <span className="font-medium">Jump to&nbsp;</span>
-                    <span>{step.label}</span>
-                    {step.condition && (
-                      <>
-                        <span className="font-medium">&nbsp;if&nbsp;</span>
-                        <span>{step.condition}</span>
-                      </>
-                    )}
-                  </>
-                )}
-                {step.type === SceneStepType.VARIABLE && (
-                  <>
-                    <span className="font-medium">Set&nbsp;</span>
-                    <span>{step.name}</span>
-                    <span className="font-medium">&nbsp;to&nbsp;</span>
-                    <span>{step.value}</span>
-                  </>
-                )}
-                {step.type === SceneStepType.CHOICE && (
-                  <div>
-                    <div className="font-medium">Choice&nbsp;</div>
-                    {step.options.map((option) => (
-                      <div key={option.name}>
-                        <span>{option.name}</span>
-                        {option.condition && (
-                          <>
-                            <span className="font-medium">&nbsp;if&nbsp;</span>
-                            <span>{option.condition}</span>
-                          </>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
-                {step.type === SceneStepType.USE_WEARABLE && (
-                  <>
-                    <div>
-                      <span className="font-medium">Use&nbsp;</span>
-                      <span>
-                        {step.itemsIds
-                          .map(
-                            (id) =>
-                              (items.data?.items.find((item) => item.id === id)
-                                ?.name ?? "") + ` (${id})`,
-                          )
-                          .join(", ")}
-                      </span>
-                    </div>
-                    {step.fallbackLabel && (
-                      <>
-                        <span className="font-medium">Fallback&nbsp;</span>
-                        <span>{step.fallbackLabel}</span>
-                      </>
-                    )}
-                  </>
-                )}
-                {step.type === SceneStepType.REMOVE_WEARABLE && (
-                  <>
-                    <div>
-                      <span className="font-medium">Remove from&nbsp;</span>
-                      <span>
-                        {step.slots
-                          .map((slot) => t(`item.slots.${slot}`))
-                          .join(", ")}
-                      </span>
-                    </div>
-                    {step.fallbackLabel && (
-                      <>
-                        <span className="font-medium">Fallback&nbsp;</span>
-                        <span>{step.fallbackLabel}</span>
-                      </>
-                    )}
-                  </>
-                )}
-                {step.type === SceneStepType.CHANGE_ITEMS_COUNT && (
-                  <>
-                    <span className="font-medium">Change count of&nbsp;</span>
-                    <span>
-                      {(items.data?.items.find(
-                        (item) => item.id === step.itemId,
-                      )?.name ?? "") + ` (${step.itemId})`}
-                    </span>
-                    <span className="font-medium">&nbsp;by&nbsp;</span>
-                    <span>{step.delta}</span>
-                  </>
-                )}
-                {step.type === SceneStepType.ABORT && (
-                  <span className="font-medium">Abort</span>
-                )}
-              </div>
-              <div className="flex items-center ml-auto">
-                <ActionIcon
-                  variant="transparent"
-                  onClick={() => handleMoveStepUp(index)}
-                  disabled={index === 0}
-                >
-                  <FontAwesomeIcon icon={faArrowUp} />
-                </ActionIcon>
-                <ActionIcon
-                  variant="transparent"
-                  onClick={() => handleMoveStepDown(index)}
-                  disabled={index === props.scene.steps.length - 1}
-                >
-                  <FontAwesomeIcon icon={faArrowDown} />
-                </ActionIcon>
-                <ActionIcon
-                  variant="transparent"
-                  onClick={() => handleEditStep(step)}
-                  disabled={step.type === SceneStepType.ABORT}
-                >
-                  <FontAwesomeIcon icon={faGear} />
-                </ActionIcon>
-                <ActionIcon
-                  variant="transparent"
-                  data-variant-color="danger"
-                  onClick={() => handleRemoveStep(index)}
-                >
-                  <FontAwesomeIcon icon={faTrash} />
-                </ActionIcon>
-              </div>
-            </div>
+              step={step}
+              items={items.data?.items ?? []}
+              onMoveUp={index > 0 ? () => handleMoveStepUp(index) : undefined}
+              onMoveDown={
+                index < props.scene.steps.length - 1
+                  ? () => handleMoveStepDown(index)
+                  : undefined
+              }
+              onEdit={() => handleEditStep(step)}
+              onRemove={() => handleRemoveStep(index)}
+            />
           ))}
         </div>
         <div
