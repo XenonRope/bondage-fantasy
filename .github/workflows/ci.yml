@@ -45,3 +45,7 @@ jobs:
           file: ./bondage-fantasy-server/Dockerfile
           push: true
           tags: ghcr.io/xenonrope/bondage-fantasy-server
+      - name: Deploy
+        env:
+          DEPLOY_WEBHOOK_URL: ${{ secrets.DEPLOY_WEBHOOK_URL }}
+        run: curl "$DEPLOY_WEBHOOK_URL"
