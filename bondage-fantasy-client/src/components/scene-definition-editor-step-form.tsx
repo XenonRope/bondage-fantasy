@@ -50,10 +50,12 @@ function TextStep({
   initialStep,
   onConfirm,
   existingVariables,
+  existingCharacterNames,
 }: {
   initialStep?: SceneStepText;
   onConfirm: (step: SceneStep) => void;
   existingVariables: string[];
+  existingCharacterNames: string[];
 }) {
   const form = useForm({
     initialValues: {
@@ -100,7 +102,7 @@ function TextStep({
   return (
     <>
       <div className="flex gap-2 items-end">
-        <TextInput
+        <Autocomplete
           {...form.getInputProps("characterName")}
           key={form.key("characterName")}
           label={<Translation>{(t) => t("common.characterName")}</Translation>}
@@ -114,6 +116,7 @@ function TextStep({
               color: form.getValues().characterNameColor,
             },
           }}
+          data={existingCharacterNames}
         />
         <ColorInput
           {...form.getInputProps("characterNameColor")}
@@ -686,6 +689,7 @@ export function SceneDefinitionEditorStepForm(props: {
   onConfirm: (step: SceneStep) => void;
   existingVariables: string[];
   existingLabels: string[];
+  existingCharacterNames: string[];
 }) {
   return (
     <>
@@ -694,6 +698,7 @@ export function SceneDefinitionEditorStepForm(props: {
           initialStep={props.step as SceneStepText}
           onConfirm={props.onConfirm}
           existingVariables={props.existingVariables}
+          existingCharacterNames={props.existingCharacterNames}
         />
       ) : props.stepType === SceneStepType.LABEL ? (
         <LabelStep

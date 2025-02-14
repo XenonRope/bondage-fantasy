@@ -68,7 +68,7 @@ export function SceneDefinitionEditor(props: {
             })
             .filter((label) => label?.length > 0),
         ),
-      ),
+      ).sort(),
     [steps],
   );
   const existingVariables = useMemo(() => {
@@ -79,6 +79,18 @@ export function SceneDefinitionEditor(props: {
           .map((step) => step.name),
       ),
     );
+  }, [steps]);
+  const existingCharacterNames = useMemo(() => {
+    return Array.from(
+      new Set(
+        steps.flatMap((step) => {
+          if (step.type === SceneStepType.TEXT && step.characterName) {
+            return [step.characterName];
+          }
+          return [];
+        }),
+      ),
+    ).sort();
   }, [steps]);
   const itemsIds = useMemo(() => {
     return Array.from(
@@ -256,6 +268,7 @@ export function SceneDefinitionEditor(props: {
             onConfirm={handleStepConfirm}
             existingVariables={existingVariables}
             existingLabels={existingLabels}
+            existingCharacterNames={existingCharacterNames}
           />
         )}
       </Modal>
