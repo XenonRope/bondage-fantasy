@@ -12,6 +12,7 @@ import {
   SCENE_TEXT_MIN_LENGTH,
   SCENE_VARIABLE_NAME_MAX_LENGTH,
   SCENE_VARIABLE_NAME_MIN_LENGTH,
+  ScenePauseMode,
   SceneStepType,
 } from "bondage-fantasy-common";
 import { expressionSource } from "./expression-validator.js";
@@ -31,6 +32,7 @@ export const sceneStepText = vine.object({
     .string()
     .minLength(SCENE_TEXT_MIN_LENGTH)
     .maxLength(SCENE_TEXT_MAX_LENGTH),
+  pause: vine.enum(ScenePauseMode),
 });
 
 export const sceneStepLabel = vine.object({

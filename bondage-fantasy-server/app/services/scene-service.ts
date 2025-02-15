@@ -20,6 +20,7 @@ import {
   Scene,
   SCENE_EXECUTED_STEPS_MAX_COUNT,
   SceneDefinition,
+  ScenePauseMode,
   SceneStepChangeItemsCount,
   SceneStepChoice,
   SceneStepType,
@@ -166,8 +167,10 @@ export class SceneService {
         );
 
         if (
-          scene.definition.steps[scene.currentStep + 1]?.type ===
-          SceneStepType.CHOICE
+          step.pause === ScenePauseMode.NEVER ||
+          (step.pause === ScenePauseMode.AUTO &&
+            scene.definition.steps[scene.currentStep + 1]?.type ===
+              SceneStepType.CHOICE)
         ) {
           scene.currentStep++;
           executedStepsCount++;

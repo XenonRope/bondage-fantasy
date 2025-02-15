@@ -27,6 +27,7 @@ import {
   SCENE_TEXT_MIN_LENGTH,
   SCENE_VARIABLE_NAME_MAX_LENGTH,
   SCENE_VARIABLE_NAME_MIN_LENGTH,
+  ScenePauseMode,
   SceneStep,
   SceneStepChangeItemsCount,
   SceneStepChoice,
@@ -57,11 +58,13 @@ function TextStep({
   existingVariables: string[];
   existingCharacterNames: string[];
 }) {
+  const { t } = useTranslation();
   const form = useForm({
     initialValues: {
       characterName: initialStep?.characterName ?? "",
       characterNameColor: initialStep?.characterNameColor ?? "#000000",
       text: initialStep?.text ?? "",
+      pause: initialStep?.pause ?? ScenePauseMode.AUTO,
     },
     validate: {
       characterName: Validators.inRange(
@@ -79,6 +82,7 @@ function TextStep({
         characterName: values.characterName,
         characterNameColor: values.characterNameColor,
         text: values.text,
+        pause: values.pause,
       });
     })();
   }
@@ -134,6 +138,16 @@ function TextStep({
         className="mt-2"
         classNames={{ input: "min-h-14 max-h-52 overflow-auto" }}
         customVariables={existingVariables}
+      />
+      <Select
+        {...form.getInputProps("pause")}
+        key={form.key("pause")}
+        label={<Translation>{(t) => t("scene.pause")}</Translation>}
+        data={Object.values(ScenePauseMode).map((mode) => ({
+          value: mode,
+          label: t(`scene.pauseMode.${mode}`),
+        }))}
+        className="mt-2"
       />
       <Button onClick={handleConfirm} className="mt-4">
         <Translation>{(t) => t("common.confirm")}</Translation>

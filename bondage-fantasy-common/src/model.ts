@@ -221,11 +221,18 @@ export interface SceneStepBase {
   id?: number;
 }
 
+export enum ScenePauseMode {
+  AUTO = "AUTO",
+  NEVER = "NEVER",
+  ALWAYS = "ALWAYS",
+}
+
 export interface SceneStepText extends SceneStepBase {
   type: SceneStepType.TEXT;
   characterName?: string;
   characterNameColor?: string;
   text: Template;
+  pause: ScenePauseMode;
 }
 
 export interface SceneStepLabel extends SceneStepBase {
