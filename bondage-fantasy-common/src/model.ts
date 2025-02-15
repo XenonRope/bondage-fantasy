@@ -105,6 +105,12 @@ export interface EventObject extends ZoneObjectBase {
   scene?: SceneDefinition;
 }
 
+export interface ZoneCharacterData {
+  zoneId: number;
+  characterId: number;
+  variables: Record<string, string>;
+}
+
 export interface ZoneVisionField {
   position: Position;
   name: string;
@@ -250,6 +256,7 @@ export interface SceneStepAbort extends SceneStepBase {
 
 export interface SceneStepVariable extends SceneStepBase {
   type: SceneStepType.VARIABLE;
+  global?: boolean;
   name: string;
   value: ExpressionSource;
 }

@@ -73,6 +73,7 @@ export const sceneStepAbort = vine.object({
 
 export const sceneStepVariable = vine.object({
   type: vine.literal(SceneStepType.VARIABLE),
+  global: vine.boolean().optional(),
   name: vine
     .string()
     .minLength(SCENE_VARIABLE_NAME_MIN_LENGTH)

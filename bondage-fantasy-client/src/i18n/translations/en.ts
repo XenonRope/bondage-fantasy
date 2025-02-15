@@ -105,6 +105,7 @@ export const en: ResourceLanguage = {
     "scene.jumpConditionally": "Jump conditionally",
     "scene.variableName": "Variable name",
     "scene.variableValue": "Variable value",
+    "scene.variableGlobal": "Global",
     "scene.addStep": "Add step",
     "scene.stepTitle": "Step: {{stepType}}",
     "scene.addChoiceOption": "Add option",

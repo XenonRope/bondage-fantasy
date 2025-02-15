@@ -9,6 +9,8 @@ import { HttpContext } from "@adonisjs/core/http";
 import { SessionData } from "bondage-fantasy-common";
 import { getCharacterId } from "./utils.js";
 import { sessionDataDto } from "./dto.js";
+import ZoneCharacterDataService from "#services/zone-character-data-service";
+import { ZoneCharacterDataDao } from "#dao/zone-character-data-dao";
 
 @inject()
 export default class SceneController {
@@ -17,6 +19,8 @@ export default class SceneController {
     private sessionService: SessionService,
     private characterService: CharacterService,
     private characterDao: CharacterDao,
+    private zoneCharacterDataService: ZoneCharacterDataService,
+    private zoneCharacterDataDao: ZoneCharacterDataDao,
   ) {}
 
   async continueScene(ctx: HttpContext): Promise<SessionData> {
@@ -31,15 +35,25 @@ export default class SceneController {
       async () => {
         const scene = await this.sceneService.getByCharacterId(characterId);
         const character = await this.characterService.getById(characterId);
+        const zoneCharacterData =
+          await this.zoneCharacterDataService.getOrPrepareEmpty({
+            zoneId: scene.zoneId,
+            characterId,
+          });
 
-        const { characterChanged } = await this.sceneService.continueScene(
-          scene,
-          character,
-          { choiceIndex },
-        );
+        const { characterChanged, zoneCharacterDataChanged } =
+          await this.sceneService.continueScene(
+            scene,
+            character,
+            zoneCharacterData,
+            { choiceIndex },
+          );
 
         if (characterChanged) {
           await this.characterDao.update(character);
+        }
+        if (zoneCharacterDataChanged) {
+          await this.zoneCharacterDataDao.update(zoneCharacterData);
         }
         if (this.sceneService.isSceneEnded(scene)) {
           await this.sceneService.deleteById(scene.id);

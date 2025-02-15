@@ -264,6 +264,7 @@ function VariableStep({
     initialValues: {
       name: initialStep?.name ?? "",
       value: initialStep?.value ?? "",
+      global: initialStep?.global ?? false,
     },
     validate: {
       name: Validators.inRange(
@@ -280,6 +281,7 @@ function VariableStep({
         type: SceneStepType.VARIABLE,
         name: values.name,
         value: values.value,
+        global: values.global,
       });
     })();
   }
@@ -297,6 +299,11 @@ function VariableStep({
         maxLength={EXPRESSION_SOURCE_MAX_LENGTH}
         className="mt-2"
         customVariables={existingVariables}
+      />
+      <Checkbox
+        {...form.getInputProps("global", { type: "checkbox" })}
+        label={<Translation>{(t) => t("scene.variableGlobal")}</Translation>}
+        className="mt-4"
       />
       <Button onClick={handleConfirm} className="mt-4">
         <Translation>{(t) => t("common.confirm")}</Translation>

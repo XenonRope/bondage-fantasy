@@ -115,6 +115,7 @@ export const pl: ResourceLanguage = {
     "scene.fallbackLabel": "Plan awaryjny",
     "scene.wearables": "Ubrania",
     "scene.itemDelta": "O ile zwiększyć/zmniejszyć liczbę przedmiotów",
+    "scene.variableGlobal": "Zmienna globalna",
     "scene.type.TEXT": "Tekst",
     "scene.type.LABEL": "Etykieta",
     "scene.type.JUMP": "Skok",
