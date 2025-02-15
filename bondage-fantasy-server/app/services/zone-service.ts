@@ -423,7 +423,7 @@ export class ZoneService {
     { x: x2, y: y2 }: Position,
   ) {
     return (
-      (x1 == x2 && Math.abs(y1 - y2) === 1) ||
+      (x1 === x2 && Math.abs(y1 - y2) === 1) ||
       (y1 === y2 && Math.abs(x1 - x2) === 1)
     );
   }

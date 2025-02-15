@@ -89,9 +89,8 @@ export class ZoneVisionService {
             position: object.position,
             characterId: object.characterId,
             name:
-              characters.find(
-                (character) => character.id === object.characterId,
-              )?.name ?? "",
+              characters.find(({ id }) => id === object.characterId)?.name ??
+              "",
           };
           return characterObject;
         } else if (object.type === ObjectType.EVENT) {

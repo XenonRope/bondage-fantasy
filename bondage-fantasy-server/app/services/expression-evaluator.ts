@@ -17,14 +17,14 @@ export class ExpressionEvaluator {
     expression: Expression,
     variables: Record<string, string>,
   ): number {
-    return parseInt(this.evaluate(expression, variables));
+    return Number.parseInt(this.evaluate(expression, variables));
   }
 
   evaluateAsNumber(
     expression: Expression,
     variables: Record<string, string>,
   ): number {
-    return parseFloat(this.evaluate(expression, variables));
+    return Number.parseFloat(this.evaluate(expression, variables));
   }
 
   evaluate(expression: Expression, variables: Record<string, string>): string {

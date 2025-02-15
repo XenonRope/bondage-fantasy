@@ -224,9 +224,8 @@ export class SceneService {
           zoneCharacterDataChanged = true;
         }
       } else if (step.type === SceneStepType.USE_WEARABLE) {
-        const wearablesToAdd: WearableItemOnCharacter[] = (
-          await this.itemDao.getManyByIds(step.itemsIds)
-        )
+        const items = await this.itemDao.getManyByIds(step.itemsIds);
+        const wearablesToAdd: WearableItemOnCharacter[] = items
           .filter((wearable) => wearable.type === ItemType.WEARABLE)
           .filter(
             (wearable) => wearable.ownerCharacterId === scene.ownerCharacterId,
@@ -298,11 +297,11 @@ export class SceneService {
       this.parseExpression(step.delta),
       this.getVariables(scene, character, zoneCharacterData),
     );
-    if (isNaN(delta)) {
+    if (Number.isNaN(delta)) {
       return { characterChanged: false };
     }
     let itemInInventory = character.inventory.find(
-      (item) => item.itemId === step.itemId,
+      ({ itemId }) => itemId === step.itemId,
     );
     if (itemInInventory == null) {
       if (character.inventory.length >= ITEM_IN_INVENTORY_UNIQUE_MAX_COUNT) {

@@ -75,7 +75,7 @@ export class ItemService {
         }
         if (
           params.imageKey != null &&
-          params.imageKey != existingItem.imageKey
+          params.imageKey !== existingItem.imageKey
         ) {
           throw new InvalidItemException(
             "Image key cannot be changed manually",

@@ -21,6 +21,8 @@ export default [
     },
     rules: {
       "@typescript-eslint/no-floating-promises": ["error"],
+      eqeqeq: ["error", "smart"],
+      "@typescript-eslint/naming-convention": "off",
     },
   },
   {

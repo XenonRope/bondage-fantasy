@@ -12,8 +12,10 @@ import { ErrorCode } from "bondage-fantasy-common";
 export function getCharacterIdWithoutCheck(
   ctx: HttpContext,
 ): number | undefined {
-  const characterId = parseInt(ctx.request.header("X-CHARACTER-ID") ?? "");
-  return isNaN(characterId) ? undefined : characterId;
+  const characterId = Number.parseInt(
+    ctx.request.header("X-CHARACTER-ID") ?? "",
+  );
+  return Number.isNaN(characterId) ? undefined : characterId;
 }
 
 export async function getCharacterId(ctx: HttpContext): Promise<number> {
