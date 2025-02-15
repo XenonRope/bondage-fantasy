@@ -188,7 +188,7 @@ export function ItemEditorPage() {
         <MultiSelect
           {...form.getInputProps("slots")}
           key={`${form.key("slots")}-${i18n.language}`}
-          label={t("item.occupiedBodyParts")}
+          label={t("item.slots")}
           data={Object.values(ItemSlot).map((slot) => ({
             value: slot,
             label: t(`item.slots.${slot}`),

@@ -316,6 +316,7 @@ export interface Scene {
 
 // Order is important. Slots in client are sorted by this enum.
 export enum ItemSlot {
+  OUTFIT = "OUTFIT",
   EYES = "EYES",
   MOUTH = "MOUTH",
   ARMS = "ARMS",
