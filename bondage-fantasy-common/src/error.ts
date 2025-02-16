@@ -24,6 +24,7 @@ export enum ErrorCode {
   E_ITEM_NOT_FOUND = "E_ITEM_NOT_FOUND",
   E_NO_ACCESS_TO_ITEM = "E_NO_ACCESS_TO_ITEM",
   E_INVALID_ITEM = "E_INVALID_ITEM",
+  E_CANNOT_WEAR_ITEM = "E_CANNOT_WEAR_ITEM",
 }
 
 export interface ErrorResponse {

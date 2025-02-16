@@ -50,6 +50,7 @@ router
           .where("id", router.matchers.number());
         router.post("/items/list", [ItemController, "list"]);
         router.post("/items/search", [ItemController, "search"]);
+        router.post("/items/wear", [ItemController, "wear"]);
       })
       .use(middleware.auth());
   })

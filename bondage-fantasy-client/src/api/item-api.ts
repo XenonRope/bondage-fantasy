@@ -1,4 +1,3 @@
-import { httpClient } from "./http-client";
 import {
   Item,
   ItemListRequest,
@@ -6,7 +5,10 @@ import {
   ItemSaveRequest,
   ItemSearchRequest,
   ItemSearchResponse,
+  ItemWearRequest,
+  SessionData,
 } from "bondage-fantasy-common";
+import { httpClient } from "./http-client";
 
 class ItemApi {
   async save(json: ItemSaveRequest, image?: File): Promise<Item> {
@@ -28,6 +30,10 @@ class ItemApi {
 
   async search(request: ItemSearchRequest): Promise<ItemSearchResponse> {
     return await httpClient.post("items/search", request);
+  }
+
+  async wear(request: ItemWearRequest): Promise<SessionData> {
+    return await httpClient.post("items/wear", request);
   }
 }
 

@@ -108,12 +108,19 @@ export interface ItemSearchRequest {
   types?: ItemType[];
 }
 
+export interface ItemSearchResponseRow {
+  id: number;
+  type: ItemType;
+  name: string;
+  description: string;
+  imageKey?: string;
+}
+
 export interface ItemSearchResponse {
-  items: Array<{
-    id: number;
-    name: string;
-    description: string;
-    imageKey?: string;
-  }>;
+  items: ItemSearchResponseRow[];
   total: number;
+}
+
+export interface ItemWearRequest {
+  itemId: number;
 }

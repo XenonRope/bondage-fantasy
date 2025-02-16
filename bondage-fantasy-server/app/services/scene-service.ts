@@ -12,7 +12,6 @@ import {
   Character,
   Expression,
   getCharacterVariables,
-  hasDuplicates,
   ITEM_IN_INVENTORY_STACK_MAX_COUNT,
   ITEM_IN_INVENTORY_UNIQUE_MAX_COUNT,
   ItemType,
@@ -27,11 +26,11 @@ import {
   SceneStepVariable,
   VARIABLE_MAX_COUNT,
   VARIABLE_VALUE_MAX_LENGTH,
-  WearableItemOnCharacter,
   Zone,
   ZoneCharacterData,
 } from "bondage-fantasy-common";
 import { SceneDao } from "../dao/scene-dao.js";
+import CharacterService from "./character-service.js";
 import { ExpressionEvaluator } from "./expression-evaluator.js";
 import { SequenceService } from "./sequence-service.js";
 import { TemplateRenderer } from "./template-renderer.js";
@@ -48,6 +47,7 @@ export class SceneService {
     private templateRenderer: TemplateRenderer,
     private zoneCharacterDataService: ZoneCharacterDataService,
     private zoneCharacterDataDao: ZoneCharacterDataDao,
+    private characterService: CharacterService,
   ) {}
 
   async getByCharacterId(characterId: number): Promise<Scene> {
@@ -225,22 +225,14 @@ export class SceneService {
         }
       } else if (step.type === SceneStepType.USE_WEARABLE) {
         const items = await this.itemDao.getManyByIds(step.itemsIds);
-        const wearablesToAdd: WearableItemOnCharacter[] = items
+        const wearableItems = items
           .filter((wearable) => wearable.type === ItemType.WEARABLE)
           .filter(
             (wearable) => wearable.ownerCharacterId === scene.ownerCharacterId,
-          )
-          .map((wearable) => ({
-            itemId: wearable.id,
-            name: wearable.name,
-            description: wearable.description,
-            imageKey: wearable.imageKey,
-            slots: wearable.slots,
-          }));
-        const slots = wearablesToAdd.flatMap((wearable) => wearable.slots);
+          );
         if (
-          hasDuplicates(slots) ||
-          wearablesToAdd.length !== step.itemsIds.length
+          wearableItems.length !== step.itemsIds.length ||
+          !this.characterService.wearItems(character, wearableItems)
         ) {
           if (step.fallbackLabel == null) {
             scene.currentStep++;
@@ -250,10 +242,6 @@ export class SceneService {
           executedStepsCount++;
           continue;
         }
-        character.wearables = character.wearables.filter(
-          (wearable) => !wearable.slots.some((slot) => slots.includes(slot)),
-        );
-        character.wearables.push(...wearablesToAdd);
         characterChanged = true;
       } else if (step.type === SceneStepType.REMOVE_WEARABLE) {
         character.wearables = character.wearables.filter(

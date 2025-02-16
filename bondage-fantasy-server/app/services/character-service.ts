@@ -1,5 +1,6 @@
 import { CharacterDao } from "#dao/character-dao";
 import {
+  CannotWearItemException,
   CharacterNotFoundException,
   TooManyCharactersException,
 } from "#exceptions/exceptions";
@@ -9,8 +10,13 @@ import {
   Character,
   CHARACTERS_MAX_COUNT,
   Genitals,
+  hasDuplicates,
+  ItemType,
   Pronouns,
+  WearableItem,
+  WearableItemOnCharacter,
 } from "bondage-fantasy-common";
+import { ItemService } from "./item-service.js";
 import lockService, { LOCKS } from "./lock-service.js";
 import { SequenceService } from "./sequence-service.js";
 
@@ -19,6 +25,7 @@ export default class CharacterService {
   constructor(
     private characterDao: CharacterDao,
     private sequenceService: SequenceService,
+    private itemService: ItemService,
   ) {}
 
   async getById(id: number): Promise<Character> {
@@ -61,5 +68,50 @@ export default class CharacterService {
         return character;
       },
     );
+  }
+
+  async wearItem(params: {
+    characterId: number;
+    itemId: number;
+  }): Promise<void> {
+    return await lockService.run(
+      LOCKS.character(params.characterId),
+      "1s",
+      async () => {
+        const character = await this.getById(params.characterId);
+        const item = await this.itemService.getById(params.itemId, {
+          checkAccessForCharacterId: params.characterId,
+        });
+        if (item.type !== ItemType.WEARABLE) {
+          throw new CannotWearItemException(`Item ${item.id} is not wearable`);
+        }
+        const itemWorn = this.wearItems(character, [item]);
+        if (!itemWorn) {
+          throw new CannotWearItemException(
+            `Item ${item.id} was not worn successfully`,
+          );
+        }
+        await this.characterDao.update(character);
+      },
+    );
+  }
+
+  wearItems(character: Character, items: WearableItem[]): boolean {
+    const wearablesToAdd: WearableItemOnCharacter[] = items.map((wearable) => ({
+      itemId: wearable.id,
+      name: wearable.name,
+      description: wearable.description,
+      imageKey: wearable.imageKey,
+      slots: wearable.slots,
+    }));
+    const slots = wearablesToAdd.flatMap((wearable) => wearable.slots);
+    if (hasDuplicates(slots)) {
+      return false;
+    }
+    character.wearables = character.wearables.filter(
+      (wearable) => !wearable.slots.some((slot) => slots.includes(slot)),
+    );
+    character.wearables.push(...wearablesToAdd);
+    return true;
   }
 }

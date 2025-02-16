@@ -1,8 +1,9 @@
-import { faGear } from "@fortawesome/free-solid-svg-icons";
+import { faEllipsisVertical, faGear } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   ActionIcon,
   Button,
+  Menu,
   Pagination,
   SimpleGrid,
   Text,
@@ -10,12 +11,20 @@ import {
   Tooltip,
 } from "@mantine/core";
 import { useDebouncedCallback } from "@mantine/hooks";
-import { ITEM_SEARCH_QUERY_MAX_LENGTH } from "bondage-fantasy-common";
+import { useMutation } from "@tanstack/react-query";
+import {
+  ITEM_SEARCH_QUERY_MAX_LENGTH,
+  ItemSearchResponseRow,
+  ItemType,
+} from "bondage-fantasy-common";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
+import { itemApi } from "../api/item-api";
 import { CardWithImage } from "../components/card-with-image";
 import { NameWithId } from "../components/name-with-id";
+import { errorService } from "../services/error-service";
+import { useAppStore } from "../store";
 import { useItemsQuery } from "../utils/item-utils";
 import {
   DEFAULT_DEBOUNCE,
@@ -24,6 +33,34 @@ import {
 } from "../utils/utils";
 
 const PAGE_SIZE = 24;
+
+export function ItemActions(props: { item: ItemSearchResponseRow }) {
+  const { t } = useTranslation();
+  const wear = useMutation({
+    mutationFn: async () => {
+      const sessionData = await itemApi.wear({ itemId: props.item.id });
+      useAppStore.getState().updateSessionData(sessionData);
+    },
+    onError: (error) => errorService.handleUnexpectedError(error),
+  });
+
+  return (
+    <Menu position="bottom-end" withArrow>
+      <Menu.Target>
+        <ActionIcon variant="transparent" size="sm">
+          <FontAwesomeIcon icon={faEllipsisVertical} />
+        </ActionIcon>
+      </Menu.Target>
+      {props.item.type === ItemType.WEARABLE && (
+        <Menu.Dropdown>
+          <Menu.Item onClick={() => !wear.isPending && wear.mutate()}>
+            {t("item.wear")}
+          </Menu.Item>
+        </Menu.Dropdown>
+      )}
+    </Menu>
+  );
+}
 
 export function ItemListPage() {
   const { t } = useTranslation();
@@ -62,7 +99,7 @@ export function ItemListPage() {
         <SimpleGrid cols={3}>
           {searchResult.data?.items.map((item) => (
             <CardWithImage key={item.id} image={item.imageKey}>
-              <div className="flex justify-between items-center">
+              <div className="flex justify-between items-start">
                 <NameWithId name={item.name} id={item.id} />
                 <div className="flex items-center gap-2">
                   <Tooltip
@@ -80,6 +117,7 @@ export function ItemListPage() {
                       <FontAwesomeIcon icon={faGear} />
                     </ActionIcon>
                   </Tooltip>
+                  <ItemActions item={item} />
                 </div>
               </div>
               <Text size="sm" c="dimmed" className="mt-2">

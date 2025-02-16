@@ -142,5 +142,6 @@ export const pl: ResourceLanguage = {
     "item.slots.FEET": "Stopy",
     "item.slots.MOUTH": "Usta",
     "item.slots.EYES": "Oczy",
+    "item.wear": "Załóż",
   },
 };

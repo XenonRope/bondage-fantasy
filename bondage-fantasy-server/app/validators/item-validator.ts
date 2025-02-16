@@ -80,3 +80,9 @@ export const itemSearchRequestValidator = vine.compile(
     types: vine.array(vine.enum(ItemType)).distinct().optional(),
   }),
 );
+
+export const itemWearRequestValidator = vine.compile(
+  vine.object({
+    itemId: vine.number().withoutDecimals(),
+  }),
+);

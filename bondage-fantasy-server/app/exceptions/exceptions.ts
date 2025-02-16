@@ -231,3 +231,13 @@ export class InvalidItemException extends ApplicationException {
     });
   }
 }
+
+export class CannotWearItemException extends ApplicationException {
+  constructor(message: string) {
+    super({
+      code: ErrorCode.E_CANNOT_WEAR_ITEM,
+      message,
+      status: 422,
+    });
+  }
+}

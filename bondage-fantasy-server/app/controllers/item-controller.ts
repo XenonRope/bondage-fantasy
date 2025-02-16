@@ -1,4 +1,5 @@
 import { ItemDao } from "#dao/item-dao";
+import CharacterService from "#services/character-service";
 import { ItemService } from "#services/item-service";
 import { SessionService } from "#services/session-service";
 import {
@@ -6,6 +7,7 @@ import {
   itemSaveRequestJsonValidator,
   itemSaveRequestValidator,
   itemSearchRequestValidator,
+  itemWearRequestValidator,
 } from "#validators/item-validator";
 import { inject } from "@adonisjs/core";
 import { HttpContext } from "@adonisjs/core/http";
@@ -26,6 +28,7 @@ export default class ItemController {
     private itemService: ItemService,
     private itemDao: ItemDao,
     private sessionService: SessionService,
+    private characterService: CharacterService,
   ) {}
 
   async save(ctx: HttpContext): Promise<SessionData> {
@@ -114,11 +117,30 @@ export default class ItemController {
     return {
       items: items.map((item) => ({
         id: item.id,
+        type: item.type,
         name: item.name,
         description: item.description,
         imageKey: item.imageKey,
       })),
       total,
     };
+  }
+
+  async wear(ctx: HttpContext): Promise<SessionData> {
+    const { itemId } = await ctx.request.validateUsing(
+      itemWearRequestValidator,
+    );
+    const characterId = await getCharacterId(ctx);
+    await this.characterService.wearItem({
+      characterId,
+      itemId,
+    });
+
+    return sessionDataDto(
+      await this.sessionService.getSessionData({
+        account: ctx.auth.user?.id,
+        characterId,
+      }),
+    );
   }
 }
