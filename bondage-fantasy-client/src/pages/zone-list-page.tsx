@@ -84,19 +84,12 @@ export function ZoneListPage() {
       <div className="mt-8">
         <SimpleGrid cols={3}>
           {searchResult.data?.zones.map((zone) => (
-            <Card
-              key={zone.id}
-              shadow="sm"
-              padding="lg"
-              radius="md"
-              withBorder
-              className="h-32"
-            >
-              <div className="flex justify-between items-start">
-                <div className="flex items-center">
+            <Card key={zone.id} shadow="sm" padding="lg" radius="md" withBorder>
+              <div className="flex justify-between items-start gap-2">
+                <div className="flex items-center min-w-0">
                   <NameWithId name={zone.name} id={zone.id} />
                   {zone.private && (
-                    <Badge size="sm" className="ml-2">
+                    <Badge size="sm" className="ml-2 shrink-0">
                       {t("zone.private")}
                     </Badge>
                   )}
@@ -131,7 +124,7 @@ export function ZoneListPage() {
                   </Button>
                 </div>
               </div>
-              <Text size="sm" c="dimmed" className="mt-2">
+              <Text size="sm" c="dimmed" className="mt-2 line-clamp-3 h-[3LH]">
                 {zone.description}
               </Text>
             </Card>

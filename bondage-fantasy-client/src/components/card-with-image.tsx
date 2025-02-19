@@ -13,7 +13,7 @@ export function CardWithImage(props: {
             <ImageWithPlaceholder image={props.image} />
           </div>
         </div>
-        <div className="flex-1">{props.children}</div>
+        <div className="flex-1 min-w-0">{props.children}</div>
       </div>
     </Card>
   );

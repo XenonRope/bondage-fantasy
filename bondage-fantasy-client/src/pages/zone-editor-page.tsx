@@ -569,6 +569,7 @@ export function ZoneEditorPage() {
           key={form.key("name")}
           label={t("common.name")}
           className="max-w-xs"
+          maxLength={ZONE_NAME_MAX_LENGTH}
         />
         <Textarea
           {...form.getInputProps("description")}
@@ -578,6 +579,7 @@ export function ZoneEditorPage() {
           minRows={2}
           maxRows={10}
           className="mt-2 max-w-lg"
+          maxLength={ZONE_DESCRIPTION_MAX_LENGTH}
         />
         <Checkbox
           {...form.getInputProps("private", {

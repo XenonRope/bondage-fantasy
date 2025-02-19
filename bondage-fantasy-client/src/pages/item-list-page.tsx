@@ -99,8 +99,10 @@ export function ItemListPage() {
         <SimpleGrid cols={3}>
           {searchResult.data?.items.map((item) => (
             <CardWithImage key={item.id} image={item.imageKey}>
-              <div className="flex justify-between items-start">
-                <NameWithId name={item.name} id={item.id} />
+              <div className="flex justify-between items-start min-w-0">
+                <div className="min-w-0">
+                  <NameWithId name={item.name} id={item.id} />
+                </div>
                 <div className="flex items-center gap-2">
                   <Tooltip
                     label={t("common.edit")}
@@ -120,7 +122,7 @@ export function ItemListPage() {
                   <ItemActions item={item} />
                 </div>
               </div>
-              <Text size="sm" c="dimmed" className="mt-2">
+              <Text size="sm" c="dimmed" className="mt-2 line-clamp-3">
                 {item.description}
               </Text>
             </CardWithImage>

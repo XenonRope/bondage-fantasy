@@ -47,11 +47,15 @@ export function InventoryPage() {
             <CardWithImage key={item.itemId} image={item.imageKey}>
               <div className="flex justify-between items-start">
                 <NameWithId name={item.name} id={item.itemId} />
-                <Badge variant="default" size="lg" className="normal-case">
+                <Badge
+                  variant="default"
+                  size="lg"
+                  className="normal-case shrink-0"
+                >
                   {"x" + item.count}
                 </Badge>
               </div>
-              <Text size="sm" c="dimmed" className="mt-2">
+              <Text size="sm" c="dimmed" className="mt-2 line-clamp-3">
                 {item.description}
               </Text>
             </CardWithImage>
