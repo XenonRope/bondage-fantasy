@@ -11,6 +11,7 @@ import {
   CHARACTERS_MAX_COUNT,
   Genitals,
   hasDuplicates,
+  ItemSlot,
   ItemType,
   Pronouns,
   WearableItem,
@@ -85,7 +86,7 @@ export default class CharacterService {
         if (item.type !== ItemType.WEARABLE) {
           throw new CannotWearItemException(`Item ${item.id} is not wearable`);
         }
-        const itemWorn = this.wearItems(character, [item]);
+        const itemWorn = this.wearItemsOnCharacter(character, [item]);
         if (!itemWorn) {
           throw new CannotWearItemException(
             `Item ${item.id} was not worn successfully`,
@@ -96,7 +97,7 @@ export default class CharacterService {
     );
   }
 
-  wearItems(character: Character, items: WearableItem[]): boolean {
+  wearItemsOnCharacter(character: Character, items: WearableItem[]): boolean {
     const wearablesToAdd: WearableItemOnCharacter[] = items.map((wearable) => ({
       itemId: wearable.id,
       name: wearable.name,
@@ -112,6 +113,34 @@ export default class CharacterService {
       (wearable) => !wearable.slots.some((slot) => slots.includes(slot)),
     );
     character.wearables.push(...wearablesToAdd);
+    return true;
+  }
+
+  async removeWearables(characterId: number, slots: ItemSlot[]): Promise<void> {
+    return await lockService.run(
+      LOCKS.character(characterId),
+      "1s",
+      async () => {
+        const character = await this.getById(characterId);
+        const removed = this.removeWearablesFromCharacter(character, slots);
+        if (removed) {
+          await this.characterDao.update(character);
+        }
+      },
+    );
+  }
+
+  removeWearablesFromCharacter(
+    character: Character,
+    slots: ItemSlot[],
+  ): boolean {
+    const newWearables = character.wearables.filter(
+      (wearable) => !wearable.slots.some((slot) => slots.includes(slot)),
+    );
+    if (character.wearables.length === newWearables.length) {
+      return false;
+    }
+    character.wearables = newWearables;
     return true;
   }
 }

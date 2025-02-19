@@ -34,6 +34,7 @@ export const pl: ResourceLanguage = {
     "common.scene": "Scena",
     "common.recommendedImageData":
       "Zalecana rozdzielczość obrazu: {{width}}x{{height}}. Maksymalny rozmiar: {{maxSize}}.",
+    "common.removeWearable": "Usuń",
     "navbar.characters": "Postacie",
     "navbar.zones": "Strefy",
     "navbar.explore": "Eksploruj",

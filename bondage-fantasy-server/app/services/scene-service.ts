@@ -232,7 +232,7 @@ export class SceneService {
           );
         if (
           wearableItems.length !== step.itemsIds.length ||
-          !this.characterService.wearItems(character, wearableItems)
+          !this.characterService.wearItemsOnCharacter(character, wearableItems)
         ) {
           if (step.fallbackLabel == null) {
             scene.currentStep++;
@@ -244,11 +244,13 @@ export class SceneService {
         }
         characterChanged = true;
       } else if (step.type === SceneStepType.REMOVE_WEARABLE) {
-        character.wearables = character.wearables.filter(
-          (wearable) =>
-            !wearable.slots.some((slot) => step.slots.includes(slot)),
+        const removed = this.characterService.removeWearablesFromCharacter(
+          character,
+          step.slots,
         );
-        characterChanged = true;
+        if (removed) {
+          characterChanged = true;
+        }
       } else if (step.type === SceneStepType.CHANGE_ITEMS_COUNT) {
         const result = await this.executeStepChangeItemsCount(
           step,

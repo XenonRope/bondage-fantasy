@@ -124,3 +124,7 @@ export interface ItemSearchResponse {
 export interface ItemWearRequest {
   itemId: number;
 }
+
+export interface WearableRemoveRequest {
+  slot: ItemSlot;
+}

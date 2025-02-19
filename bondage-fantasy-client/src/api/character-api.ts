@@ -1,5 +1,10 @@
+import {
+  Character,
+  CharacterCreateRequest,
+  SessionData,
+  WearableRemoveRequest,
+} from "bondage-fantasy-common";
 import { httpClient } from "./http-client";
-import { Character, CharacterCreateRequest } from "bondage-fantasy-common";
 
 class CharacterApi {
   async getById(id: number): Promise<Character> {
@@ -12,6 +17,10 @@ class CharacterApi {
 
   async create(request: CharacterCreateRequest): Promise<Character> {
     return await httpClient.post("characters", request);
+  }
+
+  async removeWearable(request: WearableRemoveRequest): Promise<SessionData> {
+    return await httpClient.delete(`characters/wearables`, request);
   }
 }
 

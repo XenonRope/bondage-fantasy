@@ -1,17 +1,23 @@
+import { CharacterDao } from "#dao/character-dao";
+import { CharacterNotFoundException } from "#exceptions/exceptions";
 import CharacterService from "#services/character-service";
-import { characterCreateRequestValidator } from "#validators/character-validator";
+import { SessionService } from "#services/session-service";
+import {
+  characterCreateRequestValidator,
+  wearableRemoveRequestValidator,
+} from "#validators/character-validator";
 import { inject } from "@adonisjs/core";
 import { HttpContext } from "@adonisjs/core/http";
 import { Character, CharacterCreateRequest } from "bondage-fantasy-common";
-import { characterDto } from "./dto.js";
-import { CharacterDao } from "#dao/character-dao";
-import { CharacterNotFoundException } from "#exceptions/exceptions";
+import { characterDto, sessionDataDto } from "./dto.js";
+import { getCharacterId } from "./utils.js";
 
 @inject()
 export default class CharacterController {
   constructor(
     private characterService: CharacterService,
     private characterDao: CharacterDao,
+    private sessionService: SessionService,
   ) {}
 
   async getById(ctx: HttpContext): Promise<Character> {
@@ -44,5 +50,20 @@ export default class CharacterController {
     });
 
     response.status(201).send(characterDto(character));
+  }
+
+  async removeWearable(ctx: HttpContext) {
+    const { slot } = await ctx.request.validateUsing(
+      wearableRemoveRequestValidator,
+    );
+    const characterId = await getCharacterId(ctx);
+    await this.characterService.removeWearables(characterId, [slot]);
+
+    return sessionDataDto(
+      await this.sessionService.getSessionData({
+        account: ctx.auth.user?.id,
+        characterId,
+      }),
+    );
   }
 }

@@ -31,6 +31,10 @@ router
           .get("/characters/:id", [CharacterController, "getById"])
           .where("id", router.matchers.number());
         router.post("/characters", [CharacterController, "create"]);
+        router.delete("/characters/wearables", [
+          CharacterController,
+          "removeWearable",
+        ]);
         router.post("/zones", [ZoneController, "save"]);
         router
           .get("/zones/:id", [ZoneController, "getById"])

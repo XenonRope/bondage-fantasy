@@ -35,6 +35,7 @@ export const en: ResourceLanguage = {
     "common.scene": "Scene",
     "common.recommendedImageData":
       "Recommended image resolutation: {{width}}x{{height}}. Max size: {{maxSize}}.",
+    "common.removeWearable": "Remove",
     "navbar.characters": "Characters",
     "navbar.zones": "Zones",
     "navbar.explore": "Explore",

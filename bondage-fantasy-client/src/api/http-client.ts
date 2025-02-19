@@ -31,6 +31,18 @@ class HttpClient {
     });
   }
 
+  async delete<T>(
+    url: string,
+    body?: FormData | unknown,
+    params?: { characterId?: number },
+  ): Promise<T> {
+    return this.sendRequest(url, {
+      method: "DELETE",
+      body,
+      characterId: params?.characterId,
+    });
+  }
+
   private async sendRequest<T>(
     url: string,
     params: {
