@@ -10,6 +10,7 @@ import { ActionIcon } from "@mantine/core";
 import {
   SceneStep,
   SceneStepChangeItemsCount,
+  SceneStepShareItem,
   SceneStepType,
 } from "bondage-fantasy-common";
 import { t } from "i18next";
@@ -145,6 +146,16 @@ export function SceneDefinitionEditorStepTile(props: {
         )}
         {props.step.type === SceneStepType.ABORT && (
           <span className="font-medium">Abort</span>
+        )}
+        {props.step.type === SceneStepType.SHARE_ITEM && (
+          <>
+            <span className="font-medium">Share&nbsp;</span>
+            <span>
+              {(props.items.find(
+                (item) => item.id === (props.step as SceneStepShareItem).itemId,
+              )?.name ?? "") + ` (${props.step.itemId})`}
+            </span>
+          </>
         )}
       </div>
       <div className="flex items-center ml-auto">

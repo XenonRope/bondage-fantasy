@@ -46,6 +46,7 @@ export interface Character {
   genitals: Genitals;
   wearables: WearableItemOnCharacter[];
   inventory: StorableItemInInventory[];
+  sharedItemsIds: number[];
 }
 
 export interface Position {
@@ -202,6 +203,7 @@ export enum SceneStepType {
   USE_WEARABLE = "USE_WEARABLE",
   REMOVE_WEARABLE = "REMOVE_WEARABLE",
   CHANGE_ITEMS_COUNT = "CHANGE_ITEMS_COUNT",
+  SHARE_ITEM = "SHARE_ITEM",
 }
 
 export type SceneStep =
@@ -213,7 +215,8 @@ export type SceneStep =
   | SceneStepVariable
   | SceneStepUseWearable
   | SceneStepRemoveWearable
-  | SceneStepChangeItemsCount;
+  | SceneStepChangeItemsCount
+  | SceneStepShareItem;
 
 export interface SceneStepBase {
   type: SceneStepType;
@@ -284,6 +287,11 @@ export interface SceneStepChangeItemsCount extends SceneStepBase {
   type: SceneStepType.CHANGE_ITEMS_COUNT;
   itemId: number;
   delta: ExpressionSource;
+}
+
+export interface SceneStepShareItem extends SceneStepBase {
+  type: SceneStepType.SHARE_ITEM;
+  itemId: number;
 }
 
 export interface SceneDefinition {

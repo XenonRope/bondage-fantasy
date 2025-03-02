@@ -126,6 +126,7 @@ export const en: ResourceLanguage = {
     "scene.type.USE_WEARABLE": "Use wearable",
     "scene.type.REMOVE_WEARABLE": "Remove wearable",
     "scene.type.CHANGE_ITEMS_COUNT": "Change items count",
+    "scene.type.SHARE_ITEM": "Share item",
     "scene.pause": "Pause",
     "scene.pauseMode.AUTO": "Auto",
     "scene.pauseMode.ALWAYS": "Always",

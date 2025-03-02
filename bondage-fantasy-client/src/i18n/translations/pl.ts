@@ -126,6 +126,7 @@ export const pl: ResourceLanguage = {
     "scene.type.USE_WEARABLE": "Załóż ubranie",
     "scene.type.REMOVE_WEARABLE": "Zdejmij ubranie",
     "scene.type.CHANGE_ITEMS_COUNT": "Zmień liczbę przedmiotów",
+    "scene.type.SHARE_ITEM": "Udostępnij przedmiot",
     "scene.pause": "Pauza",
     "scene.pauseMode.AUTO": "Automatyczna",
     "scene.pauseMode.ALWAYS": "Zawsze",

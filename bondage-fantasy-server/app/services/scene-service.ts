@@ -22,6 +22,7 @@ import {
   ScenePauseMode,
   SceneStepChangeItemsCount,
   SceneStepChoice,
+  SceneStepShareItem,
   SceneStepType,
   SceneStepVariable,
   VARIABLE_MAX_COUNT,
@@ -261,6 +262,11 @@ export class SceneService {
         if (result.characterChanged) {
           characterChanged = true;
         }
+      } else if (step.type === SceneStepType.SHARE_ITEM) {
+        const result = await this.executeStepShareItem(step, scene, character);
+        if (result.characterChanged) {
+          characterChanged = true;
+        }
       }
       scene.currentStep++;
       executedStepsCount++;
@@ -315,6 +321,25 @@ export class SceneService {
       itemInInventory.count = ITEM_IN_INVENTORY_STACK_MAX_COUNT;
     }
     character.inventory = character.inventory.filter(({ count }) => count > 0);
+
+    return { characterChanged: true };
+  }
+
+  private async executeStepShareItem(
+    step: SceneStepShareItem,
+    scene: Scene,
+    character: Character,
+  ): Promise<{ characterChanged: boolean }> {
+    const item = await this.itemDao.getById(step.itemId);
+    if (
+      item == null ||
+      item.ownerCharacterId !== scene.ownerCharacterId ||
+      character.sharedItemsIds.includes(item.id) ||
+      item.ownerCharacterId === character.id
+    ) {
+      return { characterChanged: false };
+    }
+    character.sharedItemsIds.push(item.id);
 
     return { characterChanged: true };
   }

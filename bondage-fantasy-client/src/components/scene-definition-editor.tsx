@@ -99,7 +99,10 @@ export function SceneDefinitionEditor(props: {
           if (step.type === SceneStepType.USE_WEARABLE) {
             return step.itemsIds;
           }
-          if (step.type === SceneStepType.CHANGE_ITEMS_COUNT) {
+          if (
+            step.type === SceneStepType.CHANGE_ITEMS_COUNT ||
+            step.type === SceneStepType.SHARE_ITEM
+          ) {
             return [step.itemId];
           }
           return [];

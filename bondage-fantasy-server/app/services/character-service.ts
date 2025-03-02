@@ -62,6 +62,7 @@ export default class CharacterService {
           genitals: params.genitals,
           wearables: [],
           inventory: [],
+          sharedItemsIds: [],
         };
 
         await this.characterDao.insert(character);

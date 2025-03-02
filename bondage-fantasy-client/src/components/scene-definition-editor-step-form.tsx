@@ -34,6 +34,7 @@ import {
   SceneStepJump,
   SceneStepLabel,
   SceneStepRemoveWearable,
+  SceneStepShareItem,
   SceneStepText,
   SceneStepType,
   SceneStepUseWearable,
@@ -704,6 +705,72 @@ function RemoveWearableStep({
   );
 }
 
+function ShareItemStep({
+  initialStep,
+  onConfirm,
+}: {
+  initialStep?: SceneStepShareItem;
+  onConfirm: (step: SceneStep) => void;
+}) {
+  const [itemSearchValue, setItemSearchValue] = useState("");
+  const [itemSearchValueDebounced] = useDebouncedValue(
+    itemSearchValue,
+    DEFAULT_DEBOUNCE,
+  );
+  const form = useForm({
+    initialValues: {
+      itemId: initialStep?.itemId.toString() ?? "",
+    },
+    validate: {
+      itemId: Validators.notEmpty(),
+    },
+  });
+  const items = useItemsQuery(
+    {
+      query: itemSearchValueDebounced,
+      page: 1,
+      pageSize: form.getValues().itemId ? 21 : 20,
+      includeItemsIds: form.getValues().itemId
+        ? [parseInt(form.getValues().itemId)]
+        : undefined,
+    },
+    { keepPreviousData: true },
+  );
+
+  function handleConfirm() {
+    form.onSubmit((values) => {
+      onConfirm({
+        type: SceneStepType.SHARE_ITEM,
+        itemId: parseInt(values.itemId),
+      });
+    })();
+  }
+
+  if (items.data == null) {
+    return <></>;
+  }
+
+  return (
+    <>
+      <Select
+        {...form.getInputProps("itemId")}
+        key={form.key("itemId")}
+        label={<Translation>{(t) => t("common.item")}</Translation>}
+        searchable
+        searchValue={itemSearchValue}
+        onSearchChange={setItemSearchValue}
+        data={items.data?.items.map((item) => ({
+          value: item.id.toString(),
+          label: item.name,
+        }))}
+      />
+      <Button onClick={handleConfirm} className="mt-4">
+        <Translation>{(t) => t("common.confirm")}</Translation>
+      </Button>
+    </>
+  );
+}
+
 export function SceneDefinitionEditorStepForm(props: {
   stepType: SceneStepType;
   step?: SceneStep;
@@ -764,6 +831,11 @@ export function SceneDefinitionEditorStepForm(props: {
           initialStep={props.step as SceneStepChangeItemsCount}
           onConfirm={props.onConfirm}
           existingVariables={props.existingVariables}
+        />
+      ) : props.stepType === SceneStepType.SHARE_ITEM ? (
+        <ShareItemStep
+          initialStep={props.step as SceneStepShareItem}
+          onConfirm={props.onConfirm}
         />
       ) : null}
     </>

@@ -113,6 +113,11 @@ export const sceneStepChangeItemsCount = vine.object({
   delta: expressionSource,
 });
 
+export const sceneStepShareItem = vine.object({
+  type: vine.literal(SceneStepType.SHARE_ITEM),
+  itemId: vine.number().withoutDecimals(),
+});
+
 export const sceneStep = vine.union([
   vine.union.if(
     (value) => "type" in value && value.type === SceneStepType.TEXT,
@@ -150,6 +155,10 @@ export const sceneStep = vine.union([
     (value) =>
       "type" in value && value.type === SceneStepType.CHANGE_ITEMS_COUNT,
     sceneStepChangeItemsCount,
+  ),
+  vine.union.if(
+    (value) => "type" in value && value.type === SceneStepType.SHARE_ITEM,
+    sceneStepShareItem,
   ),
 ]);
 
