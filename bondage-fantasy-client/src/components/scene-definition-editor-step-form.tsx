@@ -510,6 +510,7 @@ function UseWearableStep({
       includeItemsIds: form
         .getValues()
         .itemsIds.map((itemId) => parseInt(itemId)),
+      includeShared: true,
       types: [ItemType.WEARABLE],
     },
     { keepPreviousData: true },
@@ -591,6 +592,7 @@ function ChangeItemsCountStep({
       includeItemsIds: form.getValues().itemId
         ? [parseInt(form.getValues().itemId)]
         : undefined,
+      includeShared: true,
       types: [ItemType.STORABLE],
     },
     { keepPreviousData: true },

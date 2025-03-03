@@ -8,6 +8,7 @@ export const useItemsQuery = (
     page: number;
     pageSize: number;
     includeItemsIds?: number[];
+    includeShared?: boolean;
     types?: ItemType[];
   },
   params?: { keepPreviousData?: boolean },
@@ -20,6 +21,7 @@ export const useItemsQuery = (
         offset: (filter.page - 1) * filter.pageSize,
         limit: filter.pageSize,
         includeItemsIds: filter.includeItemsIds,
+        includeShared: filter.includeShared,
         types: filter.types,
       }),
     enabled: () => filter.query.length >= ITEM_SEARCH_QUERY_MIN_LENGTH,

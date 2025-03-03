@@ -19,15 +19,11 @@ export class ItemDao {
 
   async getMany(params: {
     itemsIds?: number[];
-    ownerCharactersIds?: number[];
     fields?: readonly string[];
   }): Promise<Item[]> {
     const filters: Filter<Item>[] = [];
     if (params.itemsIds != null) {
       filters.push({ id: { $in: params.itemsIds } });
-    }
-    if (params.ownerCharactersIds != null) {
-      filters.push({ ownerCharacterId: { $in: params.ownerCharactersIds } });
     }
     const filter = filters.length > 0 ? { $and: filters } : {};
     const projection = params.fields?.reduce((acc, field) => {
@@ -49,6 +45,7 @@ export class ItemDao {
     offset: number;
     limit: number;
     includeItemsIds?: number[];
+    sharedItemsIds?: number[];
     types?: ItemType[];
   }): Promise<{ items: Item[]; total: number }> {
     const filters: Filter<Item>[] = [];
@@ -59,8 +56,20 @@ export class ItemDao {
       filters.push({ type: { $in: params.types } });
     }
     const filter: Filter<Item> = {
-      $or: [{ $and: filters }, { id: { $in: params.includeItemsIds ?? [] } }],
-      ownerCharacterId: params.characterId,
+      $and: [
+        {
+          $or: [
+            { $and: filters },
+            { id: { $in: params.includeItemsIds ?? [] } },
+          ],
+        },
+        {
+          $or: [
+            { ownerCharacterId: params.characterId },
+            { id: { $in: params.sharedItemsIds ?? [] } },
+          ],
+        },
+      ],
     };
     const items = await this.getCollection()
       .find(filter)

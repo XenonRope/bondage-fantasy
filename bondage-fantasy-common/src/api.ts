@@ -105,6 +105,7 @@ export interface ItemSearchRequest {
   offset: number;
   limit: number;
   includeItemsIds?: number[];
+  includeShared?: boolean;
   types?: ItemType[];
 }
 
@@ -114,6 +115,7 @@ export interface ItemSearchResponseRow {
   name: string;
   description: string;
   imageKey?: string;
+  shared: boolean;
 }
 
 export interface ItemSearchResponse {

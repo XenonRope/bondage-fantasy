@@ -2,6 +2,7 @@ import { CharacterDao } from "#dao/character-dao";
 import {
   CannotWearItemException,
   CharacterNotFoundException,
+  NoAccessToItemException,
   TooManyCharactersException,
 } from "#exceptions/exceptions";
 import { SequenceCode } from "#models/sequence-model";
@@ -35,6 +36,11 @@ export default class CharacterService {
       throw new CharacterNotFoundException();
     }
     return character;
+  }
+
+  async getSharedItemsIds(id: number): Promise<number[]> {
+    const character = await this.getById(id);
+    return character.sharedItemsIds;
   }
 
   async create(params: {
@@ -81,9 +87,13 @@ export default class CharacterService {
       "1s",
       async () => {
         const character = await this.getById(params.characterId);
-        const item = await this.itemService.getById(params.itemId, {
-          checkAccessForCharacterId: params.characterId,
-        });
+        const item = await this.itemService.getById(params.itemId);
+        if (
+          item.ownerCharacterId !== params.characterId &&
+          !character.sharedItemsIds.includes(item.id)
+        ) {
+          throw new NoAccessToItemException();
+        }
         if (item.type !== ItemType.WEARABLE) {
           throw new CannotWearItemException(`Item ${item.id} is not wearable`);
         }

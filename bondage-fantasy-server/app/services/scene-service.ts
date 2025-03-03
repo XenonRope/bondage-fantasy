@@ -127,6 +127,10 @@ export class SceneService {
       return { characterChanged, zoneCharacterDataChanged };
     }
 
+    const ownerCharacter = await this.characterService.getById(
+      scene.ownerCharacterId,
+    );
+
     if (scene.choices != null && scene.choices.length > 0) {
       if (params?.choiceIndex == null) {
         throw new SceneChoiceRequiredException();
@@ -229,7 +233,9 @@ export class SceneService {
         const wearableItems = items
           .filter((wearable) => wearable.type === ItemType.WEARABLE)
           .filter(
-            (wearable) => wearable.ownerCharacterId === scene.ownerCharacterId,
+            (wearable) =>
+              wearable.ownerCharacterId === scene.ownerCharacterId ||
+              ownerCharacter.sharedItemsIds.includes(wearable.id),
           );
         if (
           wearableItems.length !== step.itemsIds.length ||
@@ -257,6 +263,7 @@ export class SceneService {
           step,
           scene,
           character,
+          ownerCharacter,
           zoneCharacterData,
         );
         if (result.characterChanged) {
@@ -279,12 +286,14 @@ export class SceneService {
     step: SceneStepChangeItemsCount,
     scene: Scene,
     character: Character,
+    ownerCharacter: Character,
     zoneCharacterData: ZoneCharacterData,
   ): Promise<{ characterChanged: boolean }> {
     const item = await this.itemDao.getById(step.itemId);
     if (
       item == null ||
-      item.ownerCharacterId !== scene.ownerCharacterId ||
+      (item.ownerCharacterId !== scene.ownerCharacterId &&
+        !ownerCharacter.sharedItemsIds.includes(item.id)) ||
       item.type !== ItemType.STORABLE
     ) {
       return { characterChanged: false };

@@ -87,31 +87,42 @@ export default class ItemController {
       itemListRequestValidator,
     );
     const characterId = await getCharacterId(ctx);
+    const sharedItemsIds =
+      await this.characterService.getSharedItemsIds(characterId);
 
     const items = await this.itemDao.getMany({
       itemsIds,
-      ownerCharactersIds: [characterId],
       fields: fields ?? ITEM_LIST_REQUEST_FIELDS,
     });
 
     return {
-      items: items.map((item) => ({
-        id: item.id,
-        name: item.name,
-      })),
+      items: items
+        .filter(
+          (item) =>
+            item.ownerCharacterId === characterId ||
+            sharedItemsIds.includes(item.id),
+        )
+        .map((item) => ({
+          id: item.id,
+          name: item.name,
+        })),
     };
   }
 
   async search(ctx: HttpContext): Promise<ItemSearchResponse> {
-    const { query, offset, limit, includeItemsIds, types } =
+    const { query, offset, limit, includeItemsIds, includeShared, types } =
       await ctx.request.validateUsing(itemSearchRequestValidator);
     const characterId = await getCharacterId(ctx);
+    const sharedItemsIds = includeShared
+      ? await this.characterService.getSharedItemsIds(characterId)
+      : undefined;
     const { items, total } = await this.itemDao.search({
       query,
       characterId,
       offset,
       limit,
       includeItemsIds,
+      sharedItemsIds,
       types,
     });
     return {
@@ -121,6 +132,7 @@ export default class ItemController {
         name: item.name,
         description: item.description,
         imageKey: item.imageKey,
+        shared: item.ownerCharacterId !== characterId,
       })),
       total,
     };

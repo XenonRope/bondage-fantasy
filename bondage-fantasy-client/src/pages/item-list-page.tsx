@@ -1,4 +1,8 @@
-import { faEllipsisVertical, faGear } from "@fortawesome/free-solid-svg-icons";
+import {
+  faEllipsisVertical,
+  faGear,
+  faGlobe,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   ActionIcon,
@@ -73,7 +77,7 @@ export function ItemListPage() {
     setFilter((filter) => ({ ...filter, query, page: 1 }));
   }, DEFAULT_DEBOUNCE);
   const searchResult = useItemsQuery(
-    { ...filter, pageSize: PAGE_SIZE },
+    { ...filter, pageSize: PAGE_SIZE, includeShared: true },
     { keepPreviousData: true },
   );
 
@@ -100,25 +104,38 @@ export function ItemListPage() {
           {searchResult.data?.items.map((item) => (
             <CardWithImage key={item.id} image={item.imageKey}>
               <div className="flex justify-between items-start min-w-0">
-                <div className="min-w-0">
+                <div className="min-w-0 flex items-center gap-2">
                   <NameWithId name={item.name} id={item.id} />
+                  {item.shared && (
+                    <Tooltip
+                      label={t("item.shared")}
+                      openDelay={DEFAULT_TOOLTIP_DELAY}
+                      transitionProps={{
+                        duration: DEFAULT_TOOLTIP_TRANSITION_DURATION,
+                      }}
+                    >
+                      <FontAwesomeIcon icon={faGlobe} />
+                    </Tooltip>
+                  )}
                 </div>
                 <div className="flex items-center gap-2">
-                  <Tooltip
-                    label={t("common.edit")}
-                    openDelay={DEFAULT_TOOLTIP_DELAY}
-                    transitionProps={{
-                      duration: DEFAULT_TOOLTIP_TRANSITION_DURATION,
-                    }}
-                  >
-                    <ActionIcon
-                      variant="transparent"
-                      size="sm"
-                      onClick={() => navigate(`/items/${item.id}/edit`)}
+                  {!item.shared && (
+                    <Tooltip
+                      label={t("common.edit")}
+                      openDelay={DEFAULT_TOOLTIP_DELAY}
+                      transitionProps={{
+                        duration: DEFAULT_TOOLTIP_TRANSITION_DURATION,
+                      }}
                     >
-                      <FontAwesomeIcon icon={faGear} />
-                    </ActionIcon>
-                  </Tooltip>
+                      <ActionIcon
+                        variant="transparent"
+                        size="sm"
+                        onClick={() => navigate(`/items/${item.id}/edit`)}
+                      >
+                        <FontAwesomeIcon icon={faGear} />
+                      </ActionIcon>
+                    </Tooltip>
+                  )}
                   <ItemActions item={item} />
                 </div>
               </div>
