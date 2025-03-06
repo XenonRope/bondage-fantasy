@@ -1,3 +1,4 @@
+import { ItemDao } from "#dao/item-dao";
 import { ZoneDao } from "#dao/zone-dao";
 import {
   CannotInteractWithEventException,
@@ -43,6 +44,7 @@ export class ZoneService {
     private expressionEvaluator: ExpressionEvaluator,
     private sceneService: SceneService,
     private characterService: CharacterService,
+    private itemDao: ItemDao,
   ) {}
 
   async get(
@@ -296,6 +298,9 @@ export class ZoneService {
         const character = await this.characterService.getById(
           params.characterId,
         );
+        const ownedItemsIds = await this.itemDao.getIdsByCharacterId(
+          params.characterId,
+        );
 
         const event = zone.objects.find(
           (object): object is EventObject =>
@@ -307,7 +312,10 @@ export class ZoneService {
           (event.condition != null &&
             !this.expressionEvaluator.evaluateAsBoolean(
               event.condition,
-              getCharacterVariables(character),
+              getCharacterVariables({
+                character,
+                ownedItemsIds,
+              }),
             ))
         ) {
           throw new EventNotFoundException(params.eventId);

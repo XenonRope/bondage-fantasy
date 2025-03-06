@@ -16,6 +16,7 @@ import {
 } from "bondage-fantasy-common";
 import { ExpressionEvaluator } from "./expression-evaluator.js";
 import { TemplateRenderer } from "./template-renderer.js";
+import { ItemDao } from "#dao/item-dao";
 
 @inject()
 export class ZoneVisionService {
@@ -24,6 +25,7 @@ export class ZoneVisionService {
     private characterDao: CharacterDao,
     private expressionEvaluator: ExpressionEvaluator,
     private templateRenderer: TemplateRenderer,
+    private itemDao: ItemDao,
   ) {}
 
   async tryGetZoneVision(
@@ -42,16 +44,19 @@ export class ZoneVisionService {
     const objects = zone.objects.filter((object) =>
       arePositionsEqual(object.position, characterObject.position),
     );
-    const zoneVisionObjects = await this.mapObjectsToZoneVisionObjects(
+    const ownedItemsIds = await this.itemDao.getIdsByCharacterId(character.id);
+    const zoneVisionObjects = await this.mapObjectsToZoneVisionObjects({
       objects,
       character,
-    );
+      ownedItemsIds,
+    });
     const currentField = zone.fields.find((field) =>
       arePositionsEqual(field.position, characterObject.position),
     )!;
     const currentFieldDescription = await this.renderFieldDescription({
       field: currentField,
       character,
+      ownedItemsIds,
     });
 
     return {
@@ -72,10 +77,15 @@ export class ZoneVisionService {
     };
   }
 
-  async mapObjectsToZoneVisionObjects(
-    objects: ZoneObject[],
-    character: Character,
-  ): Promise<ZoneVisionObject[]> {
+  async mapObjectsToZoneVisionObjects({
+    objects,
+    character,
+    ownedItemsIds,
+  }: {
+    objects: ZoneObject[];
+    character: Character;
+    ownedItemsIds: number[];
+  }): Promise<ZoneVisionObject[]> {
     const charactersIds = objects
       .filter((object) => object.type === ObjectType.CHARACTER)
       .map((object) => object.characterId);
@@ -102,7 +112,10 @@ export class ZoneVisionService {
             if (
               !this.expressionEvaluator.evaluateAsBoolean(
                 expression,
-                getCharacterVariables(character),
+                getCharacterVariables({
+                  character,
+                  ownedItemsIds,
+                }),
               )
             ) {
               return null;
@@ -124,10 +137,14 @@ export class ZoneVisionService {
   private async renderFieldDescription(params: {
     field: Field;
     character: Character;
+    ownedItemsIds: number[];
   }): Promise<string> {
     return this.templateRenderer.render(
       params.field.description,
-      getCharacterVariables(params.character),
+      getCharacterVariables({
+        character: params.character,
+        ownedItemsIds: params.ownedItemsIds,
+      }),
     );
   }
 }

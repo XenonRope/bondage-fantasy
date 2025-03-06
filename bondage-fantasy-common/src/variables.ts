@@ -16,12 +16,17 @@ export const VARIABLES = [
   ...Object.values(ItemSlot).map((slot) => `${slot}_ITEM_ID`),
   ...Object.values(ItemSlot).map((slot) => `${slot}_ITEM_NAME`),
   "ITEM_<id>_COUNT",
+  "ITEM_<id>_ACCESS",
 ];
 
-export function getCharacterVariables(
-  character: Character,
-): Record<string, string> {
-  const itemIds = Object.values(ItemSlot).reduce((acc, slot) => {
+export function getCharacterVariables({
+  character,
+  ownedItemsIds,
+}: {
+  character: Character;
+  ownedItemsIds: number[];
+}): Record<string, string> {
+  const slotItemsIds = Object.values(ItemSlot).reduce((acc, slot) => {
     const item = character.wearables.find((wearable) =>
       wearable.slots.includes(slot),
     );
@@ -31,7 +36,7 @@ export function getCharacterVariables(
     };
   }, {});
 
-  const itemNames = Object.values(ItemSlot).reduce((acc, slot) => {
+  const slotItemsNames = Object.values(ItemSlot).reduce((acc, slot) => {
     const item = character.wearables.find((wearable) =>
       wearable.slots.includes(slot),
     );
@@ -47,6 +52,17 @@ export function getCharacterVariables(
       [`ITEM_${item.itemId}_COUNT`]: item.count.toString(),
     };
   }, {});
+
+  const itemAccess = [...ownedItemsIds, ...character.sharedItemsIds].reduce(
+    (acc, itemId) => {
+      return {
+        ...acc,
+        [`ITEM_${itemId}_ACCESS`]: TRUE,
+      };
+    },
+    {},
+  );
+
   return {
     NAME: character.name,
     HAS_VAGINA: getBooleanVariable(
@@ -62,9 +78,10 @@ export function getCharacterVariables(
     IS_FUTA: getBooleanVariable(character.genitals === Genitals.FUTA),
     SHE_HER: getBooleanVariable(character.pronouns === Pronouns.SHE_HER),
     HE_HIM: getBooleanVariable(character.pronouns === Pronouns.HE_HIM),
-    ...itemIds,
-    ...itemNames,
+    ...slotItemsIds,
+    ...slotItemsNames,
     ...itemCounts,
+    ...itemAccess,
   };
 }
 

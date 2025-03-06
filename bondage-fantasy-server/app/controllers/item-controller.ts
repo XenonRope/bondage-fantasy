@@ -93,19 +93,17 @@ export default class ItemController {
     const items = await this.itemDao.getMany({
       itemsIds,
       fields: fields ?? ITEM_LIST_REQUEST_FIELDS,
+      rls: {
+        ownerCharacterId: characterId,
+        sharedItemsIds,
+      },
     });
 
     return {
-      items: items
-        .filter(
-          (item) =>
-            item.ownerCharacterId === characterId ||
-            sharedItemsIds.includes(item.id),
-        )
-        .map((item) => ({
-          id: item.id,
-          name: item.name,
-        })),
+      items: items.map((item) => ({
+        id: item.id,
+        name: item.name,
+      })),
     };
   }
 

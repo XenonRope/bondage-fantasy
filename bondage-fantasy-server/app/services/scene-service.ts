@@ -90,7 +90,11 @@ export class SceneService {
       });
 
     const { characterChanged, zoneCharacterDataChanged } =
-      await this.continueScene(scene, params.character, zoneCharacterData);
+      await this.continueScene({
+        scene,
+        character: params.character,
+        zoneCharacterData,
+      });
 
     if (characterChanged) {
       await this.characterDao.update(params.character);
@@ -111,12 +115,17 @@ export class SceneService {
     await this.sceneDao.deleteById(sceneId);
   }
 
-  async continueScene(
-    scene: Scene,
-    character: Character,
-    zoneCharacterData: ZoneCharacterData,
-    params?: { choiceIndex?: number },
-  ): Promise<{
+  async continueScene({
+    scene,
+    character,
+    zoneCharacterData,
+    params,
+  }: {
+    scene: Scene;
+    character: Character;
+    zoneCharacterData: ZoneCharacterData;
+    params?: { choiceIndex?: number };
+  }): Promise<{
     characterChanged: boolean;
     zoneCharacterDataChanged: boolean;
   }> {
@@ -127,6 +136,7 @@ export class SceneService {
       return { characterChanged, zoneCharacterDataChanged };
     }
 
+    const ownedItemsIds = await this.itemDao.getIdsByCharacterId(character.id);
     const ownerCharacter = await this.characterService.getById(
       scene.ownerCharacterId,
     );
@@ -168,7 +178,12 @@ export class SceneService {
         scene.textCharacterNameColor = step.characterNameColor;
         scene.text = this.templateRenderer.render(
           step.text,
-          this.getVariables(scene, character, zoneCharacterData),
+          this.getVariables({
+            scene,
+            character,
+            ownedItemsIds,
+            zoneCharacterData,
+          }),
         );
 
         if (
@@ -188,7 +203,12 @@ export class SceneService {
           step.condition == null ||
           this.expressionEvaluator.evaluateAsBoolean(
             this.parseExpression(step.condition),
-            this.getVariables(scene, character, zoneCharacterData),
+            this.getVariables({
+              scene,
+              character,
+              ownedItemsIds,
+              zoneCharacterData,
+            }),
           )
         ) {
           this.jumpToLabel(scene, step.label);
@@ -206,7 +226,12 @@ export class SceneService {
               option.condition == null ||
               this.expressionEvaluator.evaluateAsBoolean(
                 this.parseExpression(option.condition),
-                this.getVariables(scene, character, zoneCharacterData),
+                this.getVariables({
+                  scene,
+                  character,
+                  ownedItemsIds,
+                  zoneCharacterData,
+                }),
               )
             );
           })
@@ -219,12 +244,13 @@ export class SceneService {
         this.abort(scene);
         return { characterChanged, zoneCharacterDataChanged };
       } else if (step.type === SceneStepType.VARIABLE) {
-        const result = this.setVariable(
+        const result = this.setVariable({
           step,
           scene,
           character,
+          ownedItemsIds,
           zoneCharacterData,
-        );
+        });
         if (result.zoneCharacterDataChanged) {
           zoneCharacterDataChanged = true;
         }
@@ -259,13 +285,14 @@ export class SceneService {
           characterChanged = true;
         }
       } else if (step.type === SceneStepType.CHANGE_ITEMS_COUNT) {
-        const result = await this.executeStepChangeItemsCount(
+        const result = await this.executeStepChangeItemsCount({
           step,
           scene,
           character,
+          ownedItemsIds,
           ownerCharacter,
           zoneCharacterData,
-        );
+        });
         if (result.characterChanged) {
           characterChanged = true;
         }
@@ -282,13 +309,21 @@ export class SceneService {
     return { characterChanged, zoneCharacterDataChanged };
   }
 
-  private async executeStepChangeItemsCount(
-    step: SceneStepChangeItemsCount,
-    scene: Scene,
-    character: Character,
-    ownerCharacter: Character,
-    zoneCharacterData: ZoneCharacterData,
-  ): Promise<{ characterChanged: boolean }> {
+  private async executeStepChangeItemsCount({
+    step,
+    scene,
+    character,
+    ownedItemsIds,
+    ownerCharacter,
+    zoneCharacterData,
+  }: {
+    step: SceneStepChangeItemsCount;
+    scene: Scene;
+    character: Character;
+    ownedItemsIds: number[];
+    ownerCharacter: Character;
+    zoneCharacterData: ZoneCharacterData;
+  }): Promise<{ characterChanged: boolean }> {
     const item = await this.itemDao.getById(step.itemId);
     if (
       item == null ||
@@ -300,7 +335,7 @@ export class SceneService {
     }
     const delta = this.expressionEvaluator.evaluateAsInteger(
       this.parseExpression(step.delta),
-      this.getVariables(scene, character, zoneCharacterData),
+      this.getVariables({ scene, character, ownedItemsIds, zoneCharacterData }),
     );
     if (Number.isNaN(delta)) {
       return { characterChanged: false };
@@ -353,27 +388,40 @@ export class SceneService {
     return { characterChanged: true };
   }
 
-  private getVariables(
-    scene: Scene,
-    character: Character,
-    zoneCharacterData: ZoneCharacterData,
-  ): Record<string, string> {
+  private getVariables({
+    scene,
+    character,
+    ownedItemsIds,
+    zoneCharacterData,
+  }: {
+    scene: Scene;
+    character: Character;
+    ownedItemsIds: number[];
+    zoneCharacterData: ZoneCharacterData;
+  }): Record<string, string> {
     return {
-      ...getCharacterVariables(character),
+      ...getCharacterVariables({ character, ownedItemsIds }),
       ...zoneCharacterData.variables,
       ...scene.variables,
     };
   }
 
-  private setVariable(
-    step: SceneStepVariable,
-    scene: Scene,
-    character: Character,
-    zoneCharacterData: ZoneCharacterData,
-  ): { zoneCharacterDataChanged: boolean } {
+  private setVariable({
+    step,
+    scene,
+    character,
+    ownedItemsIds,
+    zoneCharacterData,
+  }: {
+    step: SceneStepVariable;
+    scene: Scene;
+    character: Character;
+    ownedItemsIds: number[];
+    zoneCharacterData: ZoneCharacterData;
+  }): { zoneCharacterDataChanged: boolean } {
     const value = this.expressionEvaluator.evaluate(
       this.parseExpression(step.value),
-      this.getVariables(scene, character, zoneCharacterData),
+      this.getVariables({ scene, character, ownedItemsIds, zoneCharacterData }),
     );
     if (value.length > VARIABLE_VALUE_MAX_LENGTH) {
       return { zoneCharacterDataChanged: false };

@@ -42,12 +42,12 @@ export default class SceneController {
           });
 
         const { characterChanged, zoneCharacterDataChanged } =
-          await this.sceneService.continueScene(
+          await this.sceneService.continueScene({
             scene,
             character,
             zoneCharacterData,
-            { choiceIndex },
-          );
+            params: { choiceIndex },
+          });
 
         if (characterChanged) {
           await this.characterDao.update(character);

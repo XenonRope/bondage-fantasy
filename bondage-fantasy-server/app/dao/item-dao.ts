@@ -20,10 +20,22 @@ export class ItemDao {
   async getMany(params: {
     itemsIds?: number[];
     fields?: readonly string[];
+    rls?: {
+      ownerCharacterId: number;
+      sharedItemsIds: number[];
+    };
   }): Promise<Item[]> {
     const filters: Filter<Item>[] = [];
     if (params.itemsIds != null) {
       filters.push({ id: { $in: params.itemsIds } });
+    }
+    if (params.rls != null) {
+      filters.push({
+        $or: [
+          { ownerCharacterId: params.rls.ownerCharacterId },
+          { id: { $in: params.rls.sharedItemsIds } },
+        ],
+      });
     }
     const filter = filters.length > 0 ? { $and: filters } : {};
     const projection = params.fields?.reduce((acc, field) => {
@@ -37,6 +49,15 @@ export class ItemDao {
     }
 
     return await cursor.toArray();
+  }
+
+  async getIdsByCharacterId(characterId: number): Promise<number[]> {
+    const items = await this.getCollection()
+      .find({ ownerCharacterId: characterId })
+      .project({ id: 1 })
+      .toArray();
+
+    return items.map((item) => item.id);
   }
 
   async search(params: {
