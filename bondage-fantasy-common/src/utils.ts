@@ -120,3 +120,7 @@ export function isEnum<T extends { [key: string]: unknown }>(
 ): value is T[keyof T] {
   return Object.values(enumType).includes(value);
 }
+
+export function distinct<T>(array: T[]): T[] {
+  return [...new Set(array)];
+}

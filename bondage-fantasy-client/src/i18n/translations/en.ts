@@ -36,6 +36,7 @@ export const en: ResourceLanguage = {
     "common.recommendedImageData":
       "Recommended image resolutation: {{width}}x{{height}}. Max size: {{maxSize}}.",
     "common.removeWearable": "Remove",
+    "common.invalidValue": "Invalid value",
     "navbar.characters": "Characters",
     "navbar.zones": "Zones",
     "navbar.explore": "Explore",
@@ -75,6 +76,8 @@ export const en: ResourceLanguage = {
     "characterCreation.createCharacter": "Create character",
     "characterList.createNewCharacter": "Create new character",
     "zone.private": "Private",
+    "zone.whitelist": "Whitelist",
+    "zone.blacklist": "Blacklist",
     "zoneCreation.createZone": "Create zone",
     "zoneCreation.zoneCreated": "Zone was created",
     "zoneCreation.saveZone": "Save zone",

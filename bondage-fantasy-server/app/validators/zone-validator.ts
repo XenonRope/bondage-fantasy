@@ -1,6 +1,9 @@
 import vine from "@vinejs/vine";
 import {
+  CHARACTER_MAX_ID,
+  CHARACTER_MIN_ID,
   ObjectType,
+  ZONE_BLACKLIST_MAX_COUNT,
   ZONE_DESCRIPTION_MAX_LENGTH,
   ZONE_DESCRIPTION_MIN_LENGTH,
   ZONE_EVENT_MAX_COUNT,
@@ -16,6 +19,7 @@ import {
   ZONE_NAME_MIN_LENGTH,
   ZONE_SEARCH_QUERY_MAX_LENGTH,
   ZONE_SEARCH_QUERY_MIN_LENGTH,
+  ZONE_WHITELIST_MAX_COUNT,
 } from "bondage-fantasy-common";
 import { expressionSource } from "./expression-validator.js";
 import { sceneDefinition } from "./scene-validator.js";
@@ -90,6 +94,26 @@ export const zoneSaveRequestValidator = vine.compile(
       .minLength(ZONE_DESCRIPTION_MIN_LENGTH)
       .maxLength(ZONE_DESCRIPTION_MAX_LENGTH),
     private: vine.boolean(),
+    whitelist: vine
+      .array(
+        vine
+          .number()
+          .withoutDecimals()
+          .min(CHARACTER_MIN_ID)
+          .max(CHARACTER_MAX_ID),
+      )
+      .maxLength(ZONE_WHITELIST_MAX_COUNT)
+      .distinct(),
+    blacklist: vine
+      .array(
+        vine
+          .number()
+          .withoutDecimals()
+          .min(CHARACTER_MIN_ID)
+          .max(CHARACTER_MAX_ID),
+      )
+      .maxLength(ZONE_BLACKLIST_MAX_COUNT)
+      .distinct(),
     entrance: position,
     fields: vine.array(zoneField),
     connections: vine.array(zoneFieldConnection),

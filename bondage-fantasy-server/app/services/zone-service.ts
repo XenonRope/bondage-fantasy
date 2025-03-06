@@ -51,18 +51,10 @@ export class ZoneService {
     zoneId: number,
     params?: {
       checkAccessForCharacterId?: number;
-      checkLimitedAccessForCharacterId?: number;
     },
   ): Promise<Zone> {
     const zone = await this.zoneDao.getById(zoneId);
     if (!zone) {
-      throw new ZoneNotFoundException();
-    }
-    if (
-      params?.checkLimitedAccessForCharacterId != null &&
-      params.checkLimitedAccessForCharacterId !== zone.ownerCharacterId &&
-      zone.private
-    ) {
       throw new ZoneNotFoundException();
     }
     if (
@@ -80,6 +72,8 @@ export class ZoneService {
     name: string;
     description: string;
     private: boolean;
+    whitelist: number[];
+    blacklist: number[];
     entrance: Position;
     fields: Field[];
     connections: FieldConnection[];
@@ -117,6 +111,8 @@ export class ZoneService {
         name: params.name,
         description: params.description,
         private: params.private,
+        whitelist: params.whitelist,
+        blacklist: params.blacklist,
         entrance: params.entrance,
         fields: params.fields,
         connections: params.connections,
@@ -147,9 +143,10 @@ export class ZoneService {
         ) {
           throw new CharacterInZoneException();
         }
-        const zone = await this.get(params.zoneId, {
-          checkLimitedAccessForCharacterId: params.characterId,
-        });
+        const zone = await this.get(params.zoneId);
+        if (!this.isZoneVisibleByCharacter(zone, params.characterId)) {
+          throw new ZoneNotFoundException();
+        }
 
         zone.objects.push({
           type: ObjectType.CHARACTER,
@@ -340,6 +337,14 @@ export class ZoneService {
     if (!(await this.zoneDao.isCharacterOwnerOfZone(characterId, zoneId))) {
       throw new NoAccessToZoneException();
     }
+  }
+
+  private isZoneVisibleByCharacter(zone: Zone, characterId: number): boolean {
+    return (
+      zone.ownerCharacterId === characterId ||
+      (!zone.blacklist.includes(characterId) &&
+        (!zone.private || zone.whitelist.includes(characterId)))
+    );
   }
 
   private validateFields(fields: Field[]): void {

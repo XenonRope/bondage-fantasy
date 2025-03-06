@@ -35,6 +35,7 @@ export const pl: ResourceLanguage = {
     "common.recommendedImageData":
       "Zalecana rozdzielczość obrazu: {{width}}x{{height}}. Maksymalny rozmiar: {{maxSize}}.",
     "common.removeWearable": "Usuń",
+    "common.invalidValue": "Niepoprawna wartość",
     "navbar.characters": "Postacie",
     "navbar.zones": "Strefy",
     "navbar.explore": "Eksploruj",
@@ -75,6 +76,8 @@ export const pl: ResourceLanguage = {
     "characterCreation.createCharacter": "Stwórz postać",
     "characterList.createNewCharacter": "Stwórz nową postać",
     "zone.private": "Prywatna",
+    "zone.whitelist": "Biała lista",
+    "zone.blacklist": "Czarna lista",
     "zoneCreation.createZone": "Stwórz strefę",
     "zoneCreation.zoneCreated": "Strefa została stworzona",
     "zoneCreation.saveZone": "Zapisz strefę",

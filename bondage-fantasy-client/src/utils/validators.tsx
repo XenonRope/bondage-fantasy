@@ -1,6 +1,7 @@
 import { parseExpression } from "bondage-fantasy-common";
 import { ReactNode } from "react";
 import { Translation } from "react-i18next";
+import { parseCommaSeparatedNumbers } from "./utils";
 
 function inRange(min?: number, max?: number) {
   return (value: string) => {
@@ -62,9 +63,33 @@ function expression() {
   };
 }
 
+function commaSeparatedNumbers(params?: {
+  minValue?: number;
+  maxValue?: number;
+  maxCount?: number;
+}) {
+  return (value: string | undefined | null) => {
+    if (!value) {
+      return;
+    }
+    const numbers = parseCommaSeparatedNumbers(value);
+    if (
+      numbers.some(isNaN) ||
+      (params?.minValue != null &&
+        numbers.some((number) => number < params.minValue!)) ||
+      (params?.maxValue != null &&
+        numbers.some((number) => number > params.maxValue!)) ||
+      (params?.maxCount != null && numbers.length > params.maxCount!)
+    ) {
+      return <Translation>{(t) => t("common.invalidValue")}</Translation>;
+    }
+  };
+}
+
 export const Validators = {
   inRange,
   notEmpty,
   notInList,
   expression,
+  commaSeparatedNumbers,
 };

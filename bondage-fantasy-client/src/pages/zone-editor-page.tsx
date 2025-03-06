@@ -12,6 +12,9 @@ import { useForceUpdate } from "@mantine/hooks";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   arePositionsEqual,
+  CHARACTER_MAX_ID,
+  CHARACTER_MIN_ID,
+  distinct,
   doesConnectionKeyContainFieldKey,
   EventObject,
   EXPRESSION_SOURCE_MAX_LENGTH,
@@ -27,6 +30,7 @@ import {
   Position,
   SceneDefinition,
   Zone,
+  ZONE_BLACKLIST_MAX_COUNT,
   ZONE_DESCRIPTION_MAX_LENGTH,
   ZONE_DESCRIPTION_MIN_LENGTH,
   ZONE_EVENT_MAX_COUNT,
@@ -38,6 +42,7 @@ import {
   ZONE_FIELD_NAME_MIN_LENGTH,
   ZONE_NAME_MAX_LENGTH,
   ZONE_NAME_MIN_LENGTH,
+  ZONE_WHITELIST_MAX_COUNT,
   ZoneObject,
   ZoneSaveRequest,
   ZoneVisionObject,
@@ -57,6 +62,7 @@ import {
 import { errorService } from "../services/error-service";
 import { notificationService } from "../services/notification-service";
 import { sessionService } from "../services/session-service";
+import { parseCommaSeparatedNumbers } from "../utils/utils";
 import { Validators } from "../utils/validators";
 
 interface ZoneFormField {
@@ -70,6 +76,8 @@ interface ZoneForm {
   name: string;
   description: string;
   private: boolean;
+  whitelist: string;
+  blacklist: string;
   entrance?: FieldKey;
   fields: Record<FieldKey, ZoneFormField>;
   connections: Record<FieldConnectionKey, true>;
@@ -171,6 +179,8 @@ export function ZoneEditorPage() {
       name: "",
       description: "",
       private: true,
+      whitelist: "",
+      blacklist: "",
       entrance: undefined,
       fields: {},
       connections: {},
@@ -191,7 +201,12 @@ export function ZoneEditorPage() {
         zoneId ? t("zoneCreation.zoneSaved") : t("zoneCreation.zoneCreated"),
       );
       await sessionService.refreshSession();
-      if (!zoneId) {
+      if (zoneId) {
+        form.setValues({
+          whitelist: savedZone.whitelist.join(", "),
+          blacklist: savedZone.blacklist.join(", "),
+        });
+      } else {
         navigate(`/zones/${savedZone.id}/edit`);
       }
     },
@@ -214,6 +229,8 @@ export function ZoneEditorPage() {
         name: zone.data.name,
         description: zone.data.description,
         private: zone.data.private,
+        whitelist: zone.data.whitelist.join(", "),
+        blacklist: zone.data.blacklist.join(", "),
         entrance: getFieldKey(zone.data.entrance),
         fields: mapFieldsToFormFields(zone.data.fields, zone.data),
         connections: mapConnectionsToFormConnections(zone.data.connections),
@@ -245,6 +262,16 @@ export function ZoneEditorPage() {
           {(t) => t("zoneCreation.yourZoneHasNoEntrance")}
         </Translation>,
       )(values.entrance),
+      whitelist: Validators.commaSeparatedNumbers({
+        minValue: CHARACTER_MIN_ID,
+        maxValue: CHARACTER_MAX_ID,
+        maxCount: ZONE_WHITELIST_MAX_COUNT,
+      })(values.whitelist),
+      blacklist: Validators.commaSeparatedNumbers({
+        minValue: CHARACTER_MIN_ID,
+        maxValue: CHARACTER_MAX_ID,
+        maxCount: ZONE_BLACKLIST_MAX_COUNT,
+      })(values.blacklist),
     };
     for (const [fieldKey, field] of Object.entries(values.fields)) {
       errors[`fields.${fieldKey}.name`] = Validators.inRange(
@@ -365,6 +392,12 @@ export function ZoneEditorPage() {
       name: form.getValues().name,
       description: form.getValues().description,
       private: form.getValues().private,
+      whitelist: distinct(
+        parseCommaSeparatedNumbers(form.getValues().whitelist),
+      ),
+      blacklist: distinct(
+        parseCommaSeparatedNumbers(form.getValues().blacklist),
+      ),
       entrance: getPositionFromFieldKey(form.getValues().entrance!),
       fields: getFieldsAsArray(),
       connections: getConnectionsAsArray(),
@@ -588,6 +621,24 @@ export function ZoneEditorPage() {
           key={form.key("private")}
           label={t("zone.private")}
           className="mt-4"
+        />
+        <Textarea
+          {...form.getInputProps("whitelist")}
+          key={form.key("whitelist")}
+          label={t("zone.whitelist")}
+          autosize
+          minRows={1}
+          maxRows={5}
+          className="mt-2 max-w-lg"
+        />
+        <Textarea
+          {...form.getInputProps("blacklist")}
+          key={form.key("blacklist")}
+          label={t("zone.blacklist")}
+          autosize
+          minRows={1}
+          maxRows={5}
+          className="mt-2 max-w-lg"
         />
         <div className="mt-4">
           {zoneId && (

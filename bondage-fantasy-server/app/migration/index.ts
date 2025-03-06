@@ -6,6 +6,7 @@ import M20250203_SetCharacterInventory from "./M20250203_SetCharacterInventory.j
 import M20250204_ChangeDraftToPrivate from "./M20250204_ChangeDraftToPrivate.js";
 import M20250215_SetPause from "./M20250215_SetPause.js";
 import M20250302_SetSharedItemsIds from "./M20250302_SetSharedItemsIds.js";
+import M20250306_SetWhitelistAndBlacklist from "./M20250306_SetWhitelistAndBlacklist.js";
 
 export const MIGRATION_SCRIPTS: MigrationScript[] = [
   new M20241126_CreateIndexes(),
@@ -15,4 +16,5 @@ export const MIGRATION_SCRIPTS: MigrationScript[] = [
   new M20250204_ChangeDraftToPrivate(),
   new M20250215_SetPause(),
   new M20250302_SetSharedItemsIds(),
+  new M20250306_SetWhitelistAndBlacklist(),
 ];

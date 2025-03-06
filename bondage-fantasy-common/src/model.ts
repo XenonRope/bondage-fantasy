@@ -75,6 +75,8 @@ export interface Zone {
   name: string;
   description: string;
   private: boolean;
+  whitelist: number[];
+  blacklist: number[];
   entrance: Position;
   fields: Field[];
   connections: FieldConnection[];
