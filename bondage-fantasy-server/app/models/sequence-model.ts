@@ -4,6 +4,7 @@ export enum SequenceCode {
   ZONE = "ZONE",
   SCENE = "SCENE",
   ITEM = "ITEM",
+  IMAGE = "IMAGE",
 }
 
 export interface Sequence {

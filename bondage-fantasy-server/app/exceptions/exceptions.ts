@@ -241,3 +241,33 @@ export class CannotWearItemException extends ApplicationException {
     });
   }
 }
+
+export class ImageNotFoundException extends ApplicationException {
+  constructor(imageId: number) {
+    super({
+      code: ErrorCode.E_IMAGE_NOT_FOUND,
+      message: `Image ${imageId} doesn't exist or you don't have permission to access it`,
+      status: 404,
+    });
+  }
+}
+
+export class ImageMaxCountExceededException extends ApplicationException {
+  constructor() {
+    super({
+      code: ErrorCode.E_IMAGE_MAX_COUNT_EXCEEDED,
+      message: `You have reached the maximum number of images`,
+      status: 422,
+    });
+  }
+}
+
+export class ImageMaxTotalSizeExceededException extends ApplicationException {
+  constructor() {
+    super({
+      code: ErrorCode.E_IMAGE_MAX_TOTAL_SIZE_EXCEEDED,
+      message: `You have reached the maximum total size of images`,
+      status: 422,
+    });
+  }
+}

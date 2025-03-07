@@ -132,3 +132,25 @@ export interface ItemWearRequest {
 export interface WearableRemoveRequest {
   slot: ItemSlot;
 }
+
+export interface ImageSaveRequest {
+  imageId?: number;
+  name: string;
+}
+
+export interface ImageSearchRequest {
+  query: string;
+  offset: number;
+  limit: number;
+}
+
+export interface ImageSearchResponseRow {
+  id: number;
+  name: string;
+  imageKey: string;
+}
+
+export interface ImageSearchResponse {
+  images: ImageSearchResponseRow[];
+  total: number;
+}

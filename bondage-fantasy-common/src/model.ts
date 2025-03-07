@@ -358,3 +358,11 @@ export interface WearableItem extends BaseItem {
   type: ItemType.WEARABLE;
   slots: ItemSlot[];
 }
+
+export interface Image {
+  id: number;
+  characterId: number;
+  name: string;
+  imageKey: string;
+  size: number;
+}

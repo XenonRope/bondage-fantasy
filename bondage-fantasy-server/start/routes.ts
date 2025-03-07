@@ -14,6 +14,7 @@ const ZoneController = () => import("#controllers/zone-controller");
 const SceneController = () => import("#controllers/scene-controller");
 const ItemController = () => import("#controllers/item-controller");
 const ConfigController = () => import("#controllers/config-controller");
+const ImageController = () => import("#controllers/image-controller");
 import router from "@adonisjs/core/services/router";
 import { middleware } from "./kernel.js";
 
@@ -55,6 +56,11 @@ router
         router.post("/items/list", [ItemController, "list"]);
         router.post("/items/search", [ItemController, "search"]);
         router.post("/items/wear", [ItemController, "wear"]);
+        router.post("/images", [ImageController, "save"]);
+        router.post("/images/search", [ImageController, "search"]);
+        router
+          .delete("/images/:imageId", [ImageController, "delete"])
+          .where("imageId", router.matchers.number());
       })
       .use(middleware.auth());
   })

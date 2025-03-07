@@ -9,6 +9,7 @@ export const LOCKS = {
   character: (id: number) => `character.${id}`,
   zone: (id: number) => `zone.${id}`,
   item: (id: number) => `item.${id}`,
+  image: (id: number) => `image.${id}`,
 };
 
 export class LockService {
