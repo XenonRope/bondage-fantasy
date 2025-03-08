@@ -3,8 +3,13 @@ import { SessionUser } from "#models/session-model";
 import app from "@adonisjs/core/services/app";
 import drive from "@adonisjs/drive/services/main";
 import { test } from "@japa/runner";
-import { CHARACTER_ID_HEADER } from "bondage-fantasy-common";
+import {
+  CHARACTER_ID_HEADER,
+  IMAGE_MAX_COUNT,
+  IMAGE_MAX_TOTAL_SIZE,
+} from "bondage-fantasy-common";
 import fs from "node:fs";
+import sinon from "sinon";
 
 test.group("Image save", async () => {
   test("create new image", async ({ assert, client }) => {
@@ -121,6 +126,87 @@ test.group("Image save", async () => {
     assert.equal(
       response2.body().message,
       `Image ${response1.body().id} doesn't exist or you don't have permission to access it`,
+    );
+  });
+
+  test("error when image count is exceeded", async ({
+    assert,
+    client,
+    cleanup,
+  }) => {
+    sinon
+      .stub(ImageDao.prototype, "countByCharacterId")
+      .resolves(IMAGE_MAX_COUNT);
+    cleanup(() => sinon.restore());
+
+    const response = await client
+      .post("/api/images")
+      .field("json", JSON.stringify({ name: "My image" }))
+      .file("image", fs.createReadStream("tests/resources/small_image.png"))
+      .withCsrfToken()
+      .loginAs(new SessionUser(1))
+      .header(CHARACTER_ID_HEADER, "1");
+
+    assert.equal(response.status(), 422);
+    assert.equal(
+      response.body().message,
+      "You have reached the maximum number of images",
+    );
+  });
+
+  test("no error when image count is exceeded but image is updated", async ({
+    assert,
+    client,
+    cleanup,
+  }) => {
+    const response1 = await client
+      .post("/api/images")
+      .field("json", JSON.stringify({ name: "My image" }))
+      .file("image", fs.createReadStream("tests/resources/small_image.jpg"))
+      .withCsrfToken()
+      .loginAs(new SessionUser(1))
+      .header(CHARACTER_ID_HEADER, "1");
+    sinon
+      .stub(ImageDao.prototype, "countByCharacterId")
+      .resolves(IMAGE_MAX_COUNT);
+    cleanup(() => sinon.restore());
+
+    const response2 = await client
+      .post("/api/images")
+      .field(
+        "json",
+        JSON.stringify({ imageId: response1.body().id, name: "My image 2" }),
+      )
+      .file("image", fs.createReadStream("tests/resources/small_image.png"))
+      .withCsrfToken()
+      .loginAs(new SessionUser(1))
+      .header(CHARACTER_ID_HEADER, "1");
+
+    assert.equal(response2.status(), 200);
+  });
+
+  test("error when image total size is exceeded", async ({
+    assert,
+    client,
+    cleanup,
+  }) => {
+    sinon
+      .stub(ImageDao.prototype, "getTotalSizeByCharacterId")
+      .resolves(IMAGE_MAX_TOTAL_SIZE);
+    cleanup(() => sinon.restore());
+
+    const response = await client
+      .post("/api/images")
+      .field("json", JSON.stringify({ name: "My image" }))
+      .file("image", fs.createReadStream("tests/resources/small_image.png"))
+      .withCsrfToken()
+      .loginAs(new SessionUser(1))
+      .header(CHARACTER_ID_HEADER, "1");
+
+    assert.equal(response.status(), 422);
+    assert.equal(
+      response.body().message,
+      "You have reached the maximum total size of images",
     );
   });
 });
