@@ -1,3 +1,4 @@
+import { CHARACTER_ID_HEADER } from "bondage-fantasy-common";
 import { useAppStore } from "../store";
 import Cookies from "js-cookie";
 
@@ -67,7 +68,7 @@ class HttpClient {
     const characterId =
       params.characterId ?? useAppStore.getState().character?.id;
     if (characterId) {
-      headers["X-CHARACTER-ID"] = characterId.toString();
+      headers[CHARACTER_ID_HEADER] = characterId.toString();
     }
 
     const response = await fetch(`/api/${url}`, {

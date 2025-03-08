@@ -11,4 +11,9 @@ export default class MongodbProvider {
     this.app.container.bindValue(MongoClient, client);
     this.app.container.bindValue(Db, db);
   }
+
+  async shutdown() {
+    const mongoClient = await this.app.container.make(MongoClient);
+    await mongoClient.close();
+  }
 }

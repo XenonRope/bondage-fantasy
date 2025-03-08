@@ -4,6 +4,14 @@ import app from "@adonisjs/core/services/app";
 import type { Config } from "@japa/runner/types";
 import { pluginAdonisJS } from "@japa/plugin-adonisjs";
 import testUtils from "@adonisjs/core/services/test_utils";
+import { shieldApiClient } from "@adonisjs/shield/plugins/api_client";
+import { sessionApiClient } from "@adonisjs/session/plugins/api_client";
+import { authApiClient } from "@adonisjs/auth/plugins/api_client";
+import { Db } from "mongodb";
+import { AccountDao } from "#dao/account-dao";
+import { CharacterDao } from "#dao/character-dao";
+import { Genitals, Pronouns } from "bondage-fantasy-common";
+import drive from "@adonisjs/drive/services/main";
 
 /**
  * This file is imported by the "bin/test.ts" entrypoint file
@@ -17,6 +25,9 @@ export const plugins: Config["plugins"] = [
   assert(),
   apiClient(),
   pluginAdonisJS(app),
+  sessionApiClient(app),
+  shieldApiClient(),
+  authApiClient(app),
 ];
 
 /**
@@ -27,8 +38,42 @@ export const plugins: Config["plugins"] = [
  * The teardown functions are executed after all the tests
  */
 export const runnerHooks: Required<Pick<Config, "setup" | "teardown">> = {
-  setup: [],
-  teardown: [],
+  setup: [
+    async () => {
+      drive.fake();
+    },
+    async () => {
+      const accountDao = await app.container.make(AccountDao);
+      const characterDao = await app.container.make(CharacterDao);
+      await accountDao.insert({
+        id: 1,
+        username: "TestUser",
+        password: "TestPassword",
+      });
+      await characterDao.insert({
+        id: 1,
+        accountId: 1,
+        name: "TestCharacter",
+        pronouns: Pronouns.SHE_HER,
+        genitals: Genitals.VAGINA,
+        wearables: [],
+        inventory: [],
+        sharedItemsIds: [],
+      });
+    },
+  ],
+  teardown: [
+    async () => {
+      const db = await app.container.make(Db);
+      const collections = await db.listCollections().toArray();
+      for (const collection of collections) {
+        await db.collection(collection.name).deleteMany({});
+      }
+    },
+    async () => {
+      drive.restore();
+    },
+  ],
 };
 
 /**

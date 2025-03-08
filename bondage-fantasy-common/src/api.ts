@@ -9,6 +9,8 @@ import {
   ZoneObject,
 } from "./model.js";
 
+export const CHARACTER_ID_HEADER = "X-CHARACTER-ID";
+
 export interface AccountRegisterRequest {
   username: string;
   password: string;

@@ -7,13 +7,13 @@ import { HttpContext } from "@adonisjs/core/http";
 import app from "@adonisjs/core/services/app";
 import { Exception } from "@poppinss/utils";
 import jsonUtils from "@poppinss/utils/json";
-import { ErrorCode } from "bondage-fantasy-common";
+import { CHARACTER_ID_HEADER, ErrorCode } from "bondage-fantasy-common";
 
 export function getCharacterIdWithoutCheck(
   ctx: HttpContext,
 ): number | undefined {
   const characterId = Number.parseInt(
-    ctx.request.header("X-CHARACTER-ID") ?? "",
+    ctx.request.header(CHARACTER_ID_HEADER) ?? "",
   );
   return Number.isNaN(characterId) ? undefined : characterId;
 }
