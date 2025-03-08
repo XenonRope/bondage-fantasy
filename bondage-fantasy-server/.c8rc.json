@@ -1,0 +1,6 @@
+{
+  "reporter": ["html"],
+  "all": true,
+  "include": ["app/**"],
+  "exclude": ["app/migration/**", "app/models/migration-model.ts"]
+}

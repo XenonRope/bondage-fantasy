@@ -77,4 +77,50 @@ test.group("Image save", async () => {
     assert.equal(image!.name, "Second name");
     assert.equal(image!.size, 4317);
   });
+
+  test("error when image doesn't exist", async ({ assert, client }) => {
+    const response = await client
+      .post("/api/images")
+      .field("json", JSON.stringify({ imageId: 999999999, name: "My image" }))
+      .file("image", fs.createReadStream("tests/resources/small_image.jpg"))
+      .withCsrfToken()
+      .loginAs(new SessionUser(1))
+      .header(CHARACTER_ID_HEADER, "2");
+
+    assert.equal(response.status(), 404);
+    assert.equal(
+      response.body().message,
+      `Image 999999999 doesn't exist or you don't have permission to access it`,
+    );
+  });
+
+  test("error when image belongs to another character", async ({
+    assert,
+    client,
+  }) => {
+    const response1 = await client
+      .post("/api/images")
+      .field("json", JSON.stringify({ name: "My image" }))
+      .file("image", fs.createReadStream("tests/resources/small_image.jpg"))
+      .withCsrfToken()
+      .loginAs(new SessionUser(1))
+      .header(CHARACTER_ID_HEADER, "1");
+
+    const response2 = await client
+      .post("/api/images")
+      .field(
+        "json",
+        JSON.stringify({ imageId: response1.body().id, name: "My image" }),
+      )
+      .file("image", fs.createReadStream("tests/resources/small_image.jpg"))
+      .withCsrfToken()
+      .loginAs(new SessionUser(1))
+      .header(CHARACTER_ID_HEADER, "2");
+
+    assert.equal(response2.status(), 404);
+    assert.equal(
+      response2.body().message,
+      `Image ${response1.body().id} doesn't exist or you don't have permission to access it`,
+    );
+  });
 });

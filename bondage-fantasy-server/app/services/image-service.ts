@@ -28,7 +28,7 @@ export class ImageService {
     imageId?: number;
     characterId: number;
     name: string;
-    image: MultipartFile;
+    file: MultipartFile;
   }): Promise<Image> {
     const locks =
       params.imageId == null
@@ -52,7 +52,7 @@ export class ImageService {
         params.characterId,
       );
       if (
-        totalSize + params.image.size - (existingImage?.size ?? 0) >
+        totalSize + params.file.size - (existingImage?.size ?? 0) >
         IMAGE_MAX_TOTAL_SIZE
       ) {
         throw new ImageMaxTotalSizeExceededException();
@@ -65,7 +65,7 @@ export class ImageService {
       const imageId =
         params.imageId ??
         (await this.sequenceService.nextSequence(SequenceCode.IMAGE));
-      const imageKey = `images/${cuid()}.${params.image.extname}`;
+      const imageKey = `images/${cuid()}.${params.file.extname}`;
 
       if (
         existingImage != null &&
@@ -79,11 +79,11 @@ export class ImageService {
         characterId: params.characterId,
         name: params.name,
         imageKey,
-        size: params.image.size,
+        size: params.file.size,
       };
 
       await this.imageDao.update(newImage);
-      await params.image.moveToDisk(imageKey);
+      await params.file.moveToDisk(imageKey);
 
       return newImage;
     });

@@ -30,7 +30,7 @@ export default class ImageController {
       imageId: request.imageId,
       characterId,
       name: request.name,
-      image,
+      file: image,
     });
   }
 

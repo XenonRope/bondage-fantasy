@@ -47,15 +47,25 @@ export const runnerHooks: Required<Pick<Config, "setup" | "teardown">> = {
       const characterDao = await app.container.make(CharacterDao);
       await accountDao.insert({
         id: 1,
-        username: "TestUser",
+        username: "TestUser1",
         password: "TestPassword",
       });
       await characterDao.insert({
         id: 1,
         accountId: 1,
-        name: "TestCharacter",
+        name: "TestCharacter1",
         pronouns: Pronouns.SHE_HER,
         genitals: Genitals.VAGINA,
+        wearables: [],
+        inventory: [],
+        sharedItemsIds: [],
+      });
+      await characterDao.insert({
+        id: 2,
+        accountId: 1,
+        name: "TestCharacter2",
+        pronouns: Pronouns.HE_HIM,
+        genitals: Genitals.PENIS,
         wearables: [],
         inventory: [],
         sharedItemsIds: [],

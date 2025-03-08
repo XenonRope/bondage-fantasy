@@ -10,6 +10,7 @@
     "build": "node ace build",
     "dev": "node ace serve --hmr",
     "test": "node ace test",
+    "coverage": "c8 node ace test",
     "lint": "eslint .",
     "format": "prettier --write .",
     "format-check": "prettier --check .",
