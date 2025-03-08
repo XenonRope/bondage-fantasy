@@ -2,6 +2,7 @@ import { inject } from "@adonisjs/core";
 import { Image } from "bondage-fantasy-common";
 import { Collection, Db, Filter } from "mongodb";
 import { escapeRegex } from "../utils.js";
+import { CollectionName } from "#models/collection-model";
 
 @inject()
 export class ImageDao {
@@ -60,6 +61,6 @@ export class ImageDao {
   }
 
   private getCollection(): Collection<Image> {
-    return this.db.collection("images");
+    return this.db.collection(CollectionName.IMAGES);
   }
 }

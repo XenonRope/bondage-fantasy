@@ -1,3 +1,4 @@
+import { CollectionName } from "#models/collection-model";
 import { inject } from "@adonisjs/core";
 import { ZoneCharacterData } from "bondage-fantasy-common";
 import { Collection, Db } from "mongodb";
@@ -28,6 +29,6 @@ export class ZoneCharacterDataDao {
   }
 
   private getCollection(): Collection<ZoneCharacterData> {
-    return this.db.collection("zone_character_data");
+    return this.db.collection(CollectionName.ZONE_CHARACTER_DATA);
   }
 }

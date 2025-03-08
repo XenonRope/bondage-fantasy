@@ -1,3 +1,4 @@
+import { CollectionName } from "#models/collection-model";
 import { Sequence, SequenceCode } from "#models/sequence-model";
 import { inject } from "@adonisjs/core";
 import { Collection, Db } from "mongodb";
@@ -20,6 +21,6 @@ export class SequenceDao {
   }
 
   private getCollection(): Collection<Sequence> {
-    return this.db.collection("sequences");
+    return this.db.collection(CollectionName.SEQUENCES);
   }
 }

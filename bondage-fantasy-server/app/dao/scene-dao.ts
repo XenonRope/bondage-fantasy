@@ -1,6 +1,7 @@
 import { inject } from "@adonisjs/core";
 import { Collection, Db } from "mongodb";
 import { Scene } from "bondage-fantasy-common";
+import { CollectionName } from "#models/collection-model";
 
 @inject()
 export class SceneDao {
@@ -31,6 +32,6 @@ export class SceneDao {
   }
 
   private getCollection(): Collection<Scene> {
-    return this.db.collection("scenes");
+    return this.db.collection(CollectionName.SCENES);
   }
 }

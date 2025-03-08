@@ -2,6 +2,7 @@ import { inject } from "@adonisjs/core";
 import { ObjectType, Zone } from "bondage-fantasy-common";
 import { Collection, Db, Document, Filter } from "mongodb";
 import { escapeRegex } from "../utils.js";
+import { CollectionName } from "#models/collection-model";
 
 @inject()
 export class ZoneDao {
@@ -95,6 +96,6 @@ export class ZoneDao {
   }
 
   private getCollection(): Collection<Zone> {
-    return this.db.collection("zones");
+    return this.db.collection(CollectionName.ZONES);
   }
 }

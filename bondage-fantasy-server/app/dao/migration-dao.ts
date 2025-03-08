@@ -1,3 +1,4 @@
+import { CollectionName } from "#models/collection-model";
 import { Migration } from "#models/migration-model";
 import { inject } from "@adonisjs/core";
 import { Collection, Db } from "mongodb";
@@ -15,6 +16,6 @@ export class MigrationDao {
   }
 
   private getCollection(): Collection<Migration> {
-    return this.db.collection("migrations");
+    return this.db.collection(CollectionName.MIGRATIONS);
   }
 }
