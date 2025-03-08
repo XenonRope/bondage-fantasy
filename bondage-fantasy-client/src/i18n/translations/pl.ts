@@ -34,6 +34,7 @@ export const pl: ResourceLanguage = {
     "common.scene": "Scena",
     "common.recommendedImageData":
       "Zalecana rozdzielczość obrazu: {{width}}x{{height}}. Maksymalny rozmiar: {{maxSize}}.",
+    "common.fileMaxSize": "Maksymalny rozmiar pliku: {{maxSize}}",
     "common.removeWearable": "Usuń",
     "common.invalidValue": "Niepoprawna wartość",
     "navbar.characters": "Postacie",
@@ -41,6 +42,7 @@ export const pl: ResourceLanguage = {
     "navbar.explore": "Eksploruj",
     "navbar.crafting": "Rzemiosło",
     "navbar.inventory": "Ekwipunek",
+    "navbar.images": "Obrazy",
     "pronouns.SHE_HER": "Ona/Jej",
     "pronouns.HE_HIM": "On/Jego",
     "genitals.VAGINA": "Wagina",

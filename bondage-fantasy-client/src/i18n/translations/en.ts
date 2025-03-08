@@ -35,6 +35,7 @@ export const en: ResourceLanguage = {
     "common.scene": "Scene",
     "common.recommendedImageData":
       "Recommended image resolutation: {{width}}x{{height}}. Max size: {{maxSize}}.",
+    "common.fileMaxSize": "File max size: {{maxSize}}",
     "common.removeWearable": "Remove",
     "common.invalidValue": "Invalid value",
     "navbar.characters": "Characters",
@@ -42,6 +43,7 @@ export const en: ResourceLanguage = {
     "navbar.explore": "Explore",
     "navbar.crafting": "Crafting",
     "navbar.inventory": "Inventory",
+    "navbar.images": "Images",
     "pronouns.SHE_HER": "She/Her",
     "pronouns.HE_HIM": "He/Him",
     "genitals.VAGINA": "Vagina",

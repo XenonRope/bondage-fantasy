@@ -3,7 +3,13 @@ export const DEFAULT_TOOLTIP_DELAY = 500;
 export const DEFAULT_TOOLTIP_TRANSITION_DURATION = 300;
 
 export function formatBytes(bytes: number): string {
-  return `${bytes / 1024} KB`;
+  if (bytes >= 1024 * 1024) {
+    return `${bytes / 1024 / 1024} MB`;
+  }
+  if (bytes >= 1024) {
+    return `${bytes / 1024} KB`;
+  }
+  return `${bytes} B`;
 }
 
 export function parseCommaSeparatedNumbers(value: string): number[] {

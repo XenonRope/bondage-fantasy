@@ -115,6 +115,12 @@ export function MainLayout(props: { fixedHeight?: boolean }) {
             label={t("navbar.crafting")}
           />
         )}
+        {character && (
+          <NavLink
+            onClick={() => navigate("/images")}
+            label={t("navbar.images")}
+          />
+        )}
         {account && (
           <NavLink
             onClick={() => navigate("/characters")}

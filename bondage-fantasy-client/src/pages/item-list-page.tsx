@@ -38,7 +38,7 @@ import {
 
 const PAGE_SIZE = 24;
 
-export function ItemActions(props: { item: ItemSearchResponseRow }) {
+function ItemActions(props: { item: ItemSearchResponseRow }) {
   const { t } = useTranslation();
   const wear = useMutation({
     mutationFn: async () => {

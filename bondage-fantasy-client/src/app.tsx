@@ -42,6 +42,7 @@ import { ZoneOrSceneRequired } from "./utils/zone-required";
 import { InventoryPage } from "./pages/inventory-page";
 import { configService } from "./services/config-service";
 import { AppConfig } from "bondage-fantasy-common";
+import { ImageListPage } from "./pages/image-list-page";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -126,6 +127,7 @@ function AppRouter() {
             <Route path="/new-item" element={<ItemEditorPage />} />
             <Route path="/items/:itemId/edit" element={<ItemEditorPage />} />
             <Route path="/inventory" element={<InventoryPage />} />
+            <Route path="/images" element={<ImageListPage />} />
           </Route>
         </Route>
       </Route>
