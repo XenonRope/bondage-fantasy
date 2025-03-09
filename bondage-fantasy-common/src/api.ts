@@ -144,6 +144,7 @@ export interface ImageSearchRequest {
   query: string;
   offset: number;
   limit: number;
+  includeImagesIds?: number[];
 }
 
 export interface ImageSearchResponseRow {
@@ -155,4 +156,8 @@ export interface ImageSearchResponseRow {
 export interface ImageSearchResponse {
   images: ImageSearchResponseRow[];
   total: number;
+}
+
+export interface ImageListRequest {
+  imagesIds: number[];
 }

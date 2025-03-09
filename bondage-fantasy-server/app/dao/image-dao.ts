@@ -31,10 +31,14 @@ export class ImageDao {
     characterId: number;
     offset: number;
     limit: number;
+    includeImagesIds?: number[];
   }): Promise<{ images: Image[]; total: number }> {
     const filter: Filter<Image> = {
       characterId: params.characterId,
-      name: { $regex: escapeRegex(params.query), $options: "i" },
+      $or: [
+        { name: { $regex: escapeRegex(params.query), $options: "i" } },
+        { id: { $in: params.includeImagesIds ?? [] } },
+      ],
     };
     const images = await this.getCollection()
       .find(filter)
@@ -44,6 +48,18 @@ export class ImageDao {
     const total = await this.getCollection().countDocuments(filter);
 
     return { images, total };
+  }
+
+  async getMany(params: {
+    imagesIds: number[];
+    characterId: number;
+  }): Promise<Image[]> {
+    return await this.getCollection()
+      .find({
+        id: { $in: params.imagesIds },
+        characterId: params.characterId,
+      })
+      .toArray();
   }
 
   async update(image: Image): Promise<void> {

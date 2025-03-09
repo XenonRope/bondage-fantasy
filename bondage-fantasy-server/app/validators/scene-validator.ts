@@ -35,6 +35,15 @@ export const sceneStepText = vine.object({
   pause: vine.enum(ScenePauseMode),
 });
 
+export const sceneStepShowImage = vine.object({
+  type: vine.literal(SceneStepType.SHOW_IMAGE),
+  imageId: vine.number().withoutDecimals(),
+});
+
+export const sceneStepHideImage = vine.object({
+  type: vine.literal(SceneStepType.HIDE_IMAGE),
+});
+
 export const sceneStepLabel = vine.object({
   type: vine.literal(SceneStepType.LABEL),
   label: vine
@@ -122,6 +131,14 @@ export const sceneStep = vine.union([
   vine.union.if(
     (value) => "type" in value && value.type === SceneStepType.TEXT,
     sceneStepText,
+  ),
+  vine.union.if(
+    (value) => "type" in value && value.type === SceneStepType.SHOW_IMAGE,
+    sceneStepShowImage,
+  ),
+  vine.union.if(
+    (value) => "type" in value && value.type === SceneStepType.HIDE_IMAGE,
+    sceneStepHideImage,
   ),
   vine.union.if(
     (value) => "type" in value && value.type === SceneStepType.LABEL,

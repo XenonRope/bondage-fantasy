@@ -197,6 +197,8 @@ export interface Operation {
 
 export enum SceneStepType {
   TEXT = "TEXT",
+  SHOW_IMAGE = "SHOW_IMAGE",
+  HIDE_IMAGE = "HIDE_IMAGE",
   LABEL = "LABEL",
   JUMP = "JUMP",
   CHOICE = "CHOICE",
@@ -210,6 +212,8 @@ export enum SceneStepType {
 
 export type SceneStep =
   | SceneStepText
+  | SceneStepShowImage
+  | SceneStepHideImage
   | SceneStepLabel
   | SceneStepJump
   | SceneStepChoice
@@ -238,6 +242,15 @@ export interface SceneStepText extends SceneStepBase {
   characterNameColor?: string;
   text: Template;
   pause: ScenePauseMode;
+}
+
+export interface SceneStepShowImage extends SceneStepBase {
+  type: SceneStepType.SHOW_IMAGE;
+  imageId: number;
+}
+
+export interface SceneStepHideImage extends SceneStepBase {
+  type: SceneStepType.HIDE_IMAGE;
 }
 
 export interface SceneStepLabel extends SceneStepBase {
@@ -319,6 +332,9 @@ export interface Scene {
   textCharacterName?: string;
   textCharacterNameColor?: string;
   text: string;
+  imageKey?: string;
+  imageWidth?: number;
+  imageHeight?: number;
   choices?: SceneChoiceOption[];
   // Not sent to client
   variables: Record<string, string>;

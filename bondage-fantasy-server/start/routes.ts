@@ -57,6 +57,7 @@ router
         router.post("/items/search", [ItemController, "search"]);
         router.post("/items/wear", [ItemController, "wear"]);
         router.post("/images", [ImageController, "save"]);
+        router.post("/images/list", [ImageController, "list"]);
         router.post("/images/search", [ImageController, "search"]);
         router
           .delete("/images/:imageId", [ImageController, "delete"])

@@ -35,5 +35,15 @@ export const imageSearchRequestValidator = vine.compile(
       .maxLength(IMAGE_SEARCH_QUERY_MAX_LENGTH),
     offset: vine.number().withoutDecimals().min(0),
     limit: vine.number().withoutDecimals().min(0).max(1000),
+    includeImagesIds: vine
+      .array(vine.number().withoutDecimals())
+      .maxLength(1000)
+      .optional(),
+  }),
+);
+
+export const imageListRequestValidator = vine.compile(
+  vine.object({
+    imagesIds: vine.array(vine.number().withoutDecimals()).maxLength(1000),
   }),
 );

@@ -18,6 +18,7 @@ import {
 import { Button, Modal, SimpleGrid } from "@mantine/core";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import {
+  distinct,
   SCENE_STEPS_MAX_COUNT,
   SceneDefinition,
   SceneStep,
@@ -28,6 +29,7 @@ import { Translation } from "react-i18next";
 import { itemApi } from "../api/item-api";
 import { SceneDefinitionEditorStepForm } from "./scene-definition-editor-step-form";
 import { SceneDefinitionEditorStepTile } from "./scene-definition-editor-step-tile";
+import { imageApi } from "../api/image-api";
 
 export function SceneDefinitionEditor(props: {
   initialScene: SceneDefinition;
@@ -120,6 +122,23 @@ export function SceneDefinitionEditor(props: {
     },
     placeholderData: keepPreviousData,
   });
+  const imagesIds = useMemo(() => {
+    return distinct(
+      steps
+        .filter((step) => step.type === SceneStepType.SHOW_IMAGE)
+        .map((step) => step.imageId),
+    );
+  }, [steps]);
+  const images = useQuery({
+    queryKey: ["images", imagesIds],
+    queryFn: async () => {
+      if (imagesIds.length === 0) {
+        return [];
+      }
+      return imageApi.list({ imagesIds });
+    },
+    placeholderData: keepPreviousData,
+  });
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
@@ -149,6 +168,8 @@ export function SceneDefinitionEditor(props: {
   function handleStepTypeSelect(type: SceneStepType): void {
     if (type === SceneStepType.ABORT) {
       handleStepConfirm({ type: SceneStepType.ABORT });
+    } else if (type === SceneStepType.HIDE_IMAGE) {
+      handleStepConfirm({ type: SceneStepType.HIDE_IMAGE });
     } else {
       setStepType(type);
     }
@@ -216,6 +237,7 @@ export function SceneDefinitionEditor(props: {
                   key={step.id}
                   step={step}
                   items={items.data?.items ?? []}
+                  images={images.data ?? []}
                   onEdit={() => handleEditStep(step)}
                   onRemove={() => handleRemoveStep(index)}
                   dragging={draggedStepId === step.id}

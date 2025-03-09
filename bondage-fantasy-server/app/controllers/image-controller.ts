@@ -1,6 +1,7 @@
 import { ImageDao } from "#dao/image-dao";
 import { ImageService } from "#services/image-service";
 import {
+  imageListRequestValidator,
   imageSaveRequestJsonValidator,
   imageSaveRequestValidator,
   imageSearchRequestValidator,
@@ -34,10 +35,18 @@ export default class ImageController {
     });
   }
 
-  async search(ctx: HttpContext): Promise<ImageSearchResponse> {
-    const { query, offset, limit } = await ctx.request.validateUsing(
-      imageSearchRequestValidator,
+  async list(ctx: HttpContext): Promise<Image[]> {
+    const { imagesIds } = await ctx.request.validateUsing(
+      imageListRequestValidator,
     );
+    const characterId = await getCharacterId(ctx);
+
+    return await this.imageDao.getMany({ imagesIds, characterId });
+  }
+
+  async search(ctx: HttpContext): Promise<ImageSearchResponse> {
+    const { query, offset, limit, includeImagesIds } =
+      await ctx.request.validateUsing(imageSearchRequestValidator);
     const characterId = await getCharacterId(ctx);
 
     const { images, total } = await this.imageDao.search({
@@ -45,6 +54,7 @@ export default class ImageController {
       characterId,
       offset,
       limit,
+      includeImagesIds,
     });
 
     return {

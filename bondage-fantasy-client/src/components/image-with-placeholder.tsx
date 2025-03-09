@@ -3,7 +3,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
 import { useAppStore } from "../store";
 
-export function ImageWithPlaceholder(props: { image?: File | string }) {
+export function ImageWithPlaceholder(props: {
+  image?: File | string;
+  originalSize?: boolean;
+}) {
   const [imageUrl, setImageUrl] = useState<string>();
   const config = useAppStore((state) => state.config);
   useEffect(() => {
@@ -31,7 +34,7 @@ export function ImageWithPlaceholder(props: { image?: File | string }) {
     return (
       <img
         src={imageUrl}
-        className="h-full w-full object-contain"
+        className={`object-contain ${props.originalSize ? "" : "h-full w-full"}`}
         onError={() => {
           if (typeof props.image === "string") {
             useAppStore.getState().addInvalidImageKey(props.image);
@@ -43,7 +46,9 @@ export function ImageWithPlaceholder(props: { image?: File | string }) {
   }
 
   return (
-    <div className="h-full w-full flex items-center justify-center bg-gray-200">
+    <div
+      className={`${props.originalSize ? "w-40 h-40" : "h-full w-full"} flex items-center justify-center bg-gray-200`}
+    >
       <FontAwesomeIcon icon={faImage} className="h-1/2 text-gray-400" />
     </div>
   );

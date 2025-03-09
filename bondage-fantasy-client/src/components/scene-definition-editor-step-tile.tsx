@@ -8,9 +8,11 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ActionIcon } from "@mantine/core";
 import {
+  Image,
   SceneStep,
   SceneStepChangeItemsCount,
   SceneStepShareItem,
+  SceneStepShowImage,
   SceneStepType,
 } from "bondage-fantasy-common";
 import { t } from "i18next";
@@ -21,6 +23,7 @@ export function SceneDefinitionEditorStepTile(props: {
     id: number;
     name: string;
   }>;
+  images: Image[];
   onEdit: () => void;
   onRemove: () => void;
   dragging?: boolean;
@@ -48,6 +51,22 @@ export function SceneDefinitionEditorStepTile(props: {
             )}
             <span>{props.step.text}</span>
           </div>
+        )}
+        {props.step.type === SceneStepType.SHOW_IMAGE && (
+          <>
+            <span className="font-medium">Show image&nbsp;</span>
+            <span>
+              {
+                props.images.find(
+                  (image) =>
+                    image.id === (props.step as SceneStepShowImage).imageId,
+                )?.name
+              }
+            </span>
+          </>
+        )}
+        {props.step.type === SceneStepType.HIDE_IMAGE && (
+          <span className="font-medium">Hide image</span>
         )}
         {props.step.type === SceneStepType.LABEL && (
           <>
@@ -162,7 +181,10 @@ export function SceneDefinitionEditorStepTile(props: {
         <ActionIcon
           variant="transparent"
           onClick={props.onEdit}
-          disabled={props.step.type === SceneStepType.ABORT}
+          disabled={
+            props.step.type === SceneStepType.ABORT ||
+            props.step.type === SceneStepType.HIDE_IMAGE
+          }
         >
           <FontAwesomeIcon icon={faGear} />
         </ActionIcon>

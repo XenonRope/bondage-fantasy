@@ -5,6 +5,7 @@ import { Translation } from "react-i18next";
 import { sceneApi } from "../api/scene-api";
 import { errorService } from "../services/error-service";
 import { useAppStore } from "../store";
+import { ImageWithPlaceholder } from "./image-with-placeholder";
 
 export function SceneViewer(props: { scene: Scene }) {
   const continueScene = useMutation({
@@ -17,6 +18,14 @@ export function SceneViewer(props: { scene: Scene }) {
 
   return (
     <div className="p-md">
+      {props.scene.imageKey && (
+        <div className="mb-8">
+          <ImageWithPlaceholder
+            image={props.scene.imageKey}
+            originalSize={true}
+          />
+        </div>
+      )}
       {props.scene.textCharacterName && (
         <div
           className="text-md font-medium mb-1"

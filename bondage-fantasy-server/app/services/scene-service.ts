@@ -36,6 +36,7 @@ import { ExpressionEvaluator } from "./expression-evaluator.js";
 import { SequenceService } from "./sequence-service.js";
 import { TemplateRenderer } from "./template-renderer.js";
 import ZoneCharacterDataService from "./zone-character-data-service.js";
+import { ImageDao } from "#dao/image-dao";
 
 @inject()
 export class SceneService {
@@ -49,6 +50,7 @@ export class SceneService {
     private zoneCharacterDataService: ZoneCharacterDataService,
     private zoneCharacterDataDao: ZoneCharacterDataDao,
     private characterService: CharacterService,
+    private imageDao: ImageDao,
   ) {}
 
   async getByCharacterId(characterId: number): Promise<Scene> {
@@ -198,6 +200,13 @@ export class SceneService {
         }
 
         return { characterChanged, zoneCharacterDataChanged };
+      } else if (step.type === SceneStepType.SHOW_IMAGE) {
+        const image = await this.imageDao.getById(step.imageId);
+        if (image?.characterId === scene.ownerCharacterId) {
+          scene.imageKey = image.imageKey;
+        }
+      } else if (step.type === SceneStepType.HIDE_IMAGE) {
+        scene.imageKey = undefined;
       } else if (step.type === SceneStepType.JUMP) {
         if (
           step.condition == null ||

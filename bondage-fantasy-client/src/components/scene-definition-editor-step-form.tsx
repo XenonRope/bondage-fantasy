@@ -35,6 +35,7 @@ import {
   SceneStepLabel,
   SceneStepRemoveWearable,
   SceneStepShareItem,
+  SceneStepShowImage,
   SceneStepText,
   SceneStepType,
   SceneStepUseWearable,
@@ -47,6 +48,8 @@ import { DEFAULT_DEBOUNCE } from "../utils/utils";
 import { Validators } from "../utils/validators";
 import { ExpressionEditor } from "./expression-editor";
 import { TextTemplateEditor } from "./text-template-editor";
+import { useImagesQuery } from "../utils/image-utils";
+import { ImageWithPlaceholder } from "./image-with-placeholder";
 
 function TextStep({
   initialStep,
@@ -150,6 +153,79 @@ function TextStep({
         }))}
         className="mt-2"
       />
+      <Button onClick={handleConfirm} className="mt-4">
+        <Translation>{(t) => t("common.confirm")}</Translation>
+      </Button>
+    </>
+  );
+}
+
+function ShowImageStep({
+  initialStep,
+  onConfirm,
+}: {
+  initialStep?: SceneStepShowImage;
+  onConfirm: (step: SceneStep) => void;
+}) {
+  const [imageSearchValue, setImageSearchValue] = useState("");
+  const [imageSearchValueDebounced] = useDebouncedValue(
+    imageSearchValue,
+    DEFAULT_DEBOUNCE,
+  );
+  const form = useForm({
+    initialValues: {
+      imageId: initialStep?.imageId.toString() ?? "",
+    },
+    validate: {
+      imageId: Validators.notEmpty(),
+    },
+  });
+  const images = useImagesQuery(
+    {
+      query: imageSearchValueDebounced,
+      page: 1,
+      pageSize: form.getValues().imageId ? 21 : 20,
+      includeImagesIds: form.getValues().imageId
+        ? [parseInt(form.getValues().imageId)]
+        : undefined,
+    },
+    { keepPreviousData: true },
+  );
+
+  function handleConfirm() {
+    form.onSubmit((values) => {
+      onConfirm({
+        type: SceneStepType.SHOW_IMAGE,
+        imageId: parseInt(values.imageId),
+      });
+    })();
+  }
+
+  return (
+    <>
+      <Select
+        {...form.getInputProps("imageId")}
+        key={form.key("imageId")}
+        label={<Translation>{(t) => t("common.image")}</Translation>}
+        searchable
+        searchValue={imageSearchValue}
+        onSearchChange={setImageSearchValue}
+        data={(images.data?.images ?? []).map((image) => ({
+          value: image.id.toString(),
+          label: image.name,
+        }))}
+      />
+      <div className="mt-4 h-32 w-32">
+        <ImageWithPlaceholder
+          image={
+            form.getValues().imageId
+              ? images.data?.images.find(
+                  (image) => image.id === parseInt(form.getValues().imageId),
+                )?.imageKey
+              : undefined
+          }
+        />
+      </div>
       <Button onClick={handleConfirm} className="mt-4">
         <Translation>{(t) => t("common.confirm")}</Translation>
       </Button>
@@ -789,6 +865,11 @@ export function SceneDefinitionEditorStepForm(props: {
           onConfirm={props.onConfirm}
           existingVariables={props.existingVariables}
           existingCharacterNames={props.existingCharacterNames}
+        />
+      ) : props.stepType === SceneStepType.SHOW_IMAGE ? (
+        <ShowImageStep
+          initialStep={props.step as SceneStepShowImage}
+          onConfirm={props.onConfirm}
         />
       ) : props.stepType === SceneStepType.LABEL ? (
         <LabelStep

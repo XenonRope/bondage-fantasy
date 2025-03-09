@@ -17,13 +17,12 @@ import {
   Tooltip,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import {
   IMAGE_MAX_SIZE,
   IMAGE_NAME_MAX_LENGTH,
   IMAGE_NAME_MIN_LENGTH,
   IMAGE_SEARCH_QUERY_MAX_LENGTH,
-  IMAGE_SEARCH_QUERY_MIN_LENGTH,
   ImageSaveRequest,
   ImageSearchResponseRow,
 } from "bondage-fantasy-common";
@@ -34,7 +33,7 @@ import { CardWithImage } from "../components/card-with-image";
 import { ImageWithPlaceholder } from "../components/image-with-placeholder";
 import { errorService } from "../services/error-service";
 import { notificationService } from "../services/notification-service";
-import { useAppStore } from "../store";
+import { useImagesQuery } from "../utils/image-utils";
 import {
   DEFAULT_TOOLTIP_DELAY,
   DEFAULT_TOOLTIP_TRANSITION_DURATION,
@@ -175,7 +174,6 @@ function UploadImageModal(props: {
 
 export function ImageListPage() {
   const { t } = useTranslation();
-  const characterId = useAppStore((state) => state.character?.id);
   const [filter, setFilter] = useState({
     query: "",
     page: 1,
@@ -186,18 +184,14 @@ export function ImageListPage() {
   }>({
     opened: false,
   });
-
-  const searchResult = useQuery({
-    queryKey: ["images", filter, characterId],
-    queryFn: () =>
-      imageApi.search({
-        query: filter.query,
-        offset: (filter.page - 1) * PAGE_SIZE,
-        limit: PAGE_SIZE,
-      }),
-    enabled: () => filter.query.length >= IMAGE_SEARCH_QUERY_MIN_LENGTH,
-    placeholderData: keepPreviousData,
-  });
+  const searchResult = useImagesQuery(
+    {
+      query: filter.query,
+      page: filter.page,
+      pageSize: PAGE_SIZE,
+    },
+    { keepPreviousData: true },
+  );
   const deleteImage = useMutation({
     mutationFn: async (id: number) => {
       await imageApi.delete(id);

@@ -1,5 +1,6 @@
 import {
   Image,
+  ImageListRequest,
   ImageSaveRequest,
   ImageSearchRequest,
   ImageSearchResponse,
@@ -13,6 +14,10 @@ class ImageApi {
     formData.append("image", image);
 
     return await httpClient.post("images", formData);
+  }
+
+  async list(request: ImageListRequest): Promise<Image[]> {
+    return await httpClient.post("images/list", request);
   }
 
   async search(request: ImageSearchRequest): Promise<ImageSearchResponse> {
