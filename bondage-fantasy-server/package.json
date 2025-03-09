@@ -15,7 +15,8 @@
     "format": "prettier --write .",
     "format-check": "prettier --check .",
     "typecheck": "tsc --noEmit",
-    "docker": "docker build -t bondage-fantasy-server -f ./Dockerfile .."
+    "docker": "docker build -t bondage-fantasy-server -f ./Dockerfile ..",
+    "check": "pnpm build && pnpm lint && pnpm format-check && pnpm test"
   },
   "imports": {
     "#controllers/*": "./app/controllers/*.js",

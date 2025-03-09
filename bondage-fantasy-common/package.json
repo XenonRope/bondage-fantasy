@@ -12,7 +12,8 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "format-check": "prettier --check .",
-    "lezer": "lezer-generator --typeScript src/grammar/expression.grammar -o src/grammar/expression-parser.ts"
+    "lezer": "lezer-generator --typeScript src/grammar/expression.grammar -o src/grammar/expression-parser.ts",
+    "check": "pnpm build && pnpm lint && pnpm format-check"
   },
   "dependencies": {
     "@lezer/common": "1.2.3",

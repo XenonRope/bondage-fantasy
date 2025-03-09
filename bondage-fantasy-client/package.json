@@ -9,7 +9,8 @@
     "format": "prettier --write .",
     "format-check": "prettier --check .",
     "preview": "vite preview",
-    "docker": "docker build -t bondage-fantasy-client ."
+    "docker": "docker build -t bondage-fantasy-client .",
+    "check": "pnpm build && pnpm lint && pnpm format-check"
   },
   "dependencies": {
     "@codemirror/autocomplete": "6.18.6",

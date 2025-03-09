@@ -206,9 +206,8 @@ export function ImageListPage() {
           ...filter,
           page: Math.max(filter.page - 1, 1),
         }));
-      } else {
-        searchResult.refetch();
       }
+      searchResult.refetch();
     },
     onError: (error) => errorService.handleUnexpectedError(error),
   });
