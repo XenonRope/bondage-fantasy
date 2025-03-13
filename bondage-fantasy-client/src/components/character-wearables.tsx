@@ -29,7 +29,7 @@ function CharacterWearableSlot(props: {
   });
   return (
     <div className="flex gap-2 items-center">
-      <div className="h-11 w-11 flex-shrink-0">
+      <div className="h-11 w-11 shrink-0">
         {props.wearable && (
           <ImageWithPlaceholder image={props.wearable.imageKey} />
         )}

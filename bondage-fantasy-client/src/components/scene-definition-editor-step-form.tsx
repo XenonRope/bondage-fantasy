@@ -472,7 +472,7 @@ function ChoiceStep({
   return (
     <>
       {form.getValues().options.map((_option, index) => (
-        <div key={index} className="mb-4 p-4 border border-gray-200 rounded">
+        <div key={index} className="mb-4 p-4 border border-gray-200 rounded-sm">
           <div className="flex items-center">
             <TextInput
               {...form.getInputProps(`options.${index}.name`)}

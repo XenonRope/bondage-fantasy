@@ -1,3 +1,5 @@
+import "./i18n";
+
 import {
   ActionIcon,
   Alert,
@@ -5,9 +7,7 @@ import {
   createTheme,
   MantineProvider,
 } from "@mantine/core";
-import "@mantine/core/styles.css";
 import { Notifications } from "@mantine/notifications";
-import "@mantine/notifications/styles.css";
 import {
   QueryCache,
   QueryClient,
@@ -17,8 +17,6 @@ import {
 import { useEffect, useState } from "react";
 import { BrowserRouter, Route, Routes, useNavigate } from "react-router";
 import { sessionApi } from "./api/session-api";
-import "./app.css";
-import "./i18n";
 import { MainLayout } from "./layouts/main-layout";
 import AccountRegistrationPage from "./pages/account-registration-page";
 import { CharacterCreationPage } from "./pages/character-creation-page";

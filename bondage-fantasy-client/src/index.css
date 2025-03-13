@@ -1,3 +1,29 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@layer theme, base, mantine, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "@mantine/core/styles.css" layer(mantine);
+@import "@mantine/notifications/styles.css" layer(mantine);
+@import "@fortawesome/fontawesome-svg-core/styles.css" layer(components);
+@import "tailwindcss/utilities.css" layer(utilities);
+
+@theme {
+  --color-app-shell: var(--mantine-color-gray-3);
+  --color-dimmed: var(--mantine-color-dimmed);
+
+  --padding-xs: var(--mantine-spacing-xs);
+  --padding-sm: var(--mantine-spacing-sm);
+  --padding-md: var(--mantine-spacing-md);
+  --padding-lg: var(--mantine-spacing-lg);
+  --padding-xl: var(--mantine-spacing-xl);
+
+  --margin-xs: var(--mantine-spacing-xs);
+  --margin-sm: var(--mantine-spacing-sm);
+  --margin-md: var(--mantine-spacing-md);
+  --margin-lg: var(--mantine-spacing-lg);
+  --margin-xl: var(--mantine-spacing-xl);
+
+  --text-xs: var(--mantine-font-size-xs);
+  --text-sm: var(--mantine-font-size-sm);
+  --text-md: var(--mantine-font-size-md);
+  --text-lg: var(--mantine-font-size-lg);
+  --text-xl: var(--mantine-font-size-xl);
+}

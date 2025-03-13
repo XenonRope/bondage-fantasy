@@ -94,7 +94,7 @@ export function ZoneMap(props: {
   function getFieldClasses(x: number, y: number): string {
     const field = fields[y][x];
     if (field) {
-      let result = "bg-gradient-to-br from-green-200 to-green-400";
+      let result = "bg-linear-to-br from-green-200 to-green-400";
       if (
         props.selectedField &&
         props.selectedField === getFieldKey({ x, y })
@@ -114,7 +114,7 @@ export function ZoneMap(props: {
 
   function getConnectionClasses(connection?: FieldConnection): string {
     if (connection) {
-      let result = "absolute bg-gradient-to-br from-gray-200 to-gray-300";
+      let result = "absolute bg-linear-to-br from-gray-200 to-gray-300";
       if (
         props.selectedConnection &&
         props.selectedConnection === getFieldConnectionKey(connection)

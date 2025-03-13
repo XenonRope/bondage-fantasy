@@ -649,7 +649,7 @@ export function ZoneEditorPage() {
           )}
         </div>
       </Tabs.Panel>
-      <Tabs.Panel value="map" className="flex flex-grow">
+      <Tabs.Panel value="map" className="flex grow">
         <div className="flex flex-col h-full w-1/2 border-r border-app-shell p-md">
           <div className="min-h-[256px] max-w-fit overflow-auto">
             <ZoneMap
